@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Hero } from "@/components/ui/hero";
+import { SiteFooter } from "@/components/ui/site-footer";
 import { PrivacyNote } from "@/components/ui/privacy-note";
 import { saveSessionToken } from "@/hooks/use-session";
 import { signInWithGoogle } from "@/lib/auth-api";
@@ -22,7 +23,7 @@ export function LoginScreen({ notice }: { notice: string | null }) {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center gap-6 px-4 pb-12 pt-6 text-center">
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center gap-6 px-4 pb-6 pt-6 text-center">
       <Hero bubble="ล็อกอิน~" />
       <section className="doodle-card flex w-full max-w-[445px] flex-col items-center gap-3 p-5">
         <h2 className="text-lg font-bold">เข้าด้วยอีเมลนักศึกษา</h2>
@@ -39,6 +40,7 @@ export function LoginScreen({ notice }: { notice: string | null }) {
           </p>
         )}
       </section>
+      <SiteFooter />
     </main>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Hero } from "@/components/ui/hero";
+import { SiteFooter } from "@/components/ui/site-footer";
 import type { FacultyId } from "@/constants/faculties";
 import type { Profile } from "@/types/auth";
 import { FacultyPreference } from "./faculty-preference";
@@ -32,7 +33,7 @@ export function Lobby({
     profile.faculty !== null;
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center gap-6 px-4 pb-12 pt-6 text-center">
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center gap-6 px-4 pb-6 pt-6 text-center">
       <Hero bubble="ทอล์คมั้ย?" />
       <OnlineCount online={online} connected={connected} />
       <ProfileCard
@@ -61,6 +62,7 @@ export function Lobby({
           ยังต่อเซิร์ฟเวอร์ไม่ได้ กำลังลองใหม่ให้อยู่…
         </p>
       )}
+      <SiteFooter />
     </main>
   );
 }
