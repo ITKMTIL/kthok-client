@@ -1,5 +1,5 @@
-import { facultyOf, type FacultyId } from "@/lib/faculties";
-import { Mascot } from "./mascot";
+import { facultyOf, type FacultyId } from "@/constants/faculties";
+import { Mascot } from "@/components/ui/mascot";
 
 export function Searching({
   prefers,
@@ -18,7 +18,7 @@ export function Searching({
       <div aria-live="polite">
         <h1 className="text-2xl font-bold">
           {preferred && !fellBack
-            ? `กำลังหาเพื่อนคณะ${preferred.name}`
+            ? `กำลังหาเพื่อนจาก${preferred.name}`
             : "กำลังรอเพื่อนเข้าห้อง"}
           <span className="animate-pulse">…</span>
         </h1>

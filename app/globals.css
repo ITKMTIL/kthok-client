@@ -10,6 +10,8 @@
   --color-accent: #e35205;
   --color-accent-soft: #ffd8bd;
   --color-online: #5fcf80;
+  --color-safe: #1f8a4c;
+  --color-safe-soft: #dff5e4;
   --color-danger: #b3261e;
 
   --animate-bob: bob 1.6s ease-in-out infinite;
