@@ -34,3 +34,22 @@ export const DISCONNECTED_MESSAGE = "หลุดการเชื่อมต�
 export const SESSION_EXPIRED_MESSAGE = "เซสชันหมดอายุ ล็อกอินใหม่อีกครั้งนะ";
 export const LOGIN_NOT_CONFIGURED_MESSAGE =
   "เซิร์ฟเวอร์บังคับล็อกอินแล้ว แต่หน้าเว็บยังไม่ได้ตั้ง NEXT_PUBLIC_GOOGLE_CLIENT_ID";
+
+export const CALL_ERRORS: Record<string, string> = {
+  too_early: "คุยกันอีกนิดก่อนนะ ส่งข้อความกันครบ 5 ข้อความแล้วถึงจะโทรได้",
+  busy: "มีสายค้างอยู่แล้ว",
+  rate_limited: "โทรถี่ไปหน่อย รอสักครู่แล้วลองใหม่นะ",
+  not_in_chat: "ห้องนี้ปิดแล้ว",
+};
+export const CALL_ERROR_FALLBACK = "โทรไม่สำเร็จ ลองใหม่อีกครั้งนะ";
+
+export const CALL_ENDED: Record<string, string> = {
+  hangup: "อีกฝ่ายวางสายแล้ว",
+  declined: "อีกฝ่ายยังไม่สะดวกรับสาย",
+  no_answer: "ไม่มีคนรับสาย",
+};
+
+export const CALL_MIC_BLOCKED =
+  "ใช้ไมค์ไม่ได้ ลองอนุญาตไมโครโฟนให้เว็บนี้ในตั้งค่าเบราว์เซอร์ก่อนนะ";
+export const CALL_FAILED =
+  "ต่อสายไม่ติด เครือข่ายของฝั่งใดฝั่งหนึ่งอาจไม่เปิดให้คุยเสียง";

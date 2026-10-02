@@ -1,5 +1,6 @@
 "use client";
 
+import { CallBar } from "@/components/call/call-bar";
 import { MusicPlayer } from "@/components/music/music-player";
 import type { ShareParty } from "@/components/share/share-card";
 import { ShareDialog } from "@/components/share/share-dialog";
@@ -7,8 +8,10 @@ import { ShareToolbar } from "@/components/share/share-toolbar";
 import type { Reaction } from "@/constants/reactions";
 import { useMessageSelection } from "@/hooks/use-message-selection";
 import { useMusicCollapsed } from "@/hooks/use-music-collapsed";
+import { useVoiceCall } from "@/hooks/use-voice-call";
 import type { ChatState, MusicControls } from "@/types/chat";
 import { useState } from "react";
+import type { Socket } from "socket.io-client";
 import { ChatHeader } from "./chat-header";
 import { ConnectionNotice } from "./connection-notice";
 import { MatchNotice } from "./match-notice";
@@ -17,6 +20,8 @@ import { MessageList } from "./message-list";
 
 export function ChatRoom({
   state,
+  socket,
+  soundMuted,
   self,
   music,
   onSend,
@@ -26,6 +31,8 @@ export function ChatRoom({
   onLeave,
 }: {
   state: ChatState;
+  socket: Socket | null;
+  soundMuted: boolean;
   self: ShareParty;
   music: MusicControls;
   onSend: (text: string) => Promise<string | null>;
@@ -37,6 +44,8 @@ export function ChatRoom({
   const ended = state.phase === "ended";
   const [musicCollapsed, setMusicCollapsed] = useMusicCollapsed();
   const selection = useMessageSelection();
+  const voice = useVoiceCall(socket, { enabled: !ended, soundMuted });
+  const partnerName = state.partner?.nickname ?? "อีกฝ่าย";
   const [sharing, setSharing] = useState(false);
   const sharedMessages = state.messages.filter((message) =>
     selection.selected?.has(message.id),
@@ -56,8 +65,24 @@ export function ChatRoom({
           partner={state.partner}
           canShare={state.messages.length > 0 && !selection.selecting}
           onShare={selection.start}
+          canCall={
+            !ended &&
+            state.connected &&
+            !state.partnerAway &&
+            voice.call.status === "idle"
+          }
+          onCall={voice.invite}
           onNext={onNext}
           onLeave={onLeave}
+        />
+        <CallBar
+          call={voice.call}
+          partnerName={partnerName}
+          onAccept={voice.accept}
+          onDecline={voice.decline}
+          onHangUp={voice.hangUp}
+          onToggleMute={voice.toggleMute}
+          onDismissNotice={voice.dismissNotice}
         />
         <MatchNotice
           prefers={state.prefers}
@@ -67,7 +92,7 @@ export function ChatRoom({
           <ConnectionNotice
             connected={state.connected}
             partnerAway={state.partnerAway}
-            partnerName={state.partner?.nickname ?? "อีกฝ่าย"}
+            partnerName={partnerName}
           />
         )}
         <MessageList

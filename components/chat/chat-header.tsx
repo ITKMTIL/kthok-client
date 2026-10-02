@@ -1,4 +1,4 @@
-import { Share2, User } from "lucide-react";
+import { LogOut, Phone, Share2, SkipForward, User } from "lucide-react";
 import { facultyOf } from "@/constants/faculties";
 import type { Partner } from "@/types/chat";
 
@@ -6,12 +6,16 @@ export function ChatHeader({
   partner,
   canShare,
   onShare,
+  canCall,
+  onCall,
   onNext,
   onLeave,
 }: {
   partner: Partner | null;
   canShare: boolean;
   onShare: () => void;
+  canCall: boolean;
+  onCall: () => void;
   onNext: () => void;
   onLeave: () => void;
 }) {
@@ -39,11 +43,35 @@ export function ChatHeader({
       >
         <Share2 className="size-4" aria-hidden />
       </button>
-      <button type="button" className="doodle-btn px-3 py-1" onClick={onNext}>
-        คนถัดไป
+      <button
+        type="button"
+        className="doodle-btn grid size-9 shrink-0 place-items-center"
+        disabled={!canCall}
+        aria-label="ชวนคุยเสียง"
+        title="ชวนคุยเสียง"
+        onClick={onCall}
+      >
+        <Phone className="size-4" aria-hidden />
       </button>
-      <button type="button" className="doodle-btn px-3 py-1" onClick={onLeave}>
-        ออก
+      <button
+        type="button"
+        className="doodle-btn flex h-9 shrink-0 items-center gap-1.5 px-2.5 sm:px-3"
+        aria-label="คนถัดไป"
+        title="คนถัดไป"
+        onClick={onNext}
+      >
+        <SkipForward className="size-4" aria-hidden />
+        <span className="max-sm:hidden">คนถัดไป</span>
+      </button>
+      <button
+        type="button"
+        className="doodle-btn flex h-9 shrink-0 items-center gap-1.5 px-2.5 sm:px-3"
+        aria-label="ออกจากห้อง"
+        title="ออกจากห้อง"
+        onClick={onLeave}
+      >
+        <LogOut className="size-4" aria-hidden />
+        <span className="max-sm:hidden">ออก</span>
       </button>
     </header>
   );

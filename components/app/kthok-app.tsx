@@ -34,7 +34,8 @@ export function KThokApp() {
     clearSession();
   }, []);
 
-  const { state, find, leave, send, react, setTyping, music } = useChat({
+  const { state, socket, find, leave, send, react, setTyping, music } =
+    useChat({
     token: token ?? null,
     enabled: !AUTH_REQUIRED || Boolean(token),
     onAuthError: handleAuthError,
@@ -113,6 +114,8 @@ export function KThokApp() {
             <ChatRoom
               key={state.roomId}
               state={state}
+              socket={socket}
+              soundMuted={soundMuted}
               self={{ name: nickname, faculty: profile?.faculty ?? null }}
               music={music}
               onSend={send}

@@ -43,9 +43,16 @@ export function useChat({
     onAuthErrorRef.current = onAuthError;
   }, [onAuthError]);
 
+  const socket = useMemo(
+    () =>
+      enabled
+        ? io(CORE_URL, { auth: token ? { token } : {}, autoConnect: false })
+        : null,
+    [token, enabled],
+  );
+
   useEffect(() => {
-    if (!enabled) return;
-    const socket = io(CORE_URL, { auth: token ? { token } : {} });
+    if (!socket) return;
     socketRef.current = socket;
 
     socket.on("connect", () =>
@@ -101,12 +108,15 @@ export function useChat({
       dispatch({ type: "closed", roomId: payload.roomId }),
     );
 
+    socket.connect();
+
     return () => {
       window.removeEventListener("pagehide", leaveOnUnload);
       socket.disconnect();
+      socket.off();
       socketRef.current = null;
     };
-  }, [token, enabled]);
+  }, [socket]);
 
   const find = useCallback((profile: Profile, prefers: FacultyId | null) => {
     dispatch({ type: "search", prefers });
@@ -186,5 +196,5 @@ export function useChat({
     [],
   );
 
-  return { state, find, leave, send, react, setTyping, music };
+  return { state, socket, find, leave, send, react, setTyping, music };
 }
