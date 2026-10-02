@@ -5,6 +5,8 @@ import { FACULTIES, type FacultyId } from "@/lib/faculties";
 import { randomNickname, saveProfile, type Profile } from "@/lib/profile";
 import { Mascot } from "./mascot";
 
+const MAX_NICKNAME_LENGTH = 24;
+
 export function Lobby({
   profile,
   connected,
@@ -19,6 +21,7 @@ export function Lobby({
   onFind: (profile: Profile, prefers: FacultyId | null) => void;
 }) {
   const [prefers, setPrefers] = useState<FacultyId | null>(null);
+  const nickname = profile?.nickname.trim() ?? "";
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center gap-6 px-4 pb-12 pt-6 text-center">
@@ -48,15 +51,29 @@ export function Lobby({
       <section className="doodle-card w-full p-5 text-left">
         <h2 className="text-lg font-bold">ตัวตนของเธอในห้อง</h2>
         <p className="text-sm text-ink-soft">
-          ยังไม่มีระบบล็อกอิน ตอนนี้ใช้ชื่อสุ่มกับคณะที่เลือกเองไปก่อน
+          ยังไม่มีระบบล็อกอิน ตั้งนามแฝงเองหรือกดสุ่มก็ได้ อีกฝ่ายจะเห็นชื่อนี้
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <div>
-            <span className="text-sm font-medium">นามแฝง</span>
+            <label htmlFor="nickname" className="text-sm font-medium">
+              นามแฝง
+            </label>
             <div className="mt-1 flex gap-2">
-              <output className="doodle-field flex-1 truncate">
-                {profile?.nickname ?? "…"}
-              </output>
+              <input
+                id="nickname"
+                className="doodle-field min-w-0 flex-1"
+                value={profile?.nickname ?? ""}
+                onChange={(event) =>
+                  profile &&
+                  saveProfile({ ...profile, nickname: event.target.value })
+                }
+                placeholder="ตั้งชื่อที่อยากให้เพื่อนเห็น"
+                maxLength={MAX_NICKNAME_LENGTH}
+                disabled={!profile}
+                autoComplete="off"
+                aria-invalid={profile ? !nickname : undefined}
+                aria-describedby={profile && !nickname ? "nickname-hint" : undefined}
+              />
               <button
                 type="button"
                 className="doodle-btn px-3"
@@ -71,6 +88,11 @@ export function Lobby({
                 🎲
               </button>
             </div>
+            {profile && !nickname && (
+              <p id="nickname-hint" className="mt-1 text-sm text-danger">
+                ตั้งนามแฝงก่อนนะ หรือกด 🎲 ให้สุ่มให้
+              </p>
+            )}
           </div>
           <label>
             <span className="text-sm font-medium">คณะของเธอ</span>
@@ -130,8 +152,8 @@ export function Lobby({
       <button
         type="button"
         className="doodle-btn doodle-btn-primary px-10 py-3 text-2xl font-bold"
-        disabled={!profile || !connected}
-        onClick={() => profile && onFind(profile, prefers)}
+        disabled={!profile || !nickname || !connected}
+        onClick={() => profile && onFind({ ...profile, nickname }, prefers)}
       >
         หาเพื่อนคุย
       </button>
