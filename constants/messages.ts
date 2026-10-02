@@ -38,6 +38,7 @@ export const LOGIN_NOT_CONFIGURED_MESSAGE =
 export const CALL_ERRORS: Record<string, string> = {
   too_early: "คุยกันอีกนิดก่อนนะ ส่งข้อความกันครบ 5 ข้อความแล้วถึงจะโทรได้",
   busy: "มีสายค้างอยู่แล้ว",
+  disabled: "ตอนนี้ปิดระบบโทรอยู่",
   rate_limited: "โทรถี่ไปหน่อย รอสักครู่แล้วลองใหม่นะ",
   not_in_chat: "ห้องนี้ปิดแล้ว",
 };

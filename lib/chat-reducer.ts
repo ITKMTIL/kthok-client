@@ -12,6 +12,7 @@ export type ChatAction =
   | { type: "connected"; recovered: boolean }
   | { type: "disconnected" }
   | { type: "authenticated"; faculty: FacultyId }
+  | { type: "features"; call: boolean }
   | { type: "stats"; online: number }
   | { type: "search"; prefers: FacultyId | null }
   | { type: "waiting"; roomId: string }
@@ -32,6 +33,7 @@ export type ChatAction =
 
 export const initialChatState: ChatState = {
   connected: false,
+  callEnabled: false,
   selfFaculty: null,
   online: null,
   phase: "idle",
@@ -68,12 +70,15 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         : {
             ...initialChatState,
             connected: true,
-            selfFaculty: state.selfFaculty,
+            callEnabled: state.callEnabled,
+        selfFaculty: state.selfFaculty,
             online: state.online,
             error: DISCONNECTED_MESSAGE,
           };
     case "disconnected":
       return { ...state, connected: false, partnerTyping: false };
+    case "features":
+      return { ...state, callEnabled: action.call };
     case "authenticated":
       return { ...state, selfFaculty: action.faculty };
     case "stats":
@@ -82,6 +87,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return {
         ...initialChatState,
         connected: state.connected,
+        callEnabled: state.callEnabled,
         selfFaculty: state.selfFaculty,
         online: state.online,
         phase: "searching",
@@ -149,6 +155,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return {
         ...initialChatState,
         connected: state.connected,
+        callEnabled: state.callEnabled,
         selfFaculty: state.selfFaculty,
         online: state.online,
         error: action.error ?? null,

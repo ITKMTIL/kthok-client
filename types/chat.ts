@@ -50,6 +50,7 @@ export interface MusicControls {
 
 export interface ChatState {
   connected: boolean;
+  callEnabled: boolean;
   selfFaculty: FacultyId | null;
   online: number | null;
   phase: "idle" | "searching" | "chatting" | "ended";

@@ -65,6 +65,9 @@ export function useChat({
     window.addEventListener("pagehide", leaveOnUnload);
     socket.on("disconnect", () => dispatch({ type: "disconnected" }));
     socket.on("auth:error", () => onAuthErrorRef.current());
+    socket.on("features", (features: { call?: boolean }) =>
+      dispatch({ type: "features", call: features.call === true }),
+    );
     socket.on("auth:ok", (payload: { faculty: string }) => {
       const faculty = facultyOf(payload.faculty);
       if (faculty) dispatch({ type: "authenticated", faculty: faculty.id });

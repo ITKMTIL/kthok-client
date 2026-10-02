@@ -15,7 +15,7 @@ export function ChatHeader({
   canShare: boolean;
   onShare: () => void;
   canCall: boolean;
-  onCall: () => void;
+  onCall: (() => void) | null;
   onNext: () => void;
   onLeave: () => void;
 }) {
@@ -43,16 +43,18 @@ export function ChatHeader({
       >
         <Share2 className="size-4" aria-hidden />
       </button>
-      <button
-        type="button"
-        className="doodle-btn grid size-9 shrink-0 place-items-center"
-        disabled={!canCall}
-        aria-label="ชวนคุยเสียง"
-        title="ชวนคุยเสียง"
-        onClick={onCall}
-      >
-        <Phone className="size-4" aria-hidden />
-      </button>
+      {onCall && (
+        <button
+          type="button"
+          className="doodle-btn grid size-9 shrink-0 place-items-center"
+          disabled={!canCall}
+          aria-label="ชวนคุยเสียง"
+          title="ชวนคุยเสียง"
+          onClick={onCall}
+        >
+          <Phone className="size-4" aria-hidden />
+        </button>
+      )}
       <button
         type="button"
         className="doodle-btn flex h-9 shrink-0 items-center gap-1.5 px-2.5 sm:px-3"

@@ -71,7 +71,7 @@ export function ChatRoom({
             !state.partnerAway &&
             voice.call.status === "idle"
           }
-          onCall={voice.invite}
+          onCall={state.callEnabled ? voice.invite : null}
           onNext={onNext}
           onLeave={onLeave}
         />
