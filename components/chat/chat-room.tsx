@@ -5,6 +5,7 @@ import type { Reaction } from "@/constants/reactions";
 import { useMusicCollapsed } from "@/hooks/use-music-collapsed";
 import type { ChatState, MusicControls } from "@/types/chat";
 import { ChatHeader } from "./chat-header";
+import { ConnectionNotice } from "./connection-notice";
 import { MatchNotice } from "./match-notice";
 import { MessageForm } from "./message-form";
 import { MessageList } from "./message-list";
@@ -48,6 +49,13 @@ export function ChatRoom({
           prefers={state.prefers}
           preferenceMet={state.preferenceMet}
         />
+        {!ended && (
+          <ConnectionNotice
+            connected={state.connected}
+            partnerAway={state.partnerAway}
+            partnerName={state.partner?.nickname ?? "อีกฝ่าย"}
+          />
+        )}
         <MessageList
           messages={state.messages}
           partnerName={state.partner?.nickname ?? ""}

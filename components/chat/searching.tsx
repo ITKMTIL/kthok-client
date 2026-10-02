@@ -4,10 +4,12 @@ import { Mascot } from "@/components/ui/mascot";
 export function Searching({
   prefers,
   fellBack,
+  connected,
   onCancel,
 }: {
   prefers: FacultyId | null;
   fellBack: boolean;
+  connected: boolean;
   onCancel: () => void;
 }) {
   const preferred = prefers ? facultyOf(prefers) : undefined;
@@ -30,6 +32,11 @@ export function Searching({
               : "เปิดห้องไว้ให้แล้ว ใครกดหาคนถัดไปจะเข้ามาห้องนี้"}
         </p>
       </div>
+      {!connected && (
+        <p className="text-sm font-medium text-danger" role="status">
+          หลุดการเชื่อมต่อ กำลังต่อกลับให้…
+        </p>
+      )}
       <button type="button" className="doodle-btn px-6 py-2" onClick={onCancel}>
         ยกเลิก
       </button>

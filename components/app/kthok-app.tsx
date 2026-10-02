@@ -93,6 +93,7 @@ export function KThokApp() {
             <Searching
               prefers={state.prefers}
               fellBack={state.fellBack}
+              connected={state.connected}
               onCancel={leave}
             />
           )}

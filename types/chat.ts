@@ -60,6 +60,7 @@ export interface ChatState {
   preferenceMet: boolean;
   messages: ChatMessage[];
   partnerTyping: boolean;
+  partnerAway: boolean;
   music: MusicState | null;
   error: string | null;
 }
@@ -68,6 +69,7 @@ export interface MatchedPayload {
   roomId: string;
   partner: Partner;
   preferenceMet: boolean;
+  partnerAway?: boolean;
 }
 
 export type FindAck =

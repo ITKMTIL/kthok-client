@@ -9,7 +9,7 @@ import type {
 } from "@/types/chat";
 
 export type ChatAction =
-  | { type: "connected" }
+  | { type: "connected"; recovered: boolean }
   | { type: "disconnected" }
   | { type: "authenticated"; faculty: FacultyId }
   | { type: "stats"; online: number }
@@ -19,6 +19,7 @@ export type ChatAction =
   | ({ type: "matched" } & MatchedPayload)
   | { type: "message"; message: ChatMessage }
   | { type: "typing"; typing: boolean }
+  | { type: "presence"; away: boolean }
   | {
       type: "reaction";
       roomId: string;
@@ -41,6 +42,7 @@ export const initialChatState: ChatState = {
   preferenceMet: false,
   messages: [],
   partnerTyping: false,
+  partnerAway: false,
   music: null,
   error: null,
 };
@@ -51,13 +53,27 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
 
   switch (action.type) {
     case "connected":
-      return { ...state, connected: true, error: null };
+      if (action.recovered || state.phase === "idle" || state.phase === "ended") {
+        return { ...state, connected: true };
+      }
+      return state.phase === "chatting"
+        ? {
+            ...state,
+            connected: true,
+            phase: "ended",
+            partnerTyping: false,
+            partnerAway: false,
+            music: null,
+          }
+        : {
+            ...initialChatState,
+            connected: true,
+            selfFaculty: state.selfFaculty,
+            online: state.online,
+            error: DISCONNECTED_MESSAGE,
+          };
     case "disconnected":
-      return {
-        ...initialChatState,
-        online: state.online,
-        error: state.phase === "idle" ? state.error : DISCONNECTED_MESSAGE,
-      };
+      return { ...state, connected: false, partnerTyping: false };
     case "authenticated":
       return { ...state, selfFaculty: action.faculty };
     case "stats":
@@ -87,6 +103,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
             roomId: action.roomId,
             partner: action.partner,
             preferenceMet: action.preferenceMet,
+            partnerAway: action.partnerAway ?? false,
           }
         : state;
     case "message":
@@ -100,6 +117,10 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case "typing":
       return state.phase === "chatting"
         ? { ...state, partnerTyping: action.typing }
+        : state;
+    case "presence":
+      return state.phase === "chatting"
+        ? { ...state, partnerAway: action.away, partnerTyping: false }
         : state;
     case "reaction":
       return inRoom(action.roomId)
@@ -116,7 +137,13 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return inRoom(action.roomId) ? { ...state, music: action.music } : state;
     case "closed":
       return inRoom(action.roomId)
-        ? { ...state, phase: "ended", partnerTyping: false, music: null }
+        ? {
+            ...state,
+            phase: "ended",
+            partnerTyping: false,
+            partnerAway: false,
+            music: null,
+          }
         : state;
     case "reset":
       return {

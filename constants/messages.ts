@@ -8,6 +8,7 @@ export const FIND_ERROR_FALLBACK = "หาห้องไม่สำเร็�
 export const SEND_ERRORS: Record<string, string> = {
   rate_limited: "ส่งถี่ไปหน่อย รอแป๊บแล้วกดส่งอีกที",
   not_in_chat: "ห้องนี้ปิดแล้ว",
+  offline: "ยังต่อเน็ตไม่ติด รอแป๊บแล้วส่งอีกที",
 };
 export const SEND_ERROR_FALLBACK = "ส่งข้อความไม่สำเร็จ ลองอีกครั้งนะ";
 

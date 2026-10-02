@@ -48,7 +48,14 @@ export function useChat({
     const socket = io(CORE_URL, { auth: token ? { token } : {} });
     socketRef.current = socket;
 
-    socket.on("connect", () => dispatch({ type: "connected" }));
+    socket.on("connect", () =>
+      dispatch({ type: "connected", recovered: socket.recovered }),
+    );
+    socket.on("partner:presence", (payload: { away: boolean }) =>
+      dispatch({ type: "presence", away: payload.away === true }),
+    );
+    const leaveOnUnload = () => socket.emit("room:leave");
+    window.addEventListener("pagehide", leaveOnUnload);
     socket.on("disconnect", () => dispatch({ type: "disconnected" }));
     socket.on("auth:error", () => onAuthErrorRef.current());
     socket.on("auth:ok", (payload: { faculty: string }) => {
@@ -95,6 +102,7 @@ export function useChat({
     );
 
     return () => {
+      window.removeEventListener("pagehide", leaveOnUnload);
       socket.disconnect();
       socketRef.current = null;
     };
@@ -130,7 +138,7 @@ export function useChat({
     (text: string) =>
       new Promise<string | null>((resolve) => {
         const socket = socketRef.current;
-        if (!socket?.connected) return resolve(SEND_ERRORS.not_in_chat);
+        if (!socket?.connected) return resolve(SEND_ERRORS.offline);
         socket.emit("chat:send", { text }, (ack: SendAck) => {
           if (!ack.ok) {
             return resolve(SEND_ERRORS[ack.error] ?? SEND_ERROR_FALLBACK);
