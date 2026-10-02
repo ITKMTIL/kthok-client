@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# K-Thok — client
 
-## Getting Started
+**K-Thok** ย่อมาจาก *KMITL Thok* (thok = talk) เป็นเว็บแชตนิรนามสำหรับนักศึกษา สจล.
+อารมณ์คล้ายแอพหาเพื่อน แต่ **ไม่มีการปัดหรือรอ match** — กดหาห้องแล้วระบบจับคู่ให้ทันที
+ถ้ายังไม่มีห้องว่างก็เปิดห้องใหม่รอ ถ้ามีห้องรออยู่ก็เข้าไปคุยเลย
 
-First, run the development server:
+repo นี้คือฝั่งหน้าเว็บ (Next.js) ใช้คู่กับ [kthok-core](https://github.com/ITKMTIL/kthok-core) ซึ่งเป็น server จับคู่และส่งข้อความ
+
+## แรงบันดาลใจ
+
+ได้ไอเดียและแนวทางหน้าตามาจาก [Drinks On Me](https://drinksonme.live/) — บาร์ทิพย์สำหรับคุยกับคนแปลกหน้า
+สิ่งที่หยิบมาคือ concept "เข้ามาแล้วได้คุยเลย" และสไตล์ลายเส้น doodle (พื้นกระดาษ เส้นหมึกหนา ฟอนต์ลายมือ)
+โค้ด รูป และข้อความทั้งหมดในโปรเจกต์นี้เขียนขึ้นใหม่ ไม่ได้นำ asset ของ Drinks On Me มาใช้
+และโปรเจกต์นี้ไม่มีส่วนเกี่ยวข้องกับทีมงาน Drinks On Me
+
+## ฟีเจอร์หลัก
+
+- **จับคู่ทันที** — กด "หาเพื่อนคุย" แล้วเข้าห้อง 1 ต่อ 1 กับคนที่รออยู่ หรือเปิดห้องรอ
+- **เลือกคณะที่อยากคุยด้วย** — ถ้าไม่มีคนจากคณะนั้นรออยู่ ระบบรอให้ครู่หนึ่งแล้วพาไปห้องที่ว่างแทน
+- **ล็อกอินด้วยอีเมลนักศึกษา** (`@kmitl.ac.th` ผ่าน Google) — ใช้ยืนยันว่าเป็นเด็ก สจล. และดึงคณะจากรหัสนักศึกษา อีกฝ่ายเห็นแค่นามแฝงกับคณะ
+- **นามแฝง** — ตั้งเองหรือกดสุ่ม
+- **แชต realtime** — สถานะกำลังพิมพ์, รีแอคชัน emoji บนข้อความ, กรองคำหยาบ
+- **ฟังเพลงด้วยกัน** — วางลิงก์ YouTube เข้าคิว เล่น/หยุด/ข้ามพร้อมกันทั้งสองฝั่ง
+- **โทรคุยเสียง** — WebRTC ต้องให้อีกฝ่ายกดรับก่อน เปิด/ปิดได้จากฝั่ง server
+- **แชร์บทสนทนาเป็นรูป** — เลือกข้อความแล้วสร้างการ์ด PNG ในเครื่องผู้ใช้เอง
+- **เสียงแจ้งเตือน** และตัวเลขข้อความใหม่บนชื่อ tab
+- **หลุดแล้วกลับห้องเดิมได้** — พับจอหรือเน็ตสะดุดช่วงสั้น ๆ ไม่ทำให้ห้องหาย
+- **ใช้บนมือถือได้** — แผงเพลงหุบได้ และ layout ไม่โดนแป้นพิมพ์บัง
+
+### ความเป็นส่วนตัว
+
+- ไม่มีฐานข้อมูล ข้อความไม่ถูกบันทึกที่ server ออกจากห้องแล้วหายเลย
+- อีเมลและรหัสนักศึกษาใช้แค่ตอนยืนยันตัวตน ไม่ถูกเก็บ
+- รูปที่แชร์สร้างใน browser ไม่ถูกอัปโหลด
+
+## เทคโนโลยี
+
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · socket.io-client · lucide-react · html-to-image
+
+## เริ่มใช้งาน
+
+ต้องมี Node.js 20 ขึ้นไป และ [pnpm](https://pnpm.io/) และต้องรัน [kthok-core](https://github.com/ITKMTIL/kthok-core) ไว้ก่อน
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+เปิด http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### ตัวแปรใน `.env`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| ตัวแปร | ความหมาย |
+| --- | --- |
+| `NEXT_PUBLIC_CORE_URL` | URL ของ kthok-core (ค่าเริ่มต้น `http://localhost:3001`) |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | OAuth Client ID ของ Google เว้นว่าง = โหมดทดลอง ไม่ต้องล็อกอินและเลือกคณะเองได้ |
+| `NEXT_PUBLIC_SITE_URL` | URL จริงของเว็บ ใช้สร้างลิงก์รูป preview ตอนแชร์ลิงก์ |
 
-## Learn More
+ถ้าเปิดล็อกอิน ค่า `NEXT_PUBLIC_GOOGLE_CLIENT_ID` ต้องตรงกับ `GOOGLE_CLIENT_ID` ของ kthok-core
+และต้องเพิ่ม origin ของเว็บใน *Authorized JavaScript origins* ของ OAuth client (ไม่ต้องตั้ง redirect URI)
 
-To learn more about Next.js, take a look at the following resources:
+### คำสั่ง
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| คำสั่ง | ทำอะไร |
+| --- | --- |
+| `pnpm dev` | รัน dev server |
+| `pnpm build` / `pnpm start` | build และรันแบบ production |
+| `pnpm lint` | ตรวจโค้ดด้วย ESLint |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## โครงสร้างโปรเจกต์
 
-## Deploy on Vercel
+```
+app/          หน้าเว็บ, metadata, icon และรูป preview
+components/   UI แยกตามฟีเจอร์: app, auth, lobby, chat, music, call, share, ui
+hooks/        state และ logic เช่น use-chat, use-voice-call, use-youtube-player
+lib/          ตัวช่วย: reducer ของแชต, เสียง, สร้างรูป, storage, config
+constants/    รายชื่อคณะ, ข้อความแจ้งเตือน, รีแอคชัน
+types/        type ที่ใช้ร่วมกัน
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ทำงานอย่างไร (คร่าว ๆ)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. หน้าเว็บต่อ socket.io ไปที่ core พร้อม session token (ถ้าเปิดล็อกอิน)
+2. กดหาห้อง → core จับคู่ แล้วส่ง event กลับมาบอกว่าได้คู่กับใคร
+3. ข้อความ รีแอคชัน สถานะเพลง และสัญญาณโทร ส่งผ่าน socket เดียวกัน โดย core เป็นคนกลาง
+4. เสียงของการโทรวิ่งผ่าน WebRTC ไม่ผ่าน core
+5. state ทั้งหมดของห้องอยู่ใน `hooks/use-chat.ts` และ `lib/chat-reducer.ts`
+
+รายละเอียดฝั่ง server และรายการ event ดูที่ README ของ [kthok-core](https://github.com/ITKMTIL/kthok-core)
+
+---
+
+โปรเจกต์นี้พัฒนาโดยมี AI ช่วยเขียนโค้ด ([Claude Code](https://claude.com/claude-code)) ภายใต้การกำกับและตรวจทานของทีมผู้พัฒนา
