@@ -1,6 +1,6 @@
 "use client";
 
-import { SmilePlus } from "lucide-react";
+import { Check, SmilePlus } from "lucide-react";
 import { useCallback, useRef } from "react";
 import type { Reaction } from "@/constants/reactions";
 import { useDismiss } from "@/hooks/use-dismiss";
@@ -11,12 +11,14 @@ export function MessageBubble({
   message,
   pickerOpen,
   disabled,
+  selection,
   onTogglePicker,
   onReact,
 }: {
   message: ChatMessage;
   pickerOpen: boolean;
   disabled: boolean;
+  selection: { selected: boolean; onToggle: () => void } | null;
   onTogglePicker: (open: boolean) => void;
   onReact: (reaction: Reaction | null) => void;
 }) {
@@ -28,6 +30,7 @@ export function MessageBubble({
   const same = mine !== null && mine === theirs;
 
   const handleBubbleClick = () => {
+    if (selection) return selection.onToggle();
     if (disabled || !window.matchMedia("(hover: none)").matches) return;
     onTogglePicker(!pickerOpen);
   };
@@ -39,12 +42,24 @@ export function MessageBubble({
     >
       <div className={`flex items-center gap-1 ${message.mine ? "flex-row-reverse" : ""}`}>
         <p
-          className={`bubble max-w-full ${message.mine ? "bubble-mine" : "bubble-theirs"}`}
+          className={`bubble max-w-full ${message.mine ? "bubble-mine" : "bubble-theirs"} ${selection ? "cursor-pointer" : ""} ${selection?.selected ? "outline-3 outline-offset-2 outline-accent" : ""}`}
           onClick={handleBubbleClick}
         >
           {message.text}
         </p>
-        {!disabled && (
+        {selection && (
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={selection.selected}
+            aria-label={`เลือกข้อความ: ${message.text.slice(0, 40)}`}
+            className={`grid size-6 shrink-0 cursor-pointer place-items-center rounded-full border-2 border-ink focus-visible:outline-2 focus-visible:outline-accent ${selection.selected ? "bg-accent text-card" : "bg-card"}`}
+            onClick={selection.onToggle}
+          >
+            {selection.selected && <Check className="size-4" aria-hidden />}
+          </button>
+        )}
+        {!disabled && !selection && (
           <button
             type="button"
             className={`grid size-7 shrink-0 cursor-pointer place-items-center rounded-full text-ink-soft transition-opacity hover:bg-accent-soft hover:text-ink focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-accent [@media(hover:none)]:hidden ${pickerOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}

@@ -10,6 +10,8 @@ export function MessageList({
   partnerName,
   partnerTyping,
   ended,
+  selected,
+  onToggleSelected,
   onReact,
   onNext,
 }: {
@@ -17,6 +19,8 @@ export function MessageList({
   partnerName: string;
   partnerTyping: boolean;
   ended: boolean;
+  selected: ReadonlySet<string> | null;
+  onToggleSelected: (messageId: string) => void;
   onReact: (messageId: string, reaction: Reaction | null) => void;
   onNext: () => void;
 }) {
@@ -46,14 +50,20 @@ export function MessageList({
       aria-label="ข้อความในห้อง"
     >
       <p className="text-center text-sm text-ink-soft">
-        จับคู่แล้ว! ทักทายกันได้เลย ข้อความจะหายไปเมื่อออกจากห้อง
+        จับคู่แล้ว! ทักทายกันได้เลย เราไม่เก็บข้อความไว้ ออกจากห้องแล้วหายเลย
       </p>
       {messages.map((message) => (
         <MessageBubble
           key={message.id}
           message={message}
-          pickerOpen={openPickerId === message.id}
+          pickerOpen={!selected && openPickerId === message.id}
           disabled={ended}
+          selection={
+            selected && {
+              selected: selected.has(message.id),
+              onToggle: () => onToggleSelected(message.id),
+            }
+          }
           onTogglePicker={(open) => setOpenPickerId(open ? message.id : null)}
           onReact={(reaction) => onReact(message.id, reaction)}
         />

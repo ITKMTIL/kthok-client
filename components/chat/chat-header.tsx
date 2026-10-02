@@ -1,13 +1,17 @@
-import { User } from "lucide-react";
+import { Share2, User } from "lucide-react";
 import { facultyOf } from "@/constants/faculties";
 import type { Partner } from "@/types/chat";
 
 export function ChatHeader({
   partner,
+  canShare,
+  onShare,
   onNext,
   onLeave,
 }: {
   partner: Partner | null;
+  canShare: boolean;
+  onShare: () => void;
   onNext: () => void;
   onLeave: () => void;
 }) {
@@ -25,6 +29,16 @@ export function ChatHeader({
           {faculty?.name}
         </p>
       </div>
+      <button
+        type="button"
+        className="doodle-btn grid size-9 shrink-0 place-items-center"
+        disabled={!canShare}
+        aria-label="แชร์บทสนทนาเป็นรูป"
+        title="แชร์บทสนทนาเป็นรูป"
+        onClick={onShare}
+      >
+        <Share2 className="size-4" aria-hidden />
+      </button>
       <button type="button" className="doodle-btn px-3 py-1" onClick={onNext}>
         คนถัดไป
       </button>

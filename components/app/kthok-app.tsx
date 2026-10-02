@@ -113,6 +113,7 @@ export function KThokApp() {
             <ChatRoom
               key={state.roomId}
               state={state}
+              self={{ name: nickname, faculty: profile?.faculty ?? null }}
               music={music}
               onSend={send}
               onReact={react}
