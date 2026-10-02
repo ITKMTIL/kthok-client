@@ -6,6 +6,10 @@ import { useRef, useState } from "react";
 import { BRAND } from "@/lib/brand";
 
 const SEEN_KEY = "kthok:splash-seen";
+const CURTAINS = ["curtain-paper", "curtain-soft", "curtain-accent"];
+const CURTAIN_FULL = "M0 0 L100 0 L100 100 Q50 100 0 100 Z";
+const CURTAIN_LIFTING = "M0 0 L100 0 L100 46 Q50 104 0 46 Z";
+const CURTAIN_GONE = "M0 0 L100 0 L100 0 Q50 0 0 0 Z";
 const LETTERS = ["K", "-", "T", "H", "O", "K"];
 
 let seenOnLoad: boolean | null = null;
@@ -74,7 +78,62 @@ export function Splash() {
           { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" },
           "-=0.2",
         )
-        .to(root, { yPercent: -100, duration: 0.55, ease: "power3.inOut" }, "+=0.35");
+        .addLabel("leave", "+=0.4")
+        .to(
+          ".splash-letter",
+          {
+            y: -70,
+            opacity: 0,
+            rotation: () => gsap.utils.random(-40, 40),
+            duration: 0.32,
+            stagger: 0.035,
+            ease: "back.in(2.4)",
+          },
+          "leave",
+        )
+        .to(".splash-tagline", { opacity: 0, y: 10, duration: 0.2 }, "leave")
+        .to(
+          ".splash-mark",
+          { scaleY: 0.78, scaleX: 1.14, y: 10, duration: 0.16, ease: "power2.in" },
+          "leave+=0.05",
+        )
+        .to(".splash-mark", {
+          scaleY: 1.15,
+          scaleX: 0.9,
+          y: () => -window.innerHeight * 0.75,
+          rotation: 28,
+          duration: 0.5,
+          ease: "power3.in",
+        })
+        .addLabel("lift", "-=0.34")
+        .add(() => {
+          gsap.from(document.querySelectorAll("header, main > *"), {
+            y: 44,
+            opacity: 0,
+            scale: 0.95,
+            rotation: (index) => (index % 2 ? 1.5 : -1.5),
+            duration: 0.6,
+            stagger: 0.07,
+            delay: 0.18,
+            ease: "back.out(1.9)",
+            clearProps: "transform,opacity",
+          });
+        }, "lift");
+
+      CURTAINS.forEach((curtain, index) => {
+        const at = `lift+=${index * 0.13}`;
+        timeline
+          .to(
+            `.${curtain}`,
+            { attr: { d: CURTAIN_LIFTING }, duration: 0.34, ease: "power2.in" },
+            at,
+          )
+          .to(
+            `.${curtain}`,
+            { attr: { d: CURTAIN_GONE }, duration: 0.36, ease: "power2.out" },
+            `${at}+=0.34`,
+          );
+      });
     },
     { scope: rootRef },
   );
@@ -84,12 +143,15 @@ export function Splash() {
   return (
     <div
       ref={rootRef}
-      className="splash fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-paper"
+      className="splash fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 overflow-hidden"
       aria-hidden
     >
+      <Curtain className="curtain-accent" fill={BRAND.accent} />
+      <Curtain className="curtain-soft" fill={BRAND.accentSoft} />
+      <Curtain className="curtain-paper" fill={BRAND.paper} />
       <svg
         viewBox="0 0 64 64"
-        className="splash-mark size-32 overflow-visible"
+        className="splash-mark relative size-32 overflow-visible"
         fill="none"
         stroke={BRAND.ink}
         strokeWidth="4"
@@ -113,7 +175,7 @@ export function Splash() {
         <path className="splash-cheek" style={{ opacity: 0 }} d="M13 29h4" stroke={BRAND.accent} strokeWidth="3" />
         <path className="splash-cheek" style={{ opacity: 0 }} d="M47 29h4" stroke={BRAND.accent} strokeWidth="3" />
       </svg>
-      <p className="flex text-5xl font-bold tracking-wide">
+      <p className="relative flex text-5xl font-bold tracking-wide">
         {LETTERS.map((letter, index) => (
           <span
             key={index}
@@ -124,9 +186,21 @@ export function Splash() {
           </span>
         ))}
       </p>
-      <p className="splash-tagline text-ink-soft" style={{ opacity: 0 }}>
+      <p className="splash-tagline relative text-ink-soft" style={{ opacity: 0 }}>
         ทอล์คกันมั้ย?
       </p>
     </div>
+  );
+}
+
+function Curtain({ className, fill }: { className: string; fill: string }) {
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      className="absolute inset-0 size-full"
+    >
+      <path className={className} d={CURTAIN_FULL} fill={fill} />
+    </svg>
   );
 }
