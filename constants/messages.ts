@@ -50,6 +50,8 @@ export const CALL_ENDED: Record<string, string> = {
   no_answer: "ไม่มีคนรับสาย",
 };
 
+export const CALL_RELAY_UNAVAILABLE =
+  "ตอนนี้ต่อสายเสียงไม่ได้ ลองใหม่อีกครั้งทีหลังนะ";
 export const CALL_MIC_BLOCKED =
   "ใช้ไมค์ไม่ได้ ลองอนุญาตไมโครโฟนให้เว็บนี้ในตั้งค่าเบราว์เซอร์ก่อนนะ";
 export const CALL_FAILED =

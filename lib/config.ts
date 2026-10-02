@@ -6,7 +6,3 @@ export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 export const AUTH_REQUIRED = GOOGLE_CLIENT_ID !== "";
 
 export const EMAIL_DOMAIN = "kmitl.ac.th";
-
-export const ICE_SERVERS: RTCIceServer[] = [
-  { urls: "stun:stun.cloudflare.com:3478" },
-];

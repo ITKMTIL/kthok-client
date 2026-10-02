@@ -6,8 +6,8 @@ import {
   CALL_ERRORS,
   CALL_FAILED,
   CALL_MIC_BLOCKED,
+  CALL_RELAY_UNAVAILABLE,
 } from "@/constants/messages";
-import { ICE_SERVERS } from "@/lib/config";
 import { playSound } from "@/lib/sounds";
 
 const RING_INTERVAL_MS = 2500;
@@ -32,6 +32,25 @@ interface SignalPayload {
 }
 
 type Ack = { ok: true } | { ok: false; error: string };
+
+type IceAck =
+  | { ok: true; iceServers: RTCIceServer[]; relayOnly: boolean }
+  | { ok: false; error: string };
+
+function requestIceConfig(socket: Socket): Promise<RTCConfiguration | null> {
+  return new Promise((resolve) => {
+    socket.emit("call:ice", (ack: IceAck) =>
+      resolve(
+        ack.ok
+          ? {
+              iceServers: ack.iceServers,
+              iceTransportPolicy: ack.relayOnly ? "relay" : "all",
+            }
+          : null,
+      ),
+    );
+  });
+}
 
 const IDLE: CallState = {
   status: "idle",
@@ -83,8 +102,8 @@ export function useVoiceCall(
   );
 
   const createPeer = useCallback(
-    (stream: MediaStream) => {
-      const peer = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    (stream: MediaStream, config: RTCConfiguration) => {
+      const peer = new RTCPeerConnection(config);
       stream.getTracks().forEach((track) => peer.addTrack(track, stream));
       peer.onicecandidate = (event) => {
         if (event.candidate) {
@@ -127,7 +146,13 @@ export function useVoiceCall(
       const stream = streamRef.current;
       if (statusRef.current !== "outgoing" || !stream) return;
       setCall((current) => ({ ...current, status: "connecting" }));
-      const peer = createPeer(stream);
+      const config = await requestIceConfig(socket);
+      if (!config) {
+        socket.emit("call:end");
+        return finish(CALL_RELAY_UNAVAILABLE);
+      }
+      if (streamRef.current !== stream) return;
+      const peer = createPeer(stream, config);
       await peer.setLocalDescription(await peer.createOffer());
       socket.emit("call:signal", { description: peer.localDescription });
     };
@@ -203,7 +228,14 @@ export function useVoiceCall(
       socket.emit("call:decline");
       return finish(CALL_MIC_BLOCKED);
     }
-    createPeer(stream);
+    streamRef.current = stream;
+    const config = await requestIceConfig(socket);
+    if (!config) {
+      socket.emit("call:decline");
+      return finish(CALL_RELAY_UNAVAILABLE);
+    }
+    if (streamRef.current !== stream) return;
+    createPeer(stream, config);
     socket.emit("call:accept", (ack: Ack) => {
       if (!ack.ok) finish(CALL_ERROR_FALLBACK);
     });
