@@ -1,15 +1,18 @@
-import { Bell, BellOff } from "lucide-react";
+import { Bell, BellOff, ChartColumn } from "lucide-react";
+import Link from "next/link";
 
 export function AppHeader({
   connected,
   selfName,
   soundMuted,
+  showAdminLink,
   onToggleSound,
   onSignOut,
 }: {
   connected: boolean;
   selfName: string | null;
   soundMuted: boolean;
+  showAdminLink: boolean;
   onToggleSound: () => void;
   onSignOut: (() => void) | null;
 }) {
@@ -46,6 +49,16 @@ export function AppHeader({
             <Bell className="size-4" aria-hidden />
           )}
         </button>
+        {showAdminLink && (
+          <Link
+            href="/admin"
+            className="grid size-8 place-items-center rounded-full text-ink hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
+            aria-label="รายงานการใช้งาน"
+            title="รายงานการใช้งาน"
+          >
+            <ChartColumn className="size-4" aria-hidden />
+          </Link>
+        )}
         {onSignOut && (
           <button type="button" className="doodle-btn px-2 py-0.5" onClick={onSignOut}>
             ออกจากระบบ

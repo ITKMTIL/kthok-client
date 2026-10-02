@@ -88,6 +88,7 @@ export function KThokApp() {
         connected={state.connected}
         selfName={inRoom && nickname ? nickname : null}
         soundMuted={soundMuted}
+        showAdminLink={state.isAdmin && state.phase === "idle"}
         onToggleSound={() => {
           unlockAudio();
           setSoundMuted(!soundMuted);
