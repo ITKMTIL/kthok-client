@@ -8,7 +8,7 @@ import { Searching } from "./searching";
 
 export function KThokApp() {
   const profile = useProfile();
-  const { state, find, leave, send, setTyping } = useChat();
+  const { state, find, leave, send, setTyping, music } = useChat();
 
   return (
     <div className="flex h-dvh flex-col">
@@ -49,6 +49,7 @@ export function KThokApp() {
           state={state}
           onSend={send}
           onTyping={setTyping}
+          music={music}
           onNext={() => profile && find(profile, state.prefers)}
           onLeave={leave}
         />
