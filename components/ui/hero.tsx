@@ -11,7 +11,7 @@ export function Hero({ bubble }: { bubble: string }) {
           ไม่ต้องปัด ไม่ต้องแมตช์ กดแล้วจับคู่ให้เลย แบบไม่มีใครรู้ว่าใครเป็นใคร
         </p>
       </div>
-      <Mascot bubble={bubble} className="w-80 max-w-full" />
+      <Mascot bubble={bubble} className="w-[26rem] max-w-full" />
     </>
   );
 }

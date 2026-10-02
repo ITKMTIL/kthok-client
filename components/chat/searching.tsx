@@ -17,7 +17,7 @@ export function Searching({
 
   return (
     <main className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center justify-center gap-5 px-4 pb-16 text-center">
-      <Mascot bubble="แป๊บนะ…" className="w-80 max-w-full" />
+      <Mascot bubble="แป๊บนะ…" className="w-[26rem] max-w-full" />
       <div aria-live="polite">
         <h1 className="text-2xl font-bold">
           {preferred && !fellBack

@@ -54,6 +54,60 @@ export function Mascot({
           },
         );
 
+        gsap.fromTo(
+          ".scene-train",
+          { x: -190 },
+          {
+            x: 400,
+            duration: 9,
+            ease: "none",
+            repeat: -1,
+            repeatDelay: 3.5,
+            delay: 1.2,
+          },
+        );
+        gsap.to(".scene-train-body", {
+          y: -1.2,
+          duration: 0.18,
+          yoyo: true,
+          repeat: -1,
+          ease: "sine.inOut",
+        });
+        gsap.to(".scene-smoke", {
+          y: -12,
+          x: -8,
+          opacity: 0,
+          scale: 1.6,
+          transformOrigin: "50% 50%",
+          duration: 1.1,
+          stagger: { each: 0.35, repeat: -1 },
+          ease: "power1.out",
+        });
+        gsap.fromTo(
+          ".scene-tree-left",
+          { rotation: -2.2, svgOrigin: "-18 174" },
+          {
+            rotation: 2.2,
+            svgOrigin: "-18 174",
+            duration: 2.6,
+            yoyo: true,
+            repeat: -1,
+            ease: "sine.inOut",
+          },
+        );
+        gsap.fromTo(
+          ".scene-tree-right",
+          { rotation: 2, svgOrigin: "352 174" },
+          {
+            rotation: -2,
+            svgOrigin: "352 174",
+            duration: 3.1,
+            yoyo: true,
+            repeat: -1,
+            ease: "sine.inOut",
+          },
+        );
+
         gsap
           .timeline({ repeat: -1, repeatDelay: 2.2, delay: 0.8 })
           .to(".mascot-arm", {
@@ -105,9 +159,9 @@ export function Mascot({
   return (
     <svg
       ref={rootRef}
-      viewBox="0 0 330 190"
+      viewBox="-45 0 420 190"
       role="img"
-      aria-label={`มาสคอต K-Thok สองคนคุยกัน คนหนึ่งพูดว่า ${bubble}`}
+      aria-label={`มาสคอต K-Thok สองคนคุยกันข้างทางรถไฟ คนหนึ่งพูดว่า ${bubble}`}
       className={className}
       fill="none"
       stroke="currentColor"
@@ -115,6 +169,57 @@ export function Mascot({
       strokeLinecap="round"
       strokeLinejoin="round"
     >
+      <path d="M-45 152h420" className="stroke-ink-soft" strokeWidth="2" />
+      <g className="scene-train">
+        <g className="scene-smoke stroke-ink-soft" strokeWidth="2">
+          <circle cx="118" cy="114" r="3" />
+          <circle cx="118" cy="114" r="3" />
+          <circle cx="118" cy="114" r="3" />
+        </g>
+        <g className="scene-train-body" strokeWidth="2.5">
+          <rect x="0" y="126" width="40" height="21" rx="5" className="fill-card" />
+          <rect x="44" y="126" width="40" height="21" rx="5" className="fill-card" />
+          <path
+            d="M88 147v-16c0-3 2-5 5-5h20c9 0 17 8 19 21z"
+            className="fill-accent-soft"
+          />
+          <path d="M114 126v-6h8v6" className="fill-card" />
+          <path d="M40 140h4M84 140h4" />
+          <path d="M3 141h34M47 141h34M91 141h36" className="stroke-accent" />
+          <path
+            d="M7 131h7v6H7zM18 131h7v6h-7zM29 131h6v6h-6zM51 131h7v6h-7zM62 131h7v6h-7zM73 131h6v6h-6zM95 131h7v6h-7zM107 131h9l4 6h-13z"
+            className="fill-paper"
+            strokeWidth="1.8"
+          />
+          <g className="fill-ink">
+            <circle cx="10" cy="150" r="3" />
+            <circle cx="30" cy="150" r="3" />
+            <circle cx="54" cy="150" r="3" />
+            <circle cx="74" cy="150" r="3" />
+            <circle cx="98" cy="150" r="3" />
+            <circle cx="120" cy="150" r="3" />
+          </g>
+        </g>
+      </g>
+
+      <g className="scene-tree-left">
+        <path d="M-18 174v-44" />
+        <path d="M-18 150l-9-9M-18 142l8-8" strokeWidth="2.5" />
+        <path
+          d="M-18 134c-14 2-24-7-22-19 1-7 6-11 11-12 0-11 9-18 19-16 8 1 13 7 14 14 7 2 11 8 10 16-1 11-12 19-32 17z"
+          className="fill-leaf"
+        />
+      </g>
+      <g className="scene-tree-right">
+        <path d="M352 174v-36" />
+        <path d="M352 156l8-8" strokeWidth="2.5" />
+        <path
+          d="M352 142c-13 1-21-7-19-17 1-6 5-10 10-11 1-9 8-14 17-13 7 1 12 6 12 13 6 2 9 8 8 14-2 9-11 15-28 14z"
+          className="fill-leaf"
+        />
+      </g>
+      <path d="M318 174c2-9 9-13 15-8M-2 174c-1-7 5-11 10-7" strokeWidth="2.5" />
+
       <g className="mascot-bubble">
         <path
           d="M128 14c28-7 78-5 92 9 12 13 9 40-6 50-14 9-44 9-66 6l-17 17 3-21c-17-8-25-23-21-38 2-11 8-20 15-23z"
@@ -175,7 +280,7 @@ export function Mascot({
         </g>
       </g>
 
-      <path d="M14 174c80-4 220-4 302 0" />
+      <path d="M-38 174c110-4 300-4 408 0" />
     </svg>
   );
 }
