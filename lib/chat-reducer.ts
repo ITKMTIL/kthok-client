@@ -4,6 +4,7 @@ import type {
   ChatMessage,
   ChatState,
   MatchedPayload,
+  MessageReactions,
   MusicState,
 } from "@/types/chat";
 
@@ -18,6 +19,12 @@ export type ChatAction =
   | ({ type: "matched" } & MatchedPayload)
   | { type: "message"; message: ChatMessage }
   | { type: "typing"; typing: boolean }
+  | {
+      type: "reaction";
+      roomId: string;
+      messageId: string;
+      reactions: MessageReactions;
+    }
   | { type: "music"; roomId: string; music: MusicState }
   | { type: "closed"; roomId: string }
   | { type: "reset"; error?: string };
@@ -93,6 +100,17 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case "typing":
       return state.phase === "chatting"
         ? { ...state, partnerTyping: action.typing }
+        : state;
+    case "reaction":
+      return inRoom(action.roomId)
+        ? {
+            ...state,
+            messages: state.messages.map((message) =>
+              message.id === action.messageId
+                ? { ...message, reactions: action.reactions }
+                : message,
+            ),
+          }
         : state;
     case "music":
       return inRoom(action.roomId) ? { ...state, music: action.music } : state;

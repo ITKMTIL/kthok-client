@@ -1,30 +1,47 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { Reaction } from "@/constants/reactions";
 import type { ChatMessage } from "@/types/chat";
+import { MessageBubble } from "./message-bubble";
 
 export function MessageList({
   messages,
   partnerName,
   partnerTyping,
   ended,
+  onReact,
   onNext,
 }: {
   messages: ChatMessage[];
   partnerName: string;
   partnerTyping: boolean;
   ended: boolean;
+  onReact: (messageId: string, reaction: Reaction | null) => void;
   onNext: () => void;
 }) {
+  const logRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [openPickerId, setOpenPickerId] = useState<string | null>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
   }, [messages.length, partnerTyping, ended]);
 
+  useEffect(() => {
+    const log = logRef.current;
+    if (!log) return;
+    const observer = new ResizeObserver(() =>
+      bottomRef.current?.scrollIntoView({ block: "end" }),
+    );
+    observer.observe(log);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div
-      className="doodle-card flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-4"
+      ref={logRef}
+      className="doodle-card flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain p-3 sm:p-4"
       role="log"
       aria-label="ข้อความในห้อง"
     >
@@ -32,12 +49,14 @@ export function MessageList({
         จับคู่แล้ว! ทักทายกันได้เลย ข้อความจะหายไปเมื่อออกจากห้อง
       </p>
       {messages.map((message) => (
-        <p
+        <MessageBubble
           key={message.id}
-          className={`bubble ${message.mine ? "bubble-mine" : "bubble-theirs"}`}
-        >
-          {message.text}
-        </p>
+          message={message}
+          pickerOpen={openPickerId === message.id}
+          disabled={ended}
+          onTogglePicker={(open) => setOpenPickerId(open ? message.id : null)}
+          onReact={(reaction) => onReact(message.id, reaction)}
+        />
       ))}
       {partnerTyping && (
         <p className="bubble bubble-theirs animate-pulse text-ink-soft">

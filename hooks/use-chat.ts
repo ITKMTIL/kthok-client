@@ -9,18 +9,22 @@ import {
   SEND_ERRORS,
 } from "@/constants/messages";
 import { facultyOf, type FacultyId } from "@/constants/faculties";
+import type { Reaction } from "@/constants/reactions";
 import { chatReducer, initialChatState } from "@/lib/chat-reducer";
 import { CORE_URL } from "@/lib/config";
 import type { Profile } from "@/types/auth";
 import type {
   AddTrackAck,
-  ChatMessage,
+  IncomingMessage,
   FindAck,
   MatchedPayload,
   MusicControls,
   MusicPayload,
+  ReactionPayload,
   SendAck,
 } from "@/types/chat";
+
+const NO_REACTIONS = { mine: null, theirs: null };
 
 export function useChat({
   token,
@@ -60,8 +64,21 @@ export function useChat({
     socket.on("match:fallback", (payload: { roomId: string }) =>
       dispatch({ type: "fellBack", roomId: payload.roomId }),
     );
-    socket.on("chat:message", (message: Omit<ChatMessage, "mine">) =>
-      dispatch({ type: "message", message: { ...message, mine: false } }),
+    socket.on("chat:message", (message: IncomingMessage) =>
+      dispatch({
+        type: "message",
+        message: { ...message, mine: false, reactions: NO_REACTIONS },
+      }),
+    );
+    socket.on(
+      "chat:reaction",
+      ({ roomId, messageId, mine, theirs }: ReactionPayload) =>
+        dispatch({
+          type: "reaction",
+          roomId,
+          messageId,
+          reactions: { mine, theirs },
+        }),
     );
     socket.on("chat:typing", (payload: { typing: boolean }) =>
       dispatch({ type: "typing", typing: payload.typing }),
@@ -120,11 +137,18 @@ export function useChat({
           }
           dispatch({
             type: "message",
-            message: { ...ack.message, mine: true },
+            message: { ...ack.message, mine: true, reactions: NO_REACTIONS },
           });
           resolve(null);
         });
       }),
+    [],
+  );
+
+  const react = useCallback(
+    (messageId: string, reaction: Reaction | null) => {
+      socketRef.current?.emit("chat:react", { messageId, reaction });
+    },
     [],
   );
 
@@ -154,5 +178,5 @@ export function useChat({
     [],
   );
 
-  return { state, find, leave, send, setTyping, music };
+  return { state, find, leave, send, react, setTyping, music };
 }

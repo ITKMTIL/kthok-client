@@ -5,12 +5,25 @@ export interface Partner {
   faculty: FacultyId;
 }
 
+export interface MessageReactions {
+  mine: string | null;
+  theirs: string | null;
+}
+
 export interface ChatMessage {
   id: string;
   text: string;
   at: number;
   mine: boolean;
+  reactions: MessageReactions;
 }
+
+export type IncomingMessage = Omit<ChatMessage, "mine" | "reactions">;
+
+export type ReactionPayload = MessageReactions & {
+  roomId: string;
+  messageId: string;
+};
 
 export interface Track {
   id: string;
@@ -63,7 +76,7 @@ export type FindAck =
   | { ok: false; error: string };
 
 export type SendAck =
-  | { ok: true; message: Omit<ChatMessage, "mine"> }
+  | { ok: true; message: IncomingMessage }
   | { ok: false; error: string };
 
 export type AddTrackAck = { ok: true } | { ok: false; error: string };

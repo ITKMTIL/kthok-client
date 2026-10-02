@@ -11,6 +11,7 @@ import {
 } from "@/constants/messages";
 import type { FacultyId } from "@/constants/faculties";
 import { useChat } from "@/hooks/use-chat";
+import { useVisualViewportHeight } from "@/hooks/use-visual-viewport";
 import { saveProfile, useProfile } from "@/hooks/use-profile";
 import { clearSession, useSessionToken } from "@/hooks/use-session";
 import { AUTH_REQUIRED } from "@/lib/config";
@@ -18,6 +19,7 @@ import type { Profile } from "@/types/auth";
 import { AppHeader } from "./app-header";
 
 export function KThokApp() {
+  useVisualViewportHeight();
   const stored = useProfile();
   const token = useSessionToken();
   const [loginNotice, setLoginNotice] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export function KThokApp() {
     clearSession();
   }, []);
 
-  const { state, find, leave, send, setTyping, music } = useChat({
+  const { state, find, leave, send, react, setTyping, music } = useChat({
     token: token ?? null,
     enabled: !AUTH_REQUIRED || Boolean(token),
     onAuthError: handleAuthError,
@@ -56,7 +58,7 @@ export function KThokApp() {
   };
 
   return (
-    <div className="flex h-dvh flex-col">
+    <div className="app-shell flex flex-col">
       <AppHeader
         connected={state.connected}
         selfName={inRoom && nickname ? nickname : null}
@@ -100,6 +102,7 @@ export function KThokApp() {
               state={state}
               music={music}
               onSend={send}
+              onReact={react}
               onTyping={setTyping}
               onNext={() => startSearch(state.prefers)}
               onLeave={leave}
