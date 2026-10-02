@@ -31,7 +31,7 @@ export function AddTrackForm({
     <div>
       <form className="flex gap-2" onSubmit={handleSubmit}>
         <input
-          className="doodle-field min-w-0 flex-1 py-1.5 text-sm"
+          className="doodle-field min-w-0 flex-1 py-1.5 lg:text-sm"
           type="url"
           inputMode="url"
           value={url}

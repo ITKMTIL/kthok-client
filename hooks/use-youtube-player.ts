@@ -4,7 +4,7 @@ import type { MusicState } from "@/types/chat";
 
 const SYNC_INTERVAL_MS = 500;
 const MAX_DRIFT_SEC = 2;
-const BLOCKED_AFTER_TICKS = 4;
+const BLOCKED_AFTER_TICKS = 8;
 
 function expectedPosition(music: MusicState): number {
   return music.playing

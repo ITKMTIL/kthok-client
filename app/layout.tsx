@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Mali } from "next/font/google";
 import "./globals.css";
 
@@ -12,6 +12,13 @@ export const metadata: Metadata = {
   title: "K-Thok — คุยกับเพื่อนใหม่ในรั้ว สจล.",
   description:
     "K-Thok (KMITL Thok) แชตนิรนามสำหรับชาว สจล. กดหาห้องแล้วจับคู่ให้ทันที เลือกคณะที่อยากคุยด้วยได้",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

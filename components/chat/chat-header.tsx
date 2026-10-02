@@ -15,12 +15,12 @@ export function ChatHeader({
   const FacultyIcon = faculty?.icon ?? User;
 
   return (
-    <header className="doodle-card flex items-center gap-3 px-4 py-3">
-      <span className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-ink bg-accent-soft">
-        <FacultyIcon className="size-6" aria-hidden />
+    <header className="doodle-card flex items-center gap-2.5 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
+      <span className="grid size-9 shrink-0 place-items-center rounded-full border-2 border-ink bg-accent-soft sm:size-11">
+        <FacultyIcon className="size-5 sm:size-6" aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
-        <h1 className="truncate text-lg font-bold">{partner?.nickname}</h1>
+        <h1 className="truncate font-bold leading-tight sm:text-lg">{partner?.nickname}</h1>
         <p className="truncate text-sm text-ink-soft">
           {faculty?.name}
         </p>
