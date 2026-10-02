@@ -11,10 +11,13 @@ import {
 } from "@/constants/messages";
 import type { FacultyId } from "@/constants/faculties";
 import { useChat } from "@/hooks/use-chat";
+import { useNotifications } from "@/hooks/use-notifications";
+import { useSoundMuted } from "@/hooks/use-sound-muted";
 import { useVisualViewportHeight } from "@/hooks/use-visual-viewport";
 import { saveProfile, useProfile } from "@/hooks/use-profile";
 import { clearSession, useSessionToken } from "@/hooks/use-session";
 import { AUTH_REQUIRED } from "@/lib/config";
+import { unlockAudio } from "@/lib/sounds";
 import type { Profile } from "@/types/auth";
 import { AppHeader } from "./app-header";
 
@@ -37,6 +40,9 @@ export function KThokApp() {
     onAuthError: handleAuthError,
   });
 
+  const [soundMuted, setSoundMuted] = useSoundMuted();
+  useNotifications(state, soundMuted);
+
   const profile: Profile | undefined =
     stored && (!AUTH_REQUIRED || token)
       ? {
@@ -49,6 +55,7 @@ export function KThokApp() {
   const needsLogin = AUTH_REQUIRED && token === null;
 
   const startSearch = (prefers: FacultyId | null) => {
+    unlockAudio();
     if (profile && nickname) find({ ...profile, nickname }, prefers);
   };
 
@@ -62,6 +69,11 @@ export function KThokApp() {
       <AppHeader
         connected={state.connected}
         selfName={inRoom && nickname ? nickname : null}
+        soundMuted={soundMuted}
+        onToggleSound={() => {
+          unlockAudio();
+          setSoundMuted(!soundMuted);
+        }}
         onSignOut={token && state.phase === "idle" ? signOut : null}
       />
 

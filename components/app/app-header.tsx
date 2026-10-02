@@ -1,10 +1,16 @@
+import { Bell, BellOff } from "lucide-react";
+
 export function AppHeader({
   connected,
   selfName,
+  soundMuted,
+  onToggleSound,
   onSignOut,
 }: {
   connected: boolean;
   selfName: string | null;
+  soundMuted: boolean;
+  onToggleSound: () => void;
   onSignOut: (() => void) | null;
 }) {
   return (
@@ -18,7 +24,7 @@ export function AppHeader({
           <span className="font-bold">{selfName}</span>
         </span>
       )}
-      <span className="flex shrink-0 items-center gap-3 text-sm text-ink-soft">
+      <span className="flex shrink-0 items-center gap-2 text-sm text-ink-soft">
         <span>
           <span
             className={`mr-1.5 inline-block size-2.5 rounded-full border-2 border-ink ${connected ? "bg-online" : "bg-paper"}`}
@@ -26,6 +32,20 @@ export function AppHeader({
           />
           {connected ? "ออนไลน์" : "ออฟไลน์"}
         </span>
+        <button
+          type="button"
+          className="grid size-8 cursor-pointer place-items-center rounded-full text-ink hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
+          aria-pressed={!soundMuted}
+          aria-label={soundMuted ? "เปิดเสียงแจ้งเตือน" : "ปิดเสียงแจ้งเตือน"}
+          title={soundMuted ? "เปิดเสียงแจ้งเตือน" : "ปิดเสียงแจ้งเตือน"}
+          onClick={onToggleSound}
+        >
+          {soundMuted ? (
+            <BellOff className="size-4" aria-hidden />
+          ) : (
+            <Bell className="size-4" aria-hidden />
+          )}
+        </button>
         {onSignOut && (
           <button type="button" className="doodle-btn px-2 py-0.5" onClick={onSignOut}>
             ออกจากระบบ
