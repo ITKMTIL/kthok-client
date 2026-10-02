@@ -26,6 +26,7 @@ export const LOGIN_ERRORS: Record<string, string> = {
   unknown_faculty: "ยังไม่รู้จักรหัสคณะของเธอ แจ้งทีมงานให้เพิ่มได้เลย",
   email_not_verified: "อีเมลนี้ยังไม่ได้ยืนยันกับ Google",
   invalid_credential: "ยืนยันตัวตนกับ Google ไม่สำเร็จ ลองใหม่อีกครั้งนะ",
+  banned: "บัญชีนี้ถูกระงับการใช้งานชั่วคราว",
   google_login_disabled: "เซิร์ฟเวอร์ยังไม่ได้เปิดใช้การล็อกอินด้วย Google",
 };
 export const LOGIN_ERROR_FALLBACK = "ล็อกอินไม่สำเร็จ ลองใหม่อีกครั้งนะ";
@@ -56,3 +57,7 @@ export const CALL_MIC_BLOCKED =
   "ใช้ไมค์ไม่ได้ ลองอนุญาตไมโครโฟนให้เว็บนี้ในตั้งค่าเบราว์เซอร์ก่อนนะ";
 export const CALL_FAILED =
   "ต่อสายไม่ติด เครือข่ายของฝั่งใดฝั่งหนึ่งอาจไม่เปิดให้คุยเสียง";
+
+export const BANNED_MESSAGE = "บัญชีนี้ถูกระงับการใช้งานชั่วคราว";
+export const BLOCK_DONE_MESSAGE = "บล็อกแล้ว จะไม่ถูกจับคู่กับคนนี้อีก";
+export const BLOCK_FAILED_MESSAGE = "บล็อกไม่สำเร็จ ลองใหม่อีกครั้งนะ";

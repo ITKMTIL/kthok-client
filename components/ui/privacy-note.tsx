@@ -22,11 +22,13 @@ export function PrivacyNote({ className = "" }: { className?: string }) {
       </svg>
       <div className="min-w-0">
         <p className="text-lg font-bold leading-snug">
-          เราไม่เก็บข้อมูลของเธอ
+          เราไม่เก็บข้อความและอีเมล
         </p>
         <p className="text-sm leading-snug text-ink-soft">
           <span className="block">ใช้อีเมลแค่ยืนยันว่าเป็นเด็ก สจล.</span>
-          <span className="block">ไม่บันทึกอีเมล รหัส หรือแชต</span>
+          <span className="block">
+            เก็บเฉพาะรหัสที่เข้ารหัสทางเดียว ไว้กันคนป่วน
+          </span>
         </p>
       </div>
     </aside>

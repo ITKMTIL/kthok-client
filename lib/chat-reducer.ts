@@ -11,8 +11,8 @@ import type {
 export type ChatAction =
   | { type: "connected"; recovered: boolean }
   | { type: "disconnected" }
-  | { type: "authenticated"; faculty: FacultyId }
-  | { type: "features"; call: boolean }
+  | { type: "authenticated"; faculty: FacultyId; admin: boolean }
+  | { type: "features"; call: boolean; block: boolean }
   | { type: "stats"; online: number }
   | { type: "search"; prefers: FacultyId | null }
   | { type: "waiting"; roomId: string }
@@ -34,6 +34,8 @@ export type ChatAction =
 export const initialChatState: ChatState = {
   connected: false,
   callEnabled: false,
+  blockEnabled: false,
+  isAdmin: false,
   selfFaculty: null,
   online: null,
   phase: "idle",
@@ -71,6 +73,8 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
             ...initialChatState,
             connected: true,
             callEnabled: state.callEnabled,
+            blockEnabled: state.blockEnabled,
+            isAdmin: state.isAdmin,
         selfFaculty: state.selfFaculty,
             online: state.online,
             error: DISCONNECTED_MESSAGE,
@@ -78,9 +82,13 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case "disconnected":
       return { ...state, connected: false, partnerTyping: false };
     case "features":
-      return { ...state, callEnabled: action.call };
+      return {
+        ...state,
+        callEnabled: action.call,
+        blockEnabled: action.block,
+      };
     case "authenticated":
-      return { ...state, selfFaculty: action.faculty };
+      return { ...state, selfFaculty: action.faculty, isAdmin: action.admin };
     case "stats":
       return { ...state, online: action.online };
     case "search":
@@ -88,6 +96,8 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...initialChatState,
         connected: state.connected,
         callEnabled: state.callEnabled,
+        blockEnabled: state.blockEnabled,
+        isAdmin: state.isAdmin,
         selfFaculty: state.selfFaculty,
         online: state.online,
         phase: "searching",
@@ -156,6 +166,8 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...initialChatState,
         connected: state.connected,
         callEnabled: state.callEnabled,
+        blockEnabled: state.blockEnabled,
+        isAdmin: state.isAdmin,
         selfFaculty: state.selfFaculty,
         online: state.online,
         error: action.error ?? null,

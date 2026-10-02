@@ -6,6 +6,7 @@ import { ChatRoom } from "@/components/chat/chat-room";
 import { Searching } from "@/components/chat/searching";
 import { Lobby } from "@/components/lobby/lobby";
 import {
+  BANNED_MESSAGE,
   LOGIN_NOT_CONFIGURED_MESSAGE,
   SESSION_EXPIRED_MESSAGE,
 } from "@/constants/messages";
@@ -34,11 +35,27 @@ export function KThokApp() {
     clearSession();
   }, []);
 
-  const { state, socket, find, leave, send, react, setTyping, music } =
-    useChat({
+  const handleBanned = useCallback(() => {
+    setLoginNotice(BANNED_MESSAGE);
+    clearSession();
+  }, []);
+
+  const {
+    state,
+    socket,
+    find,
+    leave,
+    send,
+    react,
+    block,
+    sendFeedback,
+    setTyping,
+    music,
+  } = useChat({
     token: token ?? null,
     enabled: !AUTH_REQUIRED || Boolean(token),
     onAuthError: handleAuthError,
+    onBanned: handleBanned,
   });
 
   const [soundMuted, setSoundMuted] = useSoundMuted();
@@ -120,6 +137,8 @@ export function KThokApp() {
               music={music}
               onSend={send}
               onReact={react}
+              onBlock={state.blockEnabled ? block : null}
+              onFeedback={sendFeedback}
               onTyping={setTyping}
               onNext={() => startSearch(state.prefers)}
               onLeave={leave}

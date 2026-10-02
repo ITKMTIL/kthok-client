@@ -26,6 +26,8 @@ export function ChatRoom({
   music,
   onSend,
   onReact,
+  onBlock,
+  onFeedback,
   onTyping,
   onNext,
   onLeave,
@@ -37,6 +39,8 @@ export function ChatRoom({
   music: MusicControls;
   onSend: (text: string) => Promise<string | null>;
   onReact: (messageId: string, reaction: Reaction | null) => void;
+  onBlock: (() => void) | null;
+  onFeedback: (rating: "up" | "down") => void;
   onTyping: (typing: boolean) => void;
   onNext: () => void;
   onLeave: () => void;
@@ -65,6 +69,7 @@ export function ChatRoom({
           partner={state.partner}
           canShare={state.messages.length > 0 && !selection.selecting}
           onShare={selection.start}
+          onBlock={ended ? null : onBlock}
           canCall={
             !ended &&
             state.connected &&
@@ -103,6 +108,7 @@ export function ChatRoom({
           selected={selection.selected}
           onToggleSelected={selection.toggle}
           onReact={onReact}
+          onFeedback={onFeedback}
           onNext={onNext}
         />
         {selection.selecting ? (

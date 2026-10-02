@@ -3,6 +3,8 @@ import { io, type Socket } from "socket.io-client";
 import {
   ADD_TRACK_ERROR_FALLBACK,
   ADD_TRACK_ERRORS,
+  BLOCK_DONE_MESSAGE,
+  BLOCK_FAILED_MESSAGE,
   FIND_ERROR_FALLBACK,
   FIND_ERRORS,
   SEND_ERROR_FALLBACK,
@@ -30,18 +32,22 @@ export function useChat({
   token,
   enabled,
   onAuthError,
+  onBanned,
 }: {
   token: string | null;
   enabled: boolean;
   onAuthError: () => void;
+  onBanned: () => void;
 }) {
   const [state, dispatch] = useReducer(chatReducer, initialChatState);
   const socketRef = useRef<Socket | null>(null);
   const onAuthErrorRef = useRef(onAuthError);
+  const onBannedRef = useRef(onBanned);
 
   useEffect(() => {
     onAuthErrorRef.current = onAuthError;
-  }, [onAuthError]);
+    onBannedRef.current = onBanned;
+  }, [onAuthError, onBanned]);
 
   const socket = useMemo(
     () =>
@@ -65,12 +71,23 @@ export function useChat({
     window.addEventListener("pagehide", leaveOnUnload);
     socket.on("disconnect", () => dispatch({ type: "disconnected" }));
     socket.on("auth:error", () => onAuthErrorRef.current());
-    socket.on("features", (features: { call?: boolean }) =>
-      dispatch({ type: "features", call: features.call === true }),
+    socket.on("auth:banned", () => onBannedRef.current());
+    socket.on("features", (features: { call?: boolean; block?: boolean }) =>
+      dispatch({
+        type: "features",
+        call: features.call === true,
+        block: features.block === true,
+      }),
     );
-    socket.on("auth:ok", (payload: { faculty: string }) => {
+    socket.on("auth:ok", (payload: { faculty: string; admin?: boolean }) => {
       const faculty = facultyOf(payload.faculty);
-      if (faculty) dispatch({ type: "authenticated", faculty: faculty.id });
+      if (faculty) {
+        dispatch({
+          type: "authenticated",
+          faculty: faculty.id,
+          admin: payload.admin === true,
+        });
+      }
     });
     socket.on("stats", (stats: { online: number }) =>
       dispatch({ type: "stats", online: stats.online }),
@@ -166,6 +183,24 @@ export function useChat({
     [],
   );
 
+  const block = useCallback(
+    () =>
+      new Promise<string | null>((resolve) => {
+        const active = socketRef.current;
+        if (!active?.connected) return resolve(BLOCK_FAILED_MESSAGE);
+        active.emit("room:block", (ack: { ok: boolean }) => {
+          if (!ack.ok) return resolve(BLOCK_FAILED_MESSAGE);
+          dispatch({ type: "reset", error: BLOCK_DONE_MESSAGE });
+          resolve(null);
+        });
+      }),
+    [],
+  );
+
+  const sendFeedback = useCallback((rating: "up" | "down") => {
+    socketRef.current?.emit("room:feedback", { rating });
+  }, []);
+
   const react = useCallback(
     (messageId: string, reaction: Reaction | null) => {
       socketRef.current?.emit("chat:react", { messageId, reaction });
@@ -199,5 +234,16 @@ export function useChat({
     [],
   );
 
-  return { state, socket, find, leave, send, react, setTyping, music };
+  return {
+    state,
+    socket,
+    find,
+    leave,
+    send,
+    react,
+    block,
+    sendFeedback,
+    setTyping,
+    music,
+  };
 }

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Reaction } from "@/constants/reactions";
 import type { ChatMessage } from "@/types/chat";
 import { MessageBubble } from "./message-bubble";
+import { RoomFeedback } from "./room-feedback";
 
 export function MessageList({
   messages,
@@ -13,6 +14,7 @@ export function MessageList({
   selected,
   onToggleSelected,
   onReact,
+  onFeedback,
   onNext,
 }: {
   messages: ChatMessage[];
@@ -22,6 +24,7 @@ export function MessageList({
   selected: ReadonlySet<string> | null;
   onToggleSelected: (messageId: string) => void;
   onReact: (messageId: string, reaction: Reaction | null) => void;
+  onFeedback: (rating: "up" | "down") => void;
   onNext: () => void;
 }) {
   const logRef = useRef<HTMLDivElement>(null);
@@ -76,6 +79,7 @@ export function MessageList({
       {ended && (
         <div className="mt-2 flex flex-col items-center gap-2 text-center">
           <p className="font-medium">{partnerName} ออกจากห้องไปแล้ว</p>
+          <RoomFeedback onFeedback={onFeedback} />
           <button
             type="button"
             className="doodle-btn doodle-btn-primary px-5 py-1.5 font-bold"
