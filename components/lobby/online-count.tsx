@@ -1,3 +1,7 @@
+"use client";
+
+import { motion } from "motion/react";
+
 export function OnlineCount({
   online,
   connected,
@@ -13,7 +17,15 @@ export function OnlineCount({
         </span>
       ) : (
         <>
-          <span className="font-bold text-accent">{online}</span> คนกำลังออนไลน์
+          <motion.span
+            key={online}
+            initial={{ scale: 1.5, y: -3 }}
+            animate={{ scale: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 18 }}
+            className="inline-block font-bold text-accent"
+          >
+            {online}
+          </motion.span> คนกำลังออนไลน์
         </>
       )}
     </p>

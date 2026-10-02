@@ -1,4 +1,5 @@
 import { facultyOf, type FacultyId } from "@/constants/faculties";
+import { BouncingDots } from "@/components/ui/bouncing-dots";
 import { Mascot } from "@/components/ui/mascot";
 
 export function Searching({
@@ -16,13 +17,13 @@ export function Searching({
 
   return (
     <main className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center justify-center gap-5 px-4 pb-16 text-center">
-      <Mascot bubble="แป๊บนะ…" className="w-60 max-w-full animate-bob" />
+      <Mascot bubble="แป๊บนะ…" className="w-80 max-w-full" />
       <div aria-live="polite">
         <h1 className="text-2xl font-bold">
           {preferred && !fellBack
             ? `กำลังหาเพื่อนจาก${preferred.name}`
             : "กำลังรอเพื่อนเข้าห้อง"}
-          <span className="animate-pulse">…</span>
+          <BouncingDots className="ml-1.5" />
         </h1>
         <p className="mt-1 text-ink-soft">
           {preferred && fellBack

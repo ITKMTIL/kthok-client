@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, SmilePlus } from "lucide-react";
+import { motion } from "motion/react";
 import { useCallback, useRef } from "react";
 import type { Reaction } from "@/constants/reactions";
 import { useDismiss } from "@/hooks/use-dismiss";
@@ -36,8 +37,12 @@ export function MessageBubble({
   };
 
   return (
-    <div
+    <motion.div
       ref={rootRef}
+      initial={{ opacity: 0, y: 12, scale: 0.92 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 520, damping: 32 }}
+      style={{ transformOrigin: message.mine ? "100% 100%" : "0% 100%" }}
       className={`group relative flex max-w-[80%] flex-col ${message.mine ? "items-end self-end" : "items-start self-start"} ${pickerOpen ? "mb-12" : ""}`}
     >
       <div className={`flex items-center gap-1 ${message.mine ? "flex-row-reverse" : ""}`}>
@@ -95,7 +100,7 @@ export function MessageBubble({
           }}
         />
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -113,6 +118,11 @@ function ReactionChip({
   onRemove?: () => void;
 }) {
   const className = `flex items-center gap-0.5 rounded-full border-2 border-ink px-1.5 text-sm leading-6 ${mine ? "bg-accent-soft" : "bg-card"}`;
+  const pop = {
+    initial: { scale: 0, rotate: -20 },
+    animate: { scale: 1, rotate: 0 },
+    transition: { type: "spring", stiffness: 600, damping: 18 },
+  } as const;
   const content = (
     <>
       <span aria-hidden>{reaction}</span>
@@ -122,19 +132,26 @@ function ReactionChip({
 
   if (!mine || disabled || !onRemove) {
     return (
-      <span className={className} aria-label={`รีแอคชัน ${reaction}`}>
+      <motion.span
+        key={reaction}
+        {...pop}
+        className={className}
+        aria-label={`รีแอคชัน ${reaction}`}
+      >
         {content}
-      </span>
+      </motion.span>
     );
   }
   return (
-    <button
+    <motion.button
+      key={reaction}
+      {...pop}
       type="button"
       className={`${className} cursor-pointer`}
       aria-label={`เอารีแอคชัน ${reaction} ของเธอออก`}
       onClick={onRemove}
     >
       {content}
-    </button>
+    </motion.button>
   );
 }

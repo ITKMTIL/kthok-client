@@ -1,6 +1,7 @@
 "use client";
 
 import { Ban, EllipsisVertical, Share2 } from "lucide-react";
+import { motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
 import { useDismiss } from "@/hooks/use-dismiss";
 
@@ -35,7 +36,11 @@ export function ChatMenu({
         <EllipsisVertical className="size-4" aria-hidden />
       </button>
       {open && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: -6 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 520, damping: 30 }}
+          style={{ transformOrigin: "100% 0%" }}
           role="menu"
           className="absolute right-0 top-full z-20 mt-2 flex w-60 flex-col gap-1 rounded-2xl border-2 border-ink bg-card p-2 shadow-[3px_3px_0_var(--color-ink)]"
         >
@@ -84,7 +89,7 @@ export function ChatMenu({
               )}
             </>
           )}
-        </div>
+        </motion.div>
       )}
     </div>
   );

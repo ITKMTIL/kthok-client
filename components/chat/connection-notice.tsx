@@ -1,4 +1,5 @@
 import { LoaderCircle, WifiOff } from "lucide-react";
+import { SlideIn } from "@/components/ui/slide-in";
 
 export function ConnectionNotice({
   connected,
@@ -12,6 +13,7 @@ export function ConnectionNotice({
   if (connected && !partnerAway) return null;
 
   return (
+    <SlideIn>
     <p
       className="flex items-center gap-2.5 rounded-2xl border-2 border-dashed border-ink bg-card px-3 py-1.5 text-sm font-medium sm:px-4"
       role="status"
@@ -27,5 +29,6 @@ export function ConnectionNotice({
           : "หลุดการเชื่อมต่อ กำลังต่อกลับเข้าห้องเดิมให้…"}
       </span>
     </p>
+    </SlideIn>
   );
 }

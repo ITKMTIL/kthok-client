@@ -1,4 +1,5 @@
 import { Mic, MicOff, Phone, PhoneIncoming, PhoneOff, X } from "lucide-react";
+import { SlideIn } from "@/components/ui/slide-in";
 import type { CallState } from "@/hooks/use-voice-call";
 import { CallTimer } from "./call-timer";
 
@@ -22,6 +23,7 @@ export function CallBar({
   if (call.status === "idle") {
     if (!call.notice) return null;
     return (
+      <SlideIn>
       <div
         className="flex items-center gap-2.5 rounded-2xl border-2 border-dashed border-ink bg-card px-3 py-1.5 text-sm font-medium sm:px-4"
         role="status"
@@ -37,6 +39,7 @@ export function CallBar({
           <X className="size-4" aria-hidden />
         </button>
       </div>
+      </SlideIn>
     );
   }
 
@@ -45,6 +48,7 @@ export function CallBar({
   const Icon = incoming ? PhoneIncoming : Phone;
 
   return (
+    <SlideIn>
     <div
       className="flex items-center gap-2.5 rounded-2xl border-2 border-ink bg-safe-soft px-3 py-1.5 sm:px-4 sm:py-2"
       role="status"
@@ -111,5 +115,6 @@ export function CallBar({
         </>
       )}
     </div>
+    </SlideIn>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Reaction } from "@/constants/reactions";
 import type { ChatMessage } from "@/types/chat";
+import { BouncingDots } from "@/components/ui/bouncing-dots";
 import { MessageBubble } from "./message-bubble";
 import { RoomFeedback } from "./room-feedback";
 
@@ -72,8 +73,8 @@ export function MessageList({
         />
       ))}
       {partnerTyping && (
-        <p className="bubble bubble-theirs animate-pulse text-ink-soft">
-          กำลังพิมพ์…
+        <p className="bubble bubble-theirs text-ink-soft" aria-label="กำลังพิมพ์">
+          <BouncingDots className="h-5 items-center" />
         </p>
       )}
       {ended && (

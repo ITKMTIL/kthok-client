@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { REACTIONS, type Reaction } from "@/constants/reactions";
 
@@ -19,8 +20,12 @@ export function ReactionPicker({
   }, []);
 
   return (
-    <div
+    <motion.div
       ref={ref}
+      initial={{ opacity: 0, scale: 0.8, y: -6 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 520, damping: 26 }}
+      style={{ transformOrigin: align === "right" ? "100% 0%" : "0% 0%" }}
       role="group"
       aria-label="ใส่รีแอคชัน"
       className={`absolute top-full z-10 mt-1 flex gap-0.5 rounded-full border-2 border-ink bg-card p-1 shadow-[2px_2px_0_var(--color-ink)] ${align === "right" ? "right-0" : "left-0"}`}
@@ -40,6 +45,6 @@ export function ReactionPicker({
           </button>
         );
       })}
-    </div>
+    </motion.div>
   );
 }

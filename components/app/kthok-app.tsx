@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, MotionConfig } from "motion/react";
 import { useCallback, useState } from "react";
 import { LoginScreen } from "@/components/auth/login-screen";
 import { ChatRoom } from "@/components/chat/chat-room";
@@ -20,7 +21,12 @@ import { clearSession, useSessionToken } from "@/hooks/use-session";
 import { AUTH_REQUIRED } from "@/lib/config";
 import { unlockAudio } from "@/lib/sounds";
 import type { Profile } from "@/types/auth";
+import { Screen } from "@/components/ui/screen";
+import { Splash } from "@/components/ui/splash";
 import { AppHeader } from "./app-header";
+
+const FIXED_SCREEN = "flex min-h-0 flex-1 flex-col";
+const SCROLL_SCREEN = `${FIXED_SCREEN} overflow-y-auto`;
 
 export function KThokApp() {
   useVisualViewportHeight();
@@ -71,6 +77,7 @@ export function KThokApp() {
   const nickname = profile?.nickname.trim() ?? "";
   const inRoom = state.phase === "chatting" || state.phase === "ended";
   const needsLogin = AUTH_REQUIRED && token === null;
+  const sessionLoading = AUTH_REQUIRED && token === undefined;
 
   const startSearch = (prefers: FacultyId | null) => {
     unlockAudio();
@@ -83,7 +90,9 @@ export function KThokApp() {
   };
 
   return (
-    <div className="app-shell flex flex-col">
+    <MotionConfig reducedMotion="user">
+    <div className="app-shell relative flex flex-col overflow-hidden">
+      <Splash />
       <AppHeader
         connected={state.connected}
         selfName={inRoom && nickname ? nickname : null}
@@ -96,41 +105,44 @@ export function KThokApp() {
         onSignOut={token && state.phase === "idle" ? signOut : null}
       />
 
-      {needsLogin ? (
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-          <LoginScreen notice={loginNotice} />
-        </div>
-      ) : (
-        <>
-          {state.phase === "idle" && (
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-              <Lobby
-                profile={profile}
-                facultyLocked={AUTH_REQUIRED}
-                connected={state.connected}
-                online={state.online}
-                error={state.error ?? (AUTH_REQUIRED ? null : loginNotice)}
-                onProfileChange={(next) =>
-                  saveProfile({
-                    nickname: next.nickname,
-                    faculty: next.faculty ?? undefined,
-                  })
-                }
-                onFind={startSearch}
-              />
-            </div>
-          )}
-          {state.phase === "searching" && (
+      <AnimatePresence mode="popLayout" initial={false}>
+        {sessionLoading ? (
+          <Screen key="loading" className={FIXED_SCREEN}>
+            {null}
+          </Screen>
+        ) : needsLogin ? (
+          <Screen key="login" className={SCROLL_SCREEN}>
+            <LoginScreen notice={loginNotice} />
+          </Screen>
+        ) : state.phase === "idle" ? (
+          <Screen key="lobby" className={SCROLL_SCREEN}>
+            <Lobby
+              profile={profile}
+              facultyLocked={AUTH_REQUIRED}
+              connected={state.connected}
+              online={state.online}
+              error={state.error ?? (AUTH_REQUIRED ? null : loginNotice)}
+              onProfileChange={(next) =>
+                saveProfile({
+                  nickname: next.nickname,
+                  faculty: next.faculty ?? undefined,
+                })
+              }
+              onFind={startSearch}
+            />
+          </Screen>
+        ) : state.phase === "searching" ? (
+          <Screen key="searching" className={FIXED_SCREEN}>
             <Searching
               prefers={state.prefers}
               fellBack={state.fellBack}
               connected={state.connected}
               onCancel={leave}
             />
-          )}
-          {inRoom && (
+          </Screen>
+        ) : (
+          <Screen key={`room-${state.roomId}`} className={FIXED_SCREEN}>
             <ChatRoom
-              key={state.roomId}
               state={state}
               socket={socket}
               soundMuted={soundMuted}
@@ -144,9 +156,10 @@ export function KThokApp() {
               onNext={() => startSearch(state.prefers)}
               onLeave={leave}
             />
-          )}
-        </>
-      )}
+          </Screen>
+        )}
+      </AnimatePresence>
     </div>
+    </MotionConfig>
   );
 }

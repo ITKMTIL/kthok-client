@@ -2,6 +2,7 @@
 
 import { CircleCheck, Shuffle, X } from "lucide-react";
 import { useState } from "react";
+import { SlideIn } from "@/components/ui/slide-in";
 import { facultyOf, type FacultyId } from "@/constants/faculties";
 
 export function MatchNotice({
@@ -18,6 +19,7 @@ export function MatchNotice({
   const Icon = preferenceMet ? CircleCheck : Shuffle;
 
   return (
+    <SlideIn>
     <div
       className={`flex items-center gap-2.5 rounded-2xl border-2 border-ink px-3 py-1.5 text-sm font-bold sm:px-4 sm:py-2.5 sm:text-base ${preferenceMet ? "bg-safe-soft" : "bg-accent-soft"}`}
       role="status"
@@ -45,5 +47,6 @@ export function MatchNotice({
         <X className="size-4" aria-hidden />
       </button>
     </div>
+    </SlideIn>
   );
 }

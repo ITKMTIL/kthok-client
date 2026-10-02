@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { useState } from "react";
 import { formatDay, formatNumber, total, type DayPoint } from "@/lib/admin-stats";
 
@@ -47,8 +48,15 @@ export function DailyColumns({
               onFocus={() => setActive(index)}
               onBlur={() => setActive(null)}
             >
-              <span
-                className={`w-full max-w-6 rounded-t bg-accent transition-opacity group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-ink ${active !== null && active !== index ? "opacity-40" : ""}`}
+              <motion.span
+                initial={{ scaleY: 0 }}
+                animate={{ scaleY: 1 }}
+                transition={{
+                  duration: 0.45,
+                  delay: index * 0.02,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className={`w-full max-w-6 origin-bottom rounded-t bg-accent transition-opacity group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-ink ${active !== null && active !== index ? "opacity-40" : ""}`}
                 style={{
                   height:
                     point.value === 0
