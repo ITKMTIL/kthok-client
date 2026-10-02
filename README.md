@@ -94,6 +94,7 @@ types/        type ที่ใช้ร่วมกัน
 5. state ทั้งหมดของห้องอยู่ใน `hooks/use-chat.ts` และ `lib/chat-reducer.ts`
 
 รายละเอียดฝั่ง server และรายการ event ดูที่ README ของ [kthok-core](https://github.com/ITKMTIL/kthok-core)
+แผนภาพ flow ของแต่ละฟีเจอร์ดูที่ [docs/FLOWS.md ของ kthok-core](https://github.com/ITKMTIL/kthok-core/blob/main/docs/FLOWS.md)
 
 ---
 
