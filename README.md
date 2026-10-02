@@ -32,11 +32,14 @@ repo นี้คือฝั่งหน้าเว็บ (Next.js) ใช้�
 - **เสียงแจ้งเตือน** และตัวเลขข้อความใหม่บนชื่อ tab
 - **หลุดแล้วกลับห้องเดิมได้** — พับจอหรือเน็ตสะดุดช่วงสั้น ๆ ไม่ทำให้ห้องหาย
 - **ใช้บนมือถือได้** — แผงเพลงหุบได้ และ layout ไม่โดนแป้นพิมพ์บัง
+- **บล็อกคู่สนทนา** และให้คะแนนห้องหลังคุยจบ
+- **หน้า dashboard สำหรับ admin** ที่ `/admin` — ยอดรวมการใช้งานรายวันและรายคณะ
 
 ### ความเป็นส่วนตัว
 
-- ไม่มีฐานข้อมูล ข้อความไม่ถูกบันทึกที่ server ออกจากห้องแล้วหายเลย
+- ข้อความไม่ถูกบันทึกที่ server ออกจากห้องแล้วหายเลย
 - อีเมลและรหัสนักศึกษาใช้แค่ตอนยืนยันตัวตน ไม่ถูกเก็บ
+- server เก็บเฉพาะรหัสนักศึกษาที่เข้ารหัสทางเดียว คณะ คู่ที่บล็อกกัน และยอดรวมการใช้งาน เพื่อกันคนป่วนและทำรายงาน
 - รูปที่แชร์สร้างใน browser ไม่ถูกอัปโหลด
 
 ## เทคโนโลยี
@@ -74,11 +77,22 @@ pnpm dev
 | `pnpm build` / `pnpm start` | build และรันแบบ production |
 | `pnpm lint` | ตรวจโค้ดด้วย ESLint |
 
+## Docker
+
+image build สำหรับ `linux/amd64` ค่า `NEXT_PUBLIC_*` ถูกฝังตอน build โดยอ่านจาก `.env`
+
+```bash
+./scripts/build-image.sh
+```
+
+ตั้งชื่อและ tag ได้ด้วยตัวแปร เช่น `IMAGE=registry.example.com/kthok-client TAG=1.0.0 PUSH=1 ./scripts/build-image.sh`
+ถ้าจะรันทั้งระบบพร้อมกัน ใช้ `docker-compose.yml` ใน [kthok-core](https://github.com/ITKMTIL/kthok-core)
+
 ## โครงสร้างโปรเจกต์
 
 ```
 app/          หน้าเว็บ, metadata, icon และรูป preview
-components/   UI แยกตามฟีเจอร์: app, auth, lobby, chat, music, call, share, ui
+components/   UI แยกตามฟีเจอร์: app, auth, lobby, chat, music, call, share, admin, ui
 hooks/        state และ logic เช่น use-chat, use-voice-call, use-youtube-player
 lib/          ตัวช่วย: reducer ของแชต, เสียง, สร้างรูป, storage, config
 constants/    รายชื่อคณะ, ข้อความแจ้งเตือน, รีแอคชัน
