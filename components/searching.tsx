@@ -1,0 +1,38 @@
+import { facultyOf, type FacultyId } from "@/lib/faculties";
+import { Mascot } from "./mascot";
+
+export function Searching({
+  prefers,
+  fellBack,
+  onCancel,
+}: {
+  prefers: FacultyId | null;
+  fellBack: boolean;
+  onCancel: () => void;
+}) {
+  const preferred = prefers ? facultyOf(prefers) : undefined;
+
+  return (
+    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center justify-center gap-5 px-4 pb-16 text-center">
+      <Mascot bubble="แป๊บนะ…" className="w-60 max-w-full animate-bob" />
+      <div aria-live="polite">
+        <h1 className="text-2xl font-bold">
+          {preferred && !fellBack
+            ? `กำลังหาเพื่อนคณะ${preferred.name}`
+            : "กำลังรอเพื่อนเข้าห้อง"}
+          <span className="animate-pulse">…</span>
+        </h1>
+        <p className="mt-1 text-ink-soft">
+          {preferred && fellBack
+            ? `ตอนนี้ยังไม่มีเด็ก${preferred.short}รออยู่ เลยเปิดห้องรับทุกคณะแล้ว`
+            : preferred
+              ? "ถ้าไม่เจอในไม่กี่วินาที จะพาไปห้องที่ว่างแทน"
+              : "เปิดห้องไว้ให้แล้ว ใครกดหาคนถัดไปจะเข้ามาห้องนี้"}
+        </p>
+      </div>
+      <button type="button" className="doodle-btn px-6 py-2" onClick={onCancel}>
+        ยกเลิก
+      </button>
+    </main>
+  );
+}
