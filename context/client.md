@@ -32,3 +32,10 @@
 - อนิเมชัน: Motion (`motion/react`) สำหรับ UI, GSAP (`useGSAP`) สำหรับ splash/mascot
 - ทุกปุ่ม/ไอคอนต้องมี `aria-label` (มาจาก dict)
 - i18n: ข้อความที่ผู้ใช้เห็นทั้งหมดอยู่ใน `lib/i18n/th.ts` + `en.ts` ห้าม hard-code ใน component; ใช้ `useT()` ใน component, `currentDict()` นอก React (ack callback ใน `use-chat`/`use-voice-call`, reducer, `auth-api`) error code จาก core แปลงด้วย `errorText(map, code, fallback)` เพิ่ม key ที่ `th.ts` ก่อนแล้ว tsc จะบังคับให้เติม `en.ts` admin (`app/admin`, `components/admin`, `lib/admin-stats`) และ metadata/OG คงภาษาไทย, `public/sw.js` เขียนสองภาษาในบรรทัดเดียว
+
+## Layout มือถือ (< lg / < sm)
+
+- ต่ำกว่า `lg`: แผงเพลงเป็น overlay (`absolute`, `invisible` ตอนพับ ห้าม unmount เพราะ iframe YouTube ต้องเล่นต่อ) เปิดจากปุ่ม ♪ ในหัวห้อง ไม่มีแถบเพลงแยก
+- ต่ำกว่า `sm`: ปุ่มออก + ออกฉุกเฉินย้ายเข้าเมนู ⋮ (`sm:hidden` items), ปุ่มคำถาม/สติกเกอร์รวมเป็นปุ่ม ＋, คำว่าออนไลน์ใน header เป็น sr-only
+- แผงเกมพับได้ (`summaryOf`), เนื้อหาเกมสูงไม่เกิน 38vh — หลักคือแชตต้องเห็นเยอะที่สุด (เจ้าของไม่อยากให้แชต "จม")
+- popover ใกล้ขอบจอใช้ `hooks/use-popover-offset.ts` กันล้นจอ
