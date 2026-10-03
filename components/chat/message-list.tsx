@@ -5,6 +5,7 @@ import type { Reaction } from "@/constants/reactions";
 import type { ChatMessage } from "@/types/chat";
 import { BouncingDots } from "@/components/ui/bouncing-dots";
 import { MessageBubble } from "./message-bubble";
+import { PromptCard } from "./prompt-card";
 import { RoomFeedback } from "./room-feedback";
 
 export function MessageList({
@@ -56,7 +57,10 @@ export function MessageList({
       <p className="text-center text-sm text-ink-soft">
         จับคู่แล้ว! ทักทายกันได้เลย เราไม่เก็บข้อความไว้ ออกจากห้องแล้วหายเลย
       </p>
-      {messages.map((message) => (
+      {messages.map((message) =>
+        message.prompt ? (
+          <PromptCard key={message.id} message={message} />
+        ) : (
         <MessageBubble
           key={message.id}
           message={message}
@@ -71,7 +75,8 @@ export function MessageList({
           onTogglePicker={(open) => setOpenPickerId(open ? message.id : null)}
           onReact={(reaction) => onReact(message.id, reaction)}
         />
-      ))}
+        ),
+      )}
       {partnerTyping && (
         <p className="bubble bubble-theirs text-ink-soft" aria-label="กำลังพิมพ์">
           <BouncingDots className="h-5 items-center" />

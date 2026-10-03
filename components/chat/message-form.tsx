@@ -1,6 +1,6 @@
 "use client";
 
-import { LoaderCircle, Mic } from "lucide-react";
+import { Lightbulb, LoaderCircle, Mic } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { VoiceRecorderBar } from "@/components/voice/voice-recorder-bar";
 import { MIC_DENIED_MESSAGE } from "@/constants/messages";
@@ -15,12 +15,14 @@ export function MessageForm({
   disabled,
   onSend,
   onSendVoice,
+  onPrompt,
   onTyping,
   onFocus,
 }: {
   disabled: boolean;
   onSend: (text: string) => Promise<string | null>;
   onSendVoice: ((voice: RecordedVoice) => Promise<string | null>) | null;
+  onPrompt: () => Promise<string | null>;
   onTyping: (typing: boolean) => void;
   onFocus: () => void;
 }) {
@@ -86,6 +88,16 @@ export function MessageForm({
         />
       ) : (
         <form className="flex gap-2" onSubmit={handleSubmit}>
+          <button
+            type="button"
+            className="doodle-btn grid size-11 shrink-0 place-items-center p-0"
+            aria-label="สุ่มคำถามชวนคุย"
+            title="สุ่มคำถามชวนคุย"
+            disabled={disabled}
+            onClick={async () => setError(await onPrompt())}
+          >
+            <Lightbulb className="size-5" aria-hidden />
+          </button>
           <input
             ref={inputRef}
             className="doodle-field min-w-0 flex-1"

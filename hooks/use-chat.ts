@@ -8,6 +8,7 @@ import {
   FIND_ERROR_FALLBACK,
   FIND_ERRORS,
   SEND_ERROR_FALLBACK,
+  PROMPT_RATE_LIMITED,
   SEND_ERRORS,
   VOICE_SEND_ERRORS,
 } from "@/constants/messages";
@@ -25,6 +26,8 @@ import type {
   MatchedPayload,
   MusicControls,
   MusicPayload,
+  PromptAck,
+  PromptPayload,
   ReactionPayload,
   RecordedVoice,
   SearchOptions,
@@ -138,6 +141,12 @@ export function useChat({
             peaks: meta.peaks,
           },
         },
+      }),
+    );
+    socket.on("chat:prompt", (prompt: PromptPayload) =>
+      dispatch({
+        type: "message",
+        message: { ...prompt, prompt: true, reactions: NO_REACTIONS },
       }),
     );
     socket.on(
@@ -282,6 +291,29 @@ export function useChat({
     [],
   );
 
+  const askPrompt = useCallback(
+    () =>
+      new Promise<string | null>((resolve) => {
+        const socket = socketRef.current;
+        if (!socket?.connected) return resolve(SEND_ERRORS.offline);
+        socket.emit("chat:prompt", (ack: PromptAck) => {
+          if (!ack.ok) {
+            return resolve(
+              ack.error === "rate_limited"
+                ? PROMPT_RATE_LIMITED
+                : (SEND_ERRORS[ack.error] ?? SEND_ERROR_FALLBACK),
+            );
+          }
+          dispatch({
+            type: "message",
+            message: { ...ack.prompt, prompt: true, reactions: NO_REACTIONS },
+          });
+          resolve(null);
+        });
+      }),
+    [],
+  );
+
   const block = useCallback(
     () =>
       new Promise<string | null>((resolve) => {
@@ -340,6 +372,7 @@ export function useChat({
     leave,
     send,
     sendVoice,
+    askPrompt,
     react,
     block,
     sendFeedback,

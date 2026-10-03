@@ -18,6 +18,7 @@ export const VOICE_SEND_ERRORS: Record<string, string> = {
 };
 export const MIC_DENIED_MESSAGE =
   "เปิดไมค์ไม่ได้ ลองอนุญาตไมโครโฟนในเบราว์เซอร์ก่อนนะ";
+export const PROMPT_RATE_LIMITED = "สุ่มคำถามถี่ไปหน่อย ลองคุยข้อนี้ก่อนนะ";
 export const SEND_ERROR_FALLBACK = "ส่งข้อความไม่สำเร็จ ลองอีกครั้งนะ";
 
 export const ADD_TRACK_ERRORS: Record<string, string> = {

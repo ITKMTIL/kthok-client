@@ -26,6 +26,7 @@ export function ChatRoom({
   music,
   onSend,
   onSendVoice,
+  onPrompt,
   onReact,
   onBlock,
   onFeedback,
@@ -40,6 +41,7 @@ export function ChatRoom({
   music: MusicControls;
   onSend: (text: string) => Promise<string | null>;
   onSendVoice: (voice: RecordedVoice) => Promise<string | null>;
+  onPrompt: () => Promise<string | null>;
   onReact: (messageId: string, reaction: Reaction | null) => void;
   onBlock: (() => void) | null;
   onFeedback: (rating: "up" | "down") => void;
@@ -128,6 +130,7 @@ export function ChatRoom({
                 ? onSendVoice
                 : null
             }
+            onPrompt={onPrompt}
             onTyping={onTyping}
             onFocus={() => setMusicCollapsed(true)}
           />

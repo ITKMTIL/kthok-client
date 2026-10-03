@@ -30,6 +30,7 @@ export interface ChatMessage {
   mine: boolean;
   reactions: MessageReactions;
   voice?: VoiceClip;
+  prompt?: boolean;
 }
 
 export type IncomingMessage = Omit<ChatMessage, "mine" | "reactions" | "voice">;
@@ -123,6 +124,17 @@ export type SendAck =
 
 export type VoiceSendAck =
   | { ok: true; message: VoiceMeta }
+  | { ok: false; error: string };
+
+export interface PromptPayload {
+  id: string;
+  text: string;
+  at: number;
+  mine: boolean;
+}
+
+export type PromptAck =
+  | { ok: true; prompt: PromptPayload }
   | { ok: false; error: string };
 
 export type AddTrackAck = { ok: true } | { ok: false; error: string };

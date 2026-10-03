@@ -53,6 +53,7 @@ export function KThokApp() {
     leave,
     send,
     sendVoice,
+    askPrompt,
     react,
     block,
     sendFeedback,
@@ -153,6 +154,7 @@ export function KThokApp() {
               music={music}
               onSend={send}
               onSendVoice={sendVoice}
+              onPrompt={askPrompt}
               onReact={react}
               onBlock={state.blockEnabled ? block : null}
               onFeedback={sendFeedback}
