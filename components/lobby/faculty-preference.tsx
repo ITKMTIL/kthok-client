@@ -1,11 +1,14 @@
-import { Dices, type LucideIcon } from "lucide-react";
+import { Dices } from "lucide-react";
 import { FACULTIES, type FacultyId } from "@/constants/faculties";
+import { PreferenceChip } from "./preference-chip";
 
 export function FacultyPreference({
   value,
+  waiting,
   onChange,
 }: {
   value: FacultyId | null;
+  waiting: ReadonlySet<string>;
   onChange: (value: FacultyId | null) => void;
 }) {
   return (
@@ -14,9 +17,14 @@ export function FacultyPreference({
       <h2 className="text-lg font-bold">อยากคุยกับคณะไหน?</h2>
       <p className="text-sm text-ink-soft">
         ถ้าไม่มีคนคณะนั้นรออยู่ เดี๋ยวพาไปห้องที่ว่างแทน
+        <span className="ml-1 inline-flex items-center gap-1 whitespace-nowrap">
+          <span className="size-2.5 rounded-full border-2 border-ink bg-online" aria-hidden />
+          = มีคนรออยู่
+        </span>
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
         <PreferenceChip
+          name="prefer-faculty"
           icon={Dices}
           label="ใครก็ได้"
           checked={value === null}
@@ -25,42 +33,16 @@ export function FacultyPreference({
         {FACULTIES.map((faculty) => (
           <PreferenceChip
             key={faculty.id}
+            name="prefer-faculty"
             icon={faculty.icon}
             label={faculty.short}
             title={faculty.name}
             checked={value === faculty.id}
+            waiting={waiting.has(faculty.id)}
             onSelect={() => onChange(faculty.id)}
           />
         ))}
       </div>
     </fieldset>
-  );
-}
-
-function PreferenceChip({
-  icon: Icon,
-  label,
-  title,
-  checked,
-  onSelect,
-}: {
-  icon: LucideIcon;
-  label: string;
-  title?: string;
-  checked: boolean;
-  onSelect: () => void;
-}) {
-  return (
-    <label className="doodle-chip flex items-center gap-1.5" title={title}>
-      <input
-        type="radio"
-        name="prefer-faculty"
-        className="sr-only"
-        checked={checked}
-        onChange={onSelect}
-      />
-      <Icon className="size-4" aria-hidden />
-      {label}
-    </label>
   );
 }

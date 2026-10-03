@@ -1,19 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Hero } from "@/components/ui/hero";
 import { SiteFooter } from "@/components/ui/site-footer";
 import type { FacultyId } from "@/constants/faculties";
+import { DEFAULT_TOPIC, type TopicId } from "@/constants/topics";
 import type { Profile } from "@/types/auth";
+import type { SearchOptions, WaitingSummary } from "@/types/chat";
 import { FacultyPreference } from "./faculty-preference";
 import { OnlineCount } from "./online-count";
 import { ProfileCard } from "./profile-card";
+import { TopicPicker } from "./topic-picker";
 
 export function Lobby({
   profile,
   facultyLocked,
   connected,
   online,
+  waiting,
   error,
   onProfileChange,
   onFind,
@@ -22,11 +26,21 @@ export function Lobby({
   facultyLocked: boolean;
   connected: boolean;
   online: number | null;
+  waiting: WaitingSummary | null;
   error: string | null;
   onProfileChange: (profile: Profile) => void;
-  onFind: (prefers: FacultyId | null) => void;
+  onFind: (options: SearchOptions) => void;
 }) {
   const [prefers, setPrefers] = useState<FacultyId | null>(null);
+  const [topic, setTopic] = useState<TopicId>(DEFAULT_TOPIC);
+  const waitingFaculties = useMemo(
+    () => new Set<string>(waiting?.faculties),
+    [waiting],
+  );
+  const waitingTopics = useMemo(
+    () => new Set<string>(waiting?.topics),
+    [waiting],
+  );
   const ready =
     profile !== undefined &&
     profile.nickname.trim() !== "" &&
@@ -41,7 +55,12 @@ export function Lobby({
         facultyLocked={facultyLocked}
         onChange={onProfileChange}
       />
-      <FacultyPreference value={prefers} onChange={setPrefers} />
+      <TopicPicker value={topic} waiting={waitingTopics} onChange={setTopic} />
+      <FacultyPreference
+        value={prefers}
+        waiting={waitingFaculties}
+        onChange={setPrefers}
+      />
 
       {error && (
         <p role="alert" className="font-medium text-danger">
@@ -53,7 +72,7 @@ export function Lobby({
         type="button"
         className="doodle-btn doodle-btn-primary px-10 py-3 text-2xl font-bold"
         disabled={!ready || !connected}
-        onClick={() => onFind(prefers)}
+        onClick={() => onFind({ prefers, topic })}
       >
         หาเพื่อนคุย
       </button>

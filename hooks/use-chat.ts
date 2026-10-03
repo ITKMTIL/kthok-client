@@ -11,7 +11,7 @@ import {
   SEND_ERRORS,
   VOICE_SEND_ERRORS,
 } from "@/constants/messages";
-import { facultyOf, type FacultyId } from "@/constants/faculties";
+import { facultyOf } from "@/constants/faculties";
 import type { Reaction } from "@/constants/reactions";
 import { chatReducer, initialChatState } from "@/lib/chat-reducer";
 import { CORE_URL } from "@/lib/config";
@@ -27,8 +27,10 @@ import type {
   MusicPayload,
   ReactionPayload,
   RecordedVoice,
+  SearchOptions,
   SendAck,
   VoiceSendAck,
+  WaitingSummary,
 } from "@/types/chat";
 
 const NO_REACTIONS = { mine: null, theirs: null };
@@ -97,8 +99,17 @@ export function useChat({
         });
       }
     });
-    socket.on("stats", (stats: { online: number }) =>
-      dispatch({ type: "stats", online: stats.online }),
+    socket.on(
+      "stats",
+      (stats: { online: number } & Partial<WaitingSummary>) =>
+        dispatch({
+          type: "stats",
+          online: stats.online,
+          waiting: {
+            faculties: stats.faculties ?? [],
+            topics: stats.topics ?? [],
+          },
+        }),
     );
     socket.on("match:found", (payload: MatchedPayload) =>
       dispatch({ type: "matched", ...payload }),
@@ -186,11 +197,11 @@ export function useChat({
     [],
   );
 
-  const find = useCallback((profile: Profile, prefers: FacultyId | null) => {
-    dispatch({ type: "search", prefers });
+  const find = useCallback((profile: Profile, { prefers, topic }: SearchOptions) => {
+    dispatch({ type: "search", prefers, topic });
     socketRef.current?.emit(
       "match:find",
-      { ...profile, preferFaculty: prefers },
+      { ...profile, preferFaculty: prefers, topic },
       (ack: FindAck) => {
         if (!ack.ok) {
           socketRef.current?.emit("room:leave");

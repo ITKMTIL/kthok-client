@@ -11,7 +11,7 @@ import {
   LOGIN_NOT_CONFIGURED_MESSAGE,
   SESSION_EXPIRED_MESSAGE,
 } from "@/constants/messages";
-import type { FacultyId } from "@/constants/faculties";
+import type { SearchOptions } from "@/types/chat";
 import { useChat } from "@/hooks/use-chat";
 import { useNotifications } from "@/hooks/use-notifications";
 import { useSoundMuted } from "@/hooks/use-sound-muted";
@@ -80,9 +80,9 @@ export function KThokApp() {
   const needsLogin = AUTH_REQUIRED && token === null;
   const sessionLoading = AUTH_REQUIRED && token === undefined;
 
-  const startSearch = (prefers: FacultyId | null) => {
+  const startSearch = (options: SearchOptions) => {
     unlockAudio();
-    if (profile && nickname) find({ ...profile, nickname }, prefers);
+    if (profile && nickname) find({ ...profile, nickname }, options);
   };
 
   const signOut = () => {
@@ -122,6 +122,7 @@ export function KThokApp() {
               facultyLocked={AUTH_REQUIRED}
               connected={state.connected}
               online={state.online}
+              waiting={state.waiting}
               error={state.error ?? (AUTH_REQUIRED ? null : loginNotice)}
               onProfileChange={(next) =>
                 saveProfile({
@@ -136,6 +137,7 @@ export function KThokApp() {
           <Screen key="searching" className={FIXED_SCREEN}>
             <Searching
               prefers={state.prefers}
+              topic={state.topic}
               fellBack={state.fellBack}
               connected={state.connected}
               onCancel={leave}
@@ -155,7 +157,9 @@ export function KThokApp() {
               onBlock={state.blockEnabled ? block : null}
               onFeedback={sendFeedback}
               onTyping={setTyping}
-              onNext={() => startSearch(state.prefers)}
+              onNext={() =>
+                startSearch({ prefers: state.prefers, topic: state.topic })
+              }
               onLeave={leave}
             />
           </Screen>

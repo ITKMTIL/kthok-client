@@ -1,4 +1,5 @@
 import type { FacultyId } from "@/constants/faculties";
+import type { TopicId } from "@/constants/topics";
 
 export interface Partner {
   nickname: string;
@@ -71,6 +72,16 @@ export interface MusicControls {
   remove: (trackId: string) => void;
 }
 
+export interface SearchOptions {
+  prefers: FacultyId | null;
+  topic: TopicId;
+}
+
+export interface WaitingSummary {
+  faculties: FacultyId[];
+  topics: TopicId[];
+}
+
 export interface ChatState {
   connected: boolean;
   callEnabled: boolean;
@@ -79,8 +90,10 @@ export interface ChatState {
   isAdmin: boolean;
   selfFaculty: FacultyId | null;
   online: number | null;
+  waiting: WaitingSummary | null;
   phase: "idle" | "searching" | "chatting" | "ended";
   prefers: FacultyId | null;
+  topic: TopicId;
   fellBack: boolean;
   roomId: string | null;
   partner: Partner | null;
