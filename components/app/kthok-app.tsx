@@ -59,6 +59,7 @@ export function KThokApp() {
     sendFeedback,
     setTyping,
     music,
+    games,
   } = useChat({
     token: token ?? null,
     enabled: !AUTH_REQUIRED || Boolean(token),
@@ -152,6 +153,7 @@ export function KThokApp() {
               soundMuted={soundMuted}
               self={{ name: nickname, faculty: profile?.faculty ?? null }}
               music={music}
+              games={games}
               onSend={send}
               onSendVoice={sendVoice}
               onPrompt={askPrompt}

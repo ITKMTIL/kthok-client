@@ -1,17 +1,20 @@
 "use client";
 
-import { Ban, EllipsisVertical, Share2 } from "lucide-react";
+import { Ban, EllipsisVertical, Grid3x3, Scissors, Share2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
 import { useDismiss } from "@/hooks/use-dismiss";
+import type { GameType } from "@/types/chat";
 
 export function ChatMenu({
   canShare,
   onShare,
+  onStartGame,
   onBlock,
 }: {
   canShare: boolean;
   onShare: () => void;
+  onStartGame: ((type: GameType) => void) | null;
   onBlock: (() => void) | null;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -80,6 +83,26 @@ export function ChatMenu({
                   onShare();
                 }}
               />
+              {onStartGame && (
+                <>
+                  <MenuItem
+                    icon={<Grid3x3 className="size-4" aria-hidden />}
+                    label="ชวนเล่น XO"
+                    onClick={() => {
+                      close();
+                      onStartGame("xo");
+                    }}
+                  />
+                  <MenuItem
+                    icon={<Scissors className="size-4" aria-hidden />}
+                    label="ชวนเป่ายิ้งฉุบ"
+                    onClick={() => {
+                      close();
+                      onStartGame("rps");
+                    }}
+                  />
+                </>
+              )}
               {onBlock && (
                 <MenuItem
                   icon={<Ban className="size-4 text-danger" aria-hidden />}

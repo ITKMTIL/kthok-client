@@ -1,6 +1,7 @@
 "use client";
 
 import { CallBar } from "@/components/call/call-bar";
+import { GamePanel } from "@/components/games/game-panel";
 import { MusicPlayer } from "@/components/music/music-player";
 import type { ShareParty } from "@/components/share/share-card";
 import { ShareDialog } from "@/components/share/share-dialog";
@@ -9,7 +10,12 @@ import type { Reaction } from "@/constants/reactions";
 import { useMessageSelection } from "@/hooks/use-message-selection";
 import { useMusicCollapsed } from "@/hooks/use-music-collapsed";
 import { useVoiceCall } from "@/hooks/use-voice-call";
-import type { ChatState, MusicControls, RecordedVoice } from "@/types/chat";
+import type {
+  ChatState,
+  GameControls,
+  MusicControls,
+  RecordedVoice,
+} from "@/types/chat";
 import { useState } from "react";
 import type { Socket } from "socket.io-client";
 import { ChatHeader } from "./chat-header";
@@ -24,6 +30,7 @@ export function ChatRoom({
   soundMuted,
   self,
   music,
+  games,
   onSend,
   onSendVoice,
   onPrompt,
@@ -39,6 +46,7 @@ export function ChatRoom({
   soundMuted: boolean;
   self: ShareParty;
   music: MusicControls;
+  games: GameControls;
   onSend: (text: string) => Promise<string | null>;
   onSendVoice: (voice: RecordedVoice) => Promise<string | null>;
   onPrompt: () => Promise<string | null>;
@@ -73,6 +81,7 @@ export function ChatRoom({
           partner={state.partner}
           canShare={state.messages.length > 0 && !selection.selecting}
           onShare={selection.start}
+          onStartGame={ended ? null : games.start}
           onBlock={ended ? null : onBlock}
           canCall={
             !ended &&
@@ -103,6 +112,9 @@ export function ChatRoom({
             partnerAway={state.partnerAway}
             partnerName={partnerName}
           />
+        )}
+        {state.game && !ended && (
+          <GamePanel game={state.game} partnerName={partnerName} controls={games} />
         )}
         <MessageList
           messages={state.messages}

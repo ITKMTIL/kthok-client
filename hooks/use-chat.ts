@@ -23,6 +23,8 @@ import type {
   IncomingMessage,
   IncomingVoice,
   FindAck,
+  GameControls,
+  GameView,
   MatchedPayload,
   MusicControls,
   MusicPayload,
@@ -168,6 +170,11 @@ export function useChat({
         roomId,
         music: { ...music, receivedAt: performance.now() },
       }),
+    );
+    socket.on(
+      "game:state",
+      ({ roomId, game }: { roomId: string; game: GameView | null }) =>
+        dispatch({ type: "game", roomId, game }),
     );
     socket.on("room:closed", (payload: { roomId: string }) =>
       dispatch({ type: "closed", roomId: payload.roomId }),
@@ -343,6 +350,16 @@ export function useChat({
     socketRef.current?.emit("chat:typing", { typing });
   }, []);
 
+  const games = useMemo<GameControls>(
+    () => ({
+      start: (type) => socketRef.current?.emit("game:start", { type }),
+      playXo: (cell) => socketRef.current?.emit("game:move", { cell }),
+      playRps: (choice) => socketRef.current?.emit("game:move", { choice }),
+      end: () => socketRef.current?.emit("game:end"),
+    }),
+    [],
+  );
+
   const music = useMemo<MusicControls>(
     () => ({
       add: (url) =>
@@ -378,5 +395,6 @@ export function useChat({
     sendFeedback,
     setTyping,
     music,
+    games,
   };
 }

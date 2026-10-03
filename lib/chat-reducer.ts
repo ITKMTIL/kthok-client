@@ -5,6 +5,7 @@ import type {
   ChatMessage,
   ChatState,
   MatchedPayload,
+  GameView,
   MessageReactions,
   MusicState,
   WaitingSummary,
@@ -30,6 +31,7 @@ export type ChatAction =
       reactions: MessageReactions;
     }
   | { type: "music"; roomId: string; music: MusicState }
+  | { type: "game"; roomId: string; game: GameView | null }
   | { type: "closed"; roomId: string }
   | { type: "reset"; error?: string };
 
@@ -53,6 +55,7 @@ export const initialChatState: ChatState = {
   partnerTyping: false,
   partnerAway: false,
   music: null,
+  game: null,
   error: null,
 };
 
@@ -73,6 +76,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
             partnerTyping: false,
             partnerAway: false,
             music: null,
+            game: null,
           }
         : {
             ...initialChatState,
@@ -162,6 +166,8 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         : state;
     case "music":
       return inRoom(action.roomId) ? { ...state, music: action.music } : state;
+    case "game":
+      return inRoom(action.roomId) ? { ...state, game: action.game } : state;
     case "closed":
       return inRoom(action.roomId)
         ? {
@@ -170,6 +176,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
             partnerTyping: false,
             partnerAway: false,
             music: null,
+            game: null,
           }
         : state;
     case "reset":

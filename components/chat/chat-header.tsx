@@ -1,12 +1,13 @@
 import { LogOut, Phone, SkipForward, User } from "lucide-react";
 import { facultyOf } from "@/constants/faculties";
-import type { Partner } from "@/types/chat";
+import type { GameType, Partner } from "@/types/chat";
 import { ChatMenu } from "./chat-menu";
 
 export function ChatHeader({
   partner,
   canShare,
   onShare,
+  onStartGame,
   onBlock,
   canCall,
   onCall,
@@ -16,6 +17,7 @@ export function ChatHeader({
   partner: Partner | null;
   canShare: boolean;
   onShare: () => void;
+  onStartGame: ((type: GameType) => void) | null;
   onBlock: (() => void) | null;
   canCall: boolean;
   onCall: (() => void) | null;
@@ -36,7 +38,12 @@ export function ChatHeader({
           {faculty?.name}
         </p>
       </div>
-      <ChatMenu canShare={canShare} onShare={onShare} onBlock={onBlock} />
+      <ChatMenu
+        canShare={canShare}
+        onShare={onShare}
+        onStartGame={onStartGame}
+        onBlock={onBlock}
+      />
       {onCall && (
         <button
           type="button"

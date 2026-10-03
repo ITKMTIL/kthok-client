@@ -83,6 +83,37 @@ export interface WaitingSummary {
   topics: TopicId[];
 }
 
+export type GameType = "xo" | "rps";
+export type RpsChoice = "rock" | "paper" | "scissors";
+export type Side = "me" | "them";
+export type GameResult = "win" | "lose" | "draw";
+
+export type GameView =
+  | {
+      type: "xo";
+      startedBy: Side;
+      board: (Side | null)[];
+      myTurn: boolean;
+      result: GameResult | null;
+      line: number[] | null;
+    }
+  | {
+      type: "rps";
+      startedBy: Side;
+      round: number;
+      myPick: RpsChoice | null;
+      theyPicked: boolean;
+      score: { me: number; them: number };
+      last: { mine: RpsChoice; theirs: RpsChoice; result: GameResult } | null;
+    };
+
+export interface GameControls {
+  start: (type: GameType) => void;
+  playXo: (cell: number) => void;
+  playRps: (choice: RpsChoice) => void;
+  end: () => void;
+}
+
 export interface ChatState {
   connected: boolean;
   callEnabled: boolean;
@@ -103,6 +134,7 @@ export interface ChatState {
   partnerTyping: boolean;
   partnerAway: boolean;
   music: MusicState | null;
+  game: GameView | null;
   error: string | null;
 }
 
