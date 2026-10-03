@@ -1,4 +1,4 @@
-import { LogOut, Phone, SkipForward, User } from "lucide-react";
+import { LogOut, Phone, ShieldAlert, SkipForward, User } from "lucide-react";
 import { facultyOf } from "@/constants/faculties";
 import type { GameType, Partner } from "@/types/chat";
 import { ChatMenu } from "./chat-menu";
@@ -14,6 +14,7 @@ export function ChatHeader({
   onCall,
   onNext,
   onLeave,
+  onPanic,
 }: {
   partner: Partner | null;
   canShare: boolean;
@@ -25,6 +26,7 @@ export function ChatHeader({
   onCall: (() => void) | null;
   onNext: () => void;
   onLeave: () => void;
+  onPanic: (() => void) | null;
 }) {
   const faculty = partner ? facultyOf(partner.faculty) : undefined;
   const FacultyIcon = faculty?.icon ?? User;
@@ -57,6 +59,17 @@ export function ChatHeader({
           onClick={onCall}
         >
           <Phone className="size-4" aria-hidden />
+        </button>
+      )}
+      {onPanic && (
+        <button
+          type="button"
+          className="doodle-btn grid size-9 shrink-0 place-items-center bg-danger text-card"
+          aria-label="ออกฉุกเฉิน: ออกจากห้องและบล็อกทันที"
+          title="ออกฉุกเฉิน: ออกและบล็อกทันที"
+          onClick={onPanic}
+        >
+          <ShieldAlert className="size-4" aria-hidden />
         </button>
       )}
       <button

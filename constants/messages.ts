@@ -82,5 +82,7 @@ export const CALL_FAILED =
   "ต่อสายไม่ติด เครือข่ายของฝั่งใดฝั่งหนึ่งอาจไม่เปิดให้คุยเสียง";
 
 export const BANNED_MESSAGE = "บัญชีนี้ถูกระงับการใช้งานชั่วคราว";
+export const PANIC_MESSAGE =
+  "ออกจากห้องและบล็อกคนนั้นแล้ว จะไม่ถูกจับคู่กันอีก ดูแลตัวเองนะ";
 export const BLOCK_DONE_MESSAGE = "บล็อกแล้ว จะไม่ถูกจับคู่กับคนนี้อีก";
 export const BLOCK_FAILED_MESSAGE = "บล็อกไม่สำเร็จ ลองใหม่อีกครั้งนะ";

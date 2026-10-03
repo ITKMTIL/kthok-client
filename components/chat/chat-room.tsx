@@ -44,6 +44,7 @@ export function ChatRoom({
   onTyping,
   onNext,
   onLeave,
+  onPanic,
 }: {
   state: ChatState;
   socket: Socket | null;
@@ -62,6 +63,7 @@ export function ChatRoom({
   onTyping: (typing: boolean) => void;
   onNext: () => void;
   onLeave: () => void;
+  onPanic: () => void;
 }) {
   const ended = state.phase === "ended";
   const [musicCollapsed, setMusicCollapsed] = useMusicCollapsed();
@@ -101,6 +103,7 @@ export function ChatRoom({
           onCall={state.callEnabled ? voice.invite : null}
           onNext={onNext}
           onLeave={onLeave}
+          onPanic={ended ? null : onPanic}
         />
         <CallBar
           call={voice.call}

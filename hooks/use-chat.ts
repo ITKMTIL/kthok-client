@@ -9,6 +9,7 @@ import {
   FIND_ERRORS,
   SEND_ERROR_FALLBACK,
   KEEP_ERRORS,
+  PANIC_MESSAGE,
   PROMPT_RATE_LIMITED,
   REPORT_ERROR_FALLBACK,
   REPORT_ERRORS,
@@ -264,9 +265,18 @@ export function useChat({
     dispatch({ type: "left" });
   }, []);
 
-  const exit = useCallback(() => {
+  const exit = useCallback((notice?: string) => {
     socketRef.current?.emit("room:leave");
-    dispatch({ type: "reset" });
+    dispatch({ type: "reset", error: notice });
+  }, []);
+
+  const panic = useCallback(() => {
+    const socket = socketRef.current;
+    dispatch({ type: "reset", error: PANIC_MESSAGE });
+    if (!socket?.connected) return;
+    socket.emit("room:block", (ack: { ok: boolean }) => {
+      if (!ack.ok) socket.emit("room:leave");
+    });
   }, []);
 
   const send = useCallback(
@@ -459,6 +469,7 @@ export function useChat({
     find,
     leave,
     exit,
+    panic,
     send,
     sendVoice,
     askPrompt,
