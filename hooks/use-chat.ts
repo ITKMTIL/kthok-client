@@ -85,6 +85,10 @@ export function useChat({
     );
     const leaveOnUnload = () => socket.emit("room:leave");
     window.addEventListener("pagehide", leaveOnUnload);
+    const reportVisibility = () =>
+      socket.emit("presence:visibility", { hidden: document.hidden });
+    document.addEventListener("visibilitychange", reportVisibility);
+    socket.on("connect", reportVisibility);
     socket.on("disconnect", () => dispatch({ type: "disconnected" }));
     socket.on("auth:error", () => onAuthErrorRef.current());
     socket.on("auth:banned", () => onBannedRef.current());
@@ -95,6 +99,7 @@ export function useChat({
         voice?: boolean;
         block?: boolean;
         report?: boolean;
+        push?: string | null;
       }) =>
         dispatch({
           type: "features",
@@ -102,6 +107,7 @@ export function useChat({
           voice: features.voice === true,
           block: features.block === true,
           report: features.report === true,
+          pushKey: typeof features.push === "string" ? features.push : null,
         }),
     );
     socket.on("auth:ok", (payload: { faculty: string; admin?: boolean }) => {
@@ -202,6 +208,7 @@ export function useChat({
 
     return () => {
       window.removeEventListener("pagehide", leaveOnUnload);
+      document.removeEventListener("visibilitychange", reportVisibility);
       socket.disconnect();
       socket.off();
       socketRef.current = null;

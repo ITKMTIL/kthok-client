@@ -134,6 +134,7 @@ export interface ChatState {
   voiceEnabled: boolean;
   blockEnabled: boolean;
   reportEnabled: boolean;
+  pushKey: string | null;
   isAdmin: boolean;
   selfFaculty: FacultyId | null;
   online: number | null;

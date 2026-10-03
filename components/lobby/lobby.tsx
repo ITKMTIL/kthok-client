@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { PushToggle } from "@/components/push/push-toggle";
 import { Hero } from "@/components/ui/hero";
 import { SiteFooter } from "@/components/ui/site-footer";
 import type { FacultyId } from "@/constants/faculties";
+import type { usePush } from "@/hooks/use-push";
 import { DEFAULT_TOPIC, type TopicId } from "@/constants/topics";
 import type { Profile } from "@/types/auth";
 import type { SearchOptions, WaitingSummary } from "@/types/chat";
@@ -18,6 +20,7 @@ export function Lobby({
   connected,
   online,
   waiting,
+  push,
   error,
   onProfileChange,
   onFind,
@@ -27,6 +30,7 @@ export function Lobby({
   connected: boolean;
   online: number | null;
   waiting: WaitingSummary | null;
+  push: ReturnType<typeof usePush>;
   error: string | null;
   onProfileChange: (profile: Profile) => void;
   onFind: (options: SearchOptions) => void;
@@ -50,6 +54,7 @@ export function Lobby({
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center gap-6 px-4 pb-6 pt-6 text-center">
       <Hero bubble="ทอล์คมั้ย?" />
       <OnlineCount online={online} connected={connected} />
+      <PushToggle push={push} />
       <ProfileCard
         profile={profile}
         facultyLocked={facultyLocked}

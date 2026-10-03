@@ -14,6 +14,7 @@ import {
 import type { SearchOptions } from "@/types/chat";
 import { useChat } from "@/hooks/use-chat";
 import { useNotifications } from "@/hooks/use-notifications";
+import { usePush } from "@/hooks/use-push";
 import { useSoundMuted } from "@/hooks/use-sound-muted";
 import { useVisualViewportHeight } from "@/hooks/use-visual-viewport";
 import { saveProfile, useProfile } from "@/hooks/use-profile";
@@ -72,6 +73,7 @@ export function KThokApp() {
 
   const [soundMuted, setSoundMuted] = useSoundMuted();
   useNotifications(state, soundMuted);
+  const push = usePush(socket, state.pushKey);
 
   const profile: Profile | undefined =
     stored && (!AUTH_REQUIRED || token)
@@ -91,6 +93,7 @@ export function KThokApp() {
   };
 
   const signOut = () => {
+    if (push.status === "on") void push.disable();
     setLoginNotice(null);
     clearSession();
   };
@@ -128,6 +131,7 @@ export function KThokApp() {
               connected={state.connected}
               online={state.online}
               waiting={state.waiting}
+              push={push}
               error={state.error ?? (AUTH_REQUIRED ? null : loginNotice)}
               onProfileChange={(next) =>
                 saveProfile({

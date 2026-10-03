@@ -21,6 +21,7 @@ export type ChatAction =
       voice: boolean;
       block: boolean;
       report: boolean;
+      pushKey: string | null;
     }
   | { type: "stats"; online: number; waiting: WaitingSummary }
   | { type: "search"; prefers: FacultyId | null; topic: TopicId }
@@ -51,6 +52,7 @@ export const initialChatState: ChatState = {
   voiceEnabled: false,
   blockEnabled: false,
   reportEnabled: false,
+  pushKey: null,
   isAdmin: false,
   selfFaculty: null,
   online: null,
@@ -98,6 +100,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
             voiceEnabled: state.voiceEnabled,
             blockEnabled: state.blockEnabled,
             reportEnabled: state.reportEnabled,
+            pushKey: state.pushKey,
             isAdmin: state.isAdmin,
             selfFaculty: state.selfFaculty,
             online: state.online,
@@ -113,6 +116,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         voiceEnabled: action.voice,
         blockEnabled: action.block,
         reportEnabled: action.report,
+        pushKey: action.pushKey,
       };
     case "authenticated":
       return { ...state, selfFaculty: action.faculty, isAdmin: action.admin };
@@ -126,6 +130,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         voiceEnabled: state.voiceEnabled,
         blockEnabled: state.blockEnabled,
         reportEnabled: state.reportEnabled,
+        pushKey: state.pushKey,
         isAdmin: state.isAdmin,
         selfFaculty: state.selfFaculty,
         online: state.online,
@@ -235,6 +240,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         voiceEnabled: state.voiceEnabled,
         blockEnabled: state.blockEnabled,
         reportEnabled: state.reportEnabled,
+        pushKey: state.pushKey,
         isAdmin: state.isAdmin,
         selfFaculty: state.selfFaculty,
         online: state.online,
