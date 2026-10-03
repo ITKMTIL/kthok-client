@@ -30,24 +30,24 @@ export function GamePanel({
       className="doodle-card flex flex-col gap-2 p-3"
       aria-label={titleOf(t, game.type)}
     >
-      <div className="flex items-center justify-between gap-2">
-        <h2 className="font-bold">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="min-w-0 font-bold">
           {game.type === "xo" ? "XO" : titleOf(t, game.type)}
-          <span className="ml-2 text-sm font-normal text-ink-soft">
+          <span className="ml-2 whitespace-nowrap text-sm font-normal text-ink-soft">
             {game.startedBy === "me" ? t.games.youStarted : t.games.partnerStarted(partnerName)}
           </span>
         </h2>
         <div className="flex gap-1.5">
           <button
             type="button"
-            className="doodle-btn px-3 py-1 text-sm"
+            className="doodle-btn whitespace-nowrap px-3 py-1 text-sm"
             onClick={() => controls.start(game.type)}
           >
             {t.games.restart}
           </button>
           <button
             type="button"
-            className="doodle-btn px-3 py-1 text-sm"
+            className="doodle-btn whitespace-nowrap px-3 py-1 text-sm"
             onClick={controls.end}
           >
             {t.games.quit}

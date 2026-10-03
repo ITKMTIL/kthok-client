@@ -141,10 +141,16 @@ function TarotSlot({ title, draw }: { title: string; draw: TarotDraw | null }) {
         animate={{ rotateY: 0 }}
         transition={{ duration: 0.35 }}
         className={`grid h-16 w-11 shrink-0 place-items-center rounded-lg border-2 border-ink text-xs font-bold ${draw ? "bg-accent-soft" : "bg-ink/10"}`}
-        style={{ rotate: draw?.reversed ? "180deg" : "0deg" }}
         aria-hidden
       >
-        {draw ? romanOf(draw.card) : "?"}
+        {draw ? (
+          <span className="flex flex-col items-center leading-none">
+            {romanOf(draw.card)}
+            {draw.reversed && <span className="mt-1 text-[10px]">↓</span>}
+          </span>
+        ) : (
+          "?"
+        )}
       </motion.span>
       <span className="min-w-0">
         <span className="block text-xs text-ink-soft">{title}</span>
