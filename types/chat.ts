@@ -188,7 +188,7 @@ export type VoiceSendAck =
 
 export interface PromptPayload {
   id: string;
-  text: string;
+  key: string;
   at: number;
   mine: boolean;
 }

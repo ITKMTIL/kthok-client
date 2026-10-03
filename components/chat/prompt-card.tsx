@@ -2,9 +2,12 @@
 
 import { Lightbulb } from "lucide-react";
 import { motion } from "motion/react";
+import { useT } from "@/hooks/use-locale";
+import { promptText } from "@/lib/i18n";
 import type { ChatMessage } from "@/types/chat";
 
 export function PromptCard({ message }: { message: ChatMessage }) {
+  const t = useT();
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.85, rotate: -2 }}
@@ -17,7 +20,7 @@ export function PromptCard({ message }: { message: ChatMessage }) {
         <Lightbulb className="size-3.5" aria-hidden />
         {message.mine ? "เธอสุ่มคำถาม" : "อีกฝ่ายสุ่มคำถาม"}
       </span>
-      <span className="font-bold">{message.text}</span>
+      <span className="font-bold">{promptText(t, message.text)}</span>
     </motion.div>
   );
 }

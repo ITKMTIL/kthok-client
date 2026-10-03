@@ -164,10 +164,10 @@ export function useChat({
         },
       }),
     );
-    socket.on("chat:prompt", (prompt: PromptPayload) =>
+    socket.on("chat:prompt", ({ key, ...prompt }: PromptPayload) =>
       dispatch({
         type: "message",
-        message: { ...prompt, prompt: true, reactions: NO_REACTIONS },
+        message: { ...prompt, text: key, prompt: true, reactions: NO_REACTIONS },
       }),
     );
     socket.on(
@@ -359,9 +359,15 @@ export function useChat({
                 : (SEND_ERRORS[ack.error] ?? SEND_ERROR_FALLBACK),
             );
           }
+          const { key, ...prompt } = ack.prompt;
           dispatch({
             type: "message",
-            message: { ...ack.prompt, prompt: true, reactions: NO_REACTIONS },
+            message: {
+              ...prompt,
+              text: key,
+              prompt: true,
+              reactions: NO_REACTIONS,
+            },
           });
           resolve(null);
         });
