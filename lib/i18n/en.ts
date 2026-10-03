@@ -112,6 +112,7 @@ export const en: Dict = {
     verified: "Verified from your student ID",
   },
   messages: {
+    more: "More",
     you: "You",
     unsentMine: "You unsent this message",
     unsentTheirs: "This message was unsent",
@@ -269,6 +270,8 @@ export const en: Dict = {
     ],
   },
   games: {
+    expand: "Expand game",
+    fold: "Collapse game",
     xoLabel: "Tic-tac-toe",
     rpsLabel: "Rock paper scissors",
     rps: "Rock paper scissors",

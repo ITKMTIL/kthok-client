@@ -110,6 +110,7 @@ export const th = {
     verified: "ยืนยันจากรหัสนักศึกษาแล้ว",
   },
   messages: {
+    more: "เพิ่มเติม",
     you: "เธอ",
     unsentMine: "เธอยกเลิกข้อความนี้",
     unsentTheirs: "ข้อความนี้ถูกยกเลิก",
@@ -291,6 +292,8 @@ export const th = {
     ],
   },
   games: {
+    expand: "กางเกม",
+    fold: "พับเกม",
     xoLabel: "เกม XO",
     rpsLabel: "เกมเป่ายิ้งฉุบ",
     rps: "เป่ายิ้งฉุบ",

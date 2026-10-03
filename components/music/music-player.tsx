@@ -31,7 +31,7 @@ export function MusicPlayer({
 
   return (
     <aside
-      className="doodle-card order-first flex shrink-0 flex-col px-3 py-2 lg:order-last lg:w-80 lg:overflow-y-auto lg:p-3"
+      className={`doodle-card order-first flex shrink-0 flex-col px-3 py-2 lg:order-last lg:w-80 lg:overflow-y-auto lg:p-3 max-lg:absolute max-lg:inset-x-2 max-lg:top-[3.9rem] max-lg:z-30 max-lg:max-h-[75%] max-lg:overflow-y-auto sm:max-lg:inset-x-3 ${collapsed ? "max-lg:pointer-events-none max-lg:invisible" : ""}`}
       aria-label={t.music.title}
     >
       <MusicMiniBar

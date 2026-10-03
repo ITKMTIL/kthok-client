@@ -1,10 +1,20 @@
 "use client";
 
-import { Lightbulb, LoaderCircle, Mic, Reply, Sticker as StickerIcon, X } from "lucide-react";
+import {
+  Lightbulb,
+  LoaderCircle,
+  Mic,
+  Plus,
+  Reply,
+  Sticker as StickerIcon,
+  X,
+} from "lucide-react";
+import { motion } from "motion/react";
 import { StickerPicker } from "@/components/stickers/sticker-picker";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { VoiceRecorderBar } from "@/components/voice/voice-recorder-bar";
 import { useT } from "@/hooks/use-locale";
+import { useDismiss } from "@/hooks/use-dismiss";
 import { useTypingSignal } from "@/hooks/use-typing-signal";
 import { useVoiceRecorder } from "@/hooks/use-voice-recorder";
 import { canRecordVoice } from "@/lib/voice";
@@ -34,6 +44,10 @@ export function MessageForm({
 }) {
   const t = useT();
   const [stickersOpen, setStickersOpen] = useState(false);
+  const [trayOpen, setTrayOpen] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const closeTray = useCallback(() => setTrayOpen(false), []);
+  useDismiss(formRef, trayOpen, closeTray);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [sendingVoice, setSendingVoice] = useState(false);
@@ -116,7 +130,11 @@ export function MessageForm({
             </button>
           </div>
         )}
-        <form className="relative flex gap-2" onSubmit={handleSubmit}>
+        <form
+          ref={formRef}
+          className="relative flex gap-1.5 sm:gap-2"
+          onSubmit={handleSubmit}
+        >
           {stickersOpen && (
             <StickerPicker
               onClose={() => setStickersOpen(false)}
@@ -126,9 +144,55 @@ export function MessageForm({
               }}
             />
           )}
+          {trayOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute bottom-full left-0 z-20 mb-2 flex flex-col gap-1 rounded-2xl border-2 border-ink bg-card p-2 shadow-[3px_3px_0_var(--color-ink)] sm:hidden"
+              role="menu"
+            >
+              <button
+                type="button"
+                role="menuitem"
+                className="flex items-center gap-2 rounded-xl px-3 py-2 text-left text-sm hover:bg-accent-soft"
+                onClick={async () => {
+                  setTrayOpen(false);
+                  setError(await onPrompt());
+                }}
+              >
+                <Lightbulb className="size-4" aria-hidden />
+                {t.messages.prompt}
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="flex items-center gap-2 rounded-xl px-3 py-2 text-left text-sm hover:bg-accent-soft"
+                onClick={() => {
+                  setTrayOpen(false);
+                  setStickersOpen(true);
+                }}
+              >
+                <StickerIcon className="size-4" aria-hidden />
+                {t.stickers.title}
+              </button>
+            </motion.div>
+          )}
           <button
             type="button"
-            className="doodle-btn grid size-11 shrink-0 place-items-center p-0"
+            className={`doodle-btn grid size-11 shrink-0 place-items-center p-0 sm:hidden ${trayOpen ? "bg-accent-soft" : ""}`}
+            aria-label={t.messages.more}
+            aria-expanded={trayOpen}
+            disabled={disabled}
+            onClick={() => {
+              setStickersOpen(false);
+              setTrayOpen((value) => !value);
+            }}
+          >
+            <Plus className={`size-5 transition-transform ${trayOpen ? "rotate-45" : ""}`} aria-hidden />
+          </button>
+          <button
+            type="button"
+            className="doodle-btn grid size-11 shrink-0 place-items-center p-0 max-sm:hidden"
             aria-label={t.messages.prompt}
             title={t.messages.prompt}
             disabled={disabled}
@@ -138,7 +202,7 @@ export function MessageForm({
           </button>
           <button
             type="button"
-            className="doodle-btn grid size-11 shrink-0 place-items-center p-0"
+            className="doodle-btn grid size-11 shrink-0 place-items-center p-0 max-sm:hidden"
             aria-label={t.stickers.send}
             aria-expanded={stickersOpen}
             title={t.stickers.title}
@@ -165,7 +229,7 @@ export function MessageForm({
           {showMic ? (
             <button
               type="button"
-              className="doodle-btn doodle-btn-primary grid w-[4.25rem] shrink-0 place-items-center"
+              className="doodle-btn doodle-btn-primary grid w-12 shrink-0 place-items-center sm:w-[4.25rem]"
               aria-label={sendingVoice ? t.voice.sending : t.voice.record}
               disabled={disabled || sendingVoice || recorder.status !== "idle"}
               onClick={startRecording}
@@ -179,7 +243,7 @@ export function MessageForm({
           ) : (
             <button
               type="submit"
-              className="doodle-btn doodle-btn-primary w-[4.25rem] shrink-0 font-bold"
+              className="doodle-btn doodle-btn-primary w-12 shrink-0 font-bold sm:w-[4.25rem]"
               disabled={disabled || !draft.trim()}
             >
               {t.messages.send}

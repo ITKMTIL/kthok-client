@@ -1,6 +1,7 @@
 "use client";
 
-import { Circle, Grab, Hand, Scissors, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Circle, Grab, Hand, RotateCcw, Scissors, X } from "lucide-react";
+import { useState } from "react";
 import { motion } from "motion/react";
 import { useT } from "@/hooks/use-locale";
 import type { GameControls, GameView, RpsChoice, Side } from "@/types/chat";
@@ -22,38 +23,59 @@ export function GamePanel({
   controls: GameControls;
 }) {
   const t = useT();
+  const [folded, setFolded] = useState(false);
+  const Chevron = folded ? ChevronDown : ChevronUp;
   return (
     <motion.section
       initial={{ opacity: 0, y: -8, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 420, damping: 30 }}
-      className="doodle-card flex flex-col gap-2 p-3"
+      className="doodle-card flex shrink-0 flex-col gap-2 px-3 py-2 sm:p-3"
       aria-label={titleOf(t, game.type)}
     >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="min-w-0 font-bold">
-          {game.type === "xo" ? "XO" : titleOf(t, game.type)}
-          <span className="ml-2 whitespace-nowrap text-sm font-normal text-ink-soft">
-            {game.startedBy === "me" ? t.games.youStarted : t.games.partnerStarted(partnerName)}
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-1.5 text-left"
+          aria-expanded={!folded}
+          onClick={() => setFolded((value) => !value)}
+        >
+          <span className="shrink-0 font-bold">
+            {game.type === "xo" ? "XO" : titleOf(t, game.type)}
           </span>
-        </h2>
-        <div className="flex gap-1.5">
-          <button
-            type="button"
-            className="doodle-btn whitespace-nowrap px-3 py-1 text-sm"
-            onClick={() => controls.start(game.type)}
-          >
-            {t.games.restart}
-          </button>
-          <button
-            type="button"
-            className="doodle-btn whitespace-nowrap px-3 py-1 text-sm"
-            onClick={controls.end}
-          >
-            {t.games.quit}
-          </button>
-        </div>
+          <span className="min-w-0 truncate text-sm text-ink-soft">
+            {folded
+              ? summaryOf(t, game, partnerName)
+              : game.startedBy === "me"
+                ? t.games.youStarted
+                : t.games.partnerStarted(partnerName)}
+          </span>
+          <Chevron className="size-4 shrink-0" aria-hidden />
+          <span className="sr-only">{folded ? t.games.expand : t.games.fold}</span>
+        </button>
+        <button
+          type="button"
+          className="doodle-btn grid size-8 shrink-0 place-items-center sm:h-8 sm:w-auto sm:px-3"
+          aria-label={t.games.restart}
+          title={t.games.restart}
+          onClick={() => controls.start(game.type)}
+        >
+          <RotateCcw className="size-4 sm:hidden" aria-hidden />
+          <span className="text-sm max-sm:hidden">{t.games.restart}</span>
+        </button>
+        <button
+          type="button"
+          className="doodle-btn grid size-8 shrink-0 place-items-center sm:h-8 sm:w-auto sm:px-3"
+          aria-label={t.games.quit}
+          title={t.games.quit}
+          onClick={controls.end}
+        >
+          <X className="size-4 sm:hidden" aria-hidden />
+          <span className="text-sm max-sm:hidden">{t.games.quit}</span>
+        </button>
       </div>
+      {!folded && (
+        <div className="max-h-[38vh] overflow-y-auto">
       {game.type === "xo" ? (
         <XoBoard game={game} partnerName={partnerName} onPlay={controls.playXo} />
       ) : game.type === "rps" ? (
@@ -63,8 +85,29 @@ export function GamePanel({
       ) : (
         <TarotBoard game={game} partnerName={partnerName} onDraw={controls.drawCard} />
       )}
+        </div>
+      )}
     </motion.section>
   );
+}
+
+function summaryOf(
+  t: ReturnType<typeof useT>,
+  game: GameView,
+  partnerName: string,
+): string {
+  if (game.type === "xo") {
+    return game.result
+      ? t.games.result[game.result]
+      : game.myTurn
+        ? t.games.yourTurn
+        : t.games.waitMove(partnerName);
+  }
+  if (game.type === "rps") return `${game.score.me} - ${game.score.them}`;
+  if (game.type === "taksa") {
+    return game.result ? `${t.fortune.score} ${game.result.score}%` : t.fortune.pickDay;
+  }
+  return game.mine ? t.fortune.cards[game.mine.card].name : t.fortune.draw;
 }
 
 function titleOf(t: ReturnType<typeof useT>, type: GameView["type"]): string {
@@ -104,7 +147,7 @@ function XoBoard({
           <button
             key={cell}
             type="button"
-            className={`grid size-11 place-items-center rounded-lg border-2 border-ink ${game.line?.includes(cell) ? "bg-accent-soft" : "bg-card"} ${!side && game.myTurn ? "cursor-pointer hover:bg-paper" : ""}`}
+            className={`grid size-9 place-items-center rounded-lg sm:size-11 border-2 border-ink ${game.line?.includes(cell) ? "bg-accent-soft" : "bg-card"} ${!side && game.myTurn ? "cursor-pointer hover:bg-paper" : ""}`}
             disabled={side !== null || !game.myTurn}
             aria-label={side ? t.games.cell(cell + 1) : t.games.emptyCell(cell + 1)}
             onClick={() => onPlay(cell)}

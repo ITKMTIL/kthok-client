@@ -1,4 +1,4 @@
-import { LogOut, Phone, SkipForward, User } from "lucide-react";
+import { LogOut, Music, Phone, SkipForward, User } from "lucide-react";
 import { PanicButton } from "@/components/safety/panic-button";
 import { facultyOf, facultyText } from "@/constants/faculties";
 import { useT } from "@/hooks/use-locale";
@@ -19,6 +19,7 @@ export function ChatHeader({
   onNext,
   onLeave,
   onPanic,
+  music,
 }: {
   partner: Partner | null;
   canShare: boolean;
@@ -33,6 +34,7 @@ export function ChatHeader({
   onNext: () => void;
   onLeave: () => void;
   onPanic: (() => void) | null;
+  music: { open: boolean; playing: boolean; onToggle: () => void };
 }) {
   const t = useT();
   const faculty = partner ? facultyOf(partner.faculty) : undefined;
@@ -49,6 +51,23 @@ export function ChatHeader({
           {partner && facultyText(t, partner.faculty)?.name}
         </p>
       </div>
+      <button
+        type="button"
+        className={`doodle-btn relative grid size-9 shrink-0 place-items-center lg:hidden ${music.open ? "bg-accent-soft" : ""}`}
+        aria-label={t.music.title}
+        aria-expanded={music.open}
+        aria-controls="music-panel"
+        title={t.music.title}
+        onClick={music.onToggle}
+      >
+        <Music className="size-4" aria-hidden />
+        {music.playing && (
+          <span
+            className="absolute -right-1 -top-1 size-3 animate-pulse rounded-full border-2 border-ink bg-online"
+            aria-hidden
+          />
+        )}
+      </button>
       <ChatMenu
         canShare={canShare}
         onShare={onShare}
@@ -57,6 +76,8 @@ export function ChatHeader({
         readReceipts={readReceipts}
         onToggleReadReceipts={onToggleReadReceipts}
         onBlock={onBlock}
+        onLeave={onLeave}
+        onPanic={onPanic}
       />
       {onCall && (
         <button
@@ -70,7 +91,11 @@ export function ChatHeader({
           <Phone className="size-4" aria-hidden />
         </button>
       )}
-      {onPanic && <PanicButton onConfirm={onPanic} />}
+      {onPanic && (
+        <span className="max-sm:hidden">
+          <PanicButton onConfirm={onPanic} />
+        </span>
+      )}
       <button
         type="button"
         className="doodle-btn flex h-9 shrink-0 items-center gap-1.5 px-2.5 sm:px-3"
@@ -83,7 +108,7 @@ export function ChatHeader({
       </button>
       <button
         type="button"
-        className="doodle-btn flex h-9 shrink-0 items-center gap-1.5 px-2.5 sm:px-3"
+        className="doodle-btn flex h-9 shrink-0 items-center gap-1.5 px-2.5 max-sm:hidden sm:px-3"
         aria-label={t.room.leave}
         title={t.room.leave}
         onClick={onLeave}

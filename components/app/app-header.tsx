@@ -39,7 +39,9 @@ export function AppHeader({
             className={`mr-1.5 inline-block size-2.5 rounded-full border-2 border-ink ${connected ? "bg-online" : "bg-paper"}`}
             aria-hidden
           />
-          {connected ? t.header.online : t.header.offline}
+          <span className="max-sm:sr-only">
+            {connected ? t.header.online : t.header.offline}
+          </span>
         </span>
         <LanguageToggle />
         <ThemeToggle />

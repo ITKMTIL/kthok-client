@@ -6,6 +6,8 @@ import {
   Eye,
   EyeOff,
   Flag,
+  LogOut,
+  ShieldAlert,
   Grid3x3,
   Scissors,
   Share2,
@@ -29,6 +31,8 @@ export function ChatMenu({
   readReceipts,
   onToggleReadReceipts,
   onBlock,
+  onLeave,
+  onPanic,
 }: {
   canShare: boolean;
   onShare: () => void;
@@ -37,14 +41,16 @@ export function ChatMenu({
   readReceipts: boolean;
   onToggleReadReceipts: () => void;
   onBlock: (() => void) | null;
+  onLeave: () => void;
+  onPanic: (() => void) | null;
 }) {
   const t = useT();
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const [confirming, setConfirming] = useState(false);
+  const [confirming, setConfirming] = useState<"block" | "panic" | null>(null);
   const close = useCallback(() => {
     setOpen(false);
-    setConfirming(false);
+    setConfirming(null);
   }, []);
   useDismiss(rootRef, open, close);
   const offset = usePopoverOffset(rootRef, open, MENU_WIDTH);
@@ -70,10 +76,10 @@ export function ChatMenu({
           role="menu"
           className="absolute top-full max-w-[calc(100vw-1.5rem)] z-20 mt-2 flex flex-col gap-1 rounded-2xl border-2 border-ink bg-card p-2 shadow-[3px_3px_0_var(--color-ink)]"
         >
-          {confirming && onBlock ? (
+          {confirming && (confirming === "block" ? onBlock : onPanic) ? (
             <div className="flex flex-col gap-2 p-1">
               <p className="text-sm">
-                {t.menu.blockConfirm}
+                {confirming === "block" ? t.menu.blockConfirm : t.safety.panicConfirm}
               </p>
               <div className="flex gap-2">
                 <button
@@ -88,15 +94,32 @@ export function ChatMenu({
                   className="doodle-btn flex-1 bg-danger px-2 py-1 text-sm font-bold text-card"
                   onClick={() => {
                     close();
-                    onBlock();
+                    (confirming === "block" ? onBlock : onPanic)?.();
                   }}
                 >
-                  {t.menu.block}
+                  {confirming === "block" ? t.menu.block : t.safety.panicAction}
                 </button>
               </div>
             </div>
           ) : (
             <>
+              <MenuItem
+                className="sm:hidden"
+                icon={<LogOut className="size-4" aria-hidden />}
+                label={t.room.leave}
+                onClick={() => {
+                  close();
+                  onLeave();
+                }}
+              />
+              {onPanic && (
+                <MenuItem
+                  className="font-bold text-danger sm:hidden"
+                  icon={<ShieldAlert className="size-4" aria-hidden />}
+                  label={t.safety.panic}
+                  onClick={() => setConfirming("panic")}
+                />
+              )}
               <MenuItem
                 icon={<Share2 className="size-4" aria-hidden />}
                 label={t.menu.share}
@@ -170,7 +193,7 @@ export function ChatMenu({
                 <MenuItem
                   icon={<Ban className="size-4 text-danger" aria-hidden />}
                   label={t.menu.blockUser}
-                  onClick={() => setConfirming(true)}
+                  onClick={() => setConfirming("block")}
                 />
               )}
             </>
@@ -185,8 +208,10 @@ function MenuItem({
   icon,
   label,
   disabled,
+  className = "",
   onClick,
 }: {
+  className?: string;
   icon: React.ReactNode;
   label: string;
   disabled?: boolean;
@@ -196,7 +221,7 @@ function MenuItem({
     <button
       type="button"
       role="menuitem"
-      className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2 text-left text-sm hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
+      className={`flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2 text-left text-sm hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent ${className}`}
       disabled={disabled}
       onClick={onClick}
     >

@@ -105,7 +105,7 @@ export function ChatRoom({
   );
 
   return (
-    <main className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-2 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:gap-3 sm:px-3 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:flex-row">
+    <main className="relative mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-2 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:gap-3 sm:px-3 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:flex-row">
       <MusicPlayer
         music={state.music}
         controls={music}
@@ -133,6 +133,11 @@ export function ChatRoom({
           onNext={onNext}
           onLeave={onLeave}
           onPanic={ended ? null : onPanic}
+          music={{
+            open: !musicCollapsed,
+            playing: state.music?.playing ?? false,
+            onToggle: () => setMusicCollapsed(!musicCollapsed),
+          }}
         />
         <CallBar
           call={voice.call}
