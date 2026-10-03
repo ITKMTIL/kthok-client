@@ -15,6 +15,7 @@ import type { Overview } from "@/types/admin";
 import { DailyColumns } from "./daily-columns";
 import { DailyTable } from "./daily-table";
 import { FacultyTable } from "./faculty-table";
+import { ReportQueue } from "./report-queue";
 import { StatTile } from "./stat-tile";
 
 const RANGES = [7, 14, 30];
@@ -99,6 +100,7 @@ export function AdminDashboard() {
         </p>
       )}
       {!problem && !result && <p className="text-ink-soft">กำลังโหลดข้อมูล…</p>}
+      {result?.ok && token && <ReportQueue token={token} />}
       {result?.ok && <Report overview={result.overview} />}
     </main>
   );
@@ -154,6 +156,11 @@ function Report({ overview }: { overview: Overview }) {
           label="การบล็อก"
           value={formatNumber(overview.totals.blocks)}
           hint="สะสมทั้งหมด"
+        />
+        <StatTile
+          label="รายงานรอตรวจ"
+          value={formatNumber(overview.totals.openReports ?? 0)}
+          hint="ดูรายละเอียดด้านบน"
         />
         <StatTile
           label="บัญชีที่ถูกระงับ"

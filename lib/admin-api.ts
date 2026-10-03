@@ -1,4 +1,4 @@
-import type { Overview } from "@/types/admin";
+import type { AdminReport, BanDays, Overview } from "@/types/admin";
 import { CORE_URL } from "./config";
 
 export type OverviewResult =
@@ -27,4 +27,48 @@ export async function fetchOverview(
   } catch {
     return { ok: false, reason: "failed" };
   }
+}
+
+export async function fetchReports(
+  token: string,
+  status: "open" | "closed",
+): Promise<AdminReport[] | null> {
+  try {
+    const response = await fetch(`${CORE_URL}/admin/reports?status=${status}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!response.ok) return null;
+    return ((await response.json()) as { reports: AdminReport[] }).reports;
+  } catch {
+    return null;
+  }
+}
+
+async function post(token: string, path: string, body?: unknown) {
+  try {
+    const response = await fetch(`${CORE_URL}${path}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+export function resolveReport(
+  token: string,
+  id: number,
+  decision: { action: "dismiss" } | { action: "ban"; days: BanDays; reason: string },
+): Promise<boolean> {
+  return post(token, `/admin/reports/${id}/resolve`, decision);
+}
+
+export function unbanUser(token: string, userRef: number): Promise<boolean> {
+  return post(token, `/admin/users/${userRef}/unban`);
 }
