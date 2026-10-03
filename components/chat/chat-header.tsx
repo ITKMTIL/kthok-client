@@ -2,7 +2,7 @@ import { LogOut, Music, Phone, SkipForward, User } from "lucide-react";
 import { PanicButton } from "@/components/safety/panic-button";
 import { facultyOf, facultyText } from "@/constants/faculties";
 import { useT } from "@/hooks/use-locale";
-import type { GameType, Partner } from "@/types/chat";
+import type { BlackjackMode, GameType, Partner } from "@/types/chat";
 import { ChatMenu } from "./chat-menu";
 
 export function ChatHeader({
@@ -24,7 +24,7 @@ export function ChatHeader({
   partner: Partner | null;
   canShare: boolean;
   onShare: () => void;
-  onStartGame: ((type: GameType) => void) | null;
+  onStartGame: ((type: GameType, mode?: BlackjackMode) => void) | null;
   onReport: (() => void) | null;
   readReceipts: boolean;
   onToggleReadReceipts: () => void;

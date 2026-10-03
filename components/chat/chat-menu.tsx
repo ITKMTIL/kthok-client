@@ -11,6 +11,7 @@ import {
   Grid3x3,
   Scissors,
   Share2,
+  Spade,
   Sparkles,
   WandSparkles,
 } from "lucide-react";
@@ -19,7 +20,7 @@ import { useCallback, useRef, useState } from "react";
 import { useDismiss } from "@/hooks/use-dismiss";
 import { usePopoverOffset } from "@/hooks/use-popover-offset";
 import { useT } from "@/hooks/use-locale";
-import type { GameType } from "@/types/chat";
+import type { BlackjackMode, GameType } from "@/types/chat";
 
 const MENU_WIDTH = 240;
 
@@ -36,7 +37,7 @@ export function ChatMenu({
 }: {
   canShare: boolean;
   onShare: () => void;
-  onStartGame: ((type: GameType) => void) | null;
+  onStartGame: ((type: GameType, mode?: BlackjackMode) => void) | null;
   onReport: (() => void) | null;
   readReceipts: boolean;
   onToggleReadReceipts: () => void;
@@ -48,9 +49,11 @@ export function ChatMenu({
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState<"block" | "panic" | null>(null);
+  const [pickingMode, setPickingMode] = useState(false);
   const close = useCallback(() => {
     setOpen(false);
     setConfirming(null);
+    setPickingMode(false);
   }, []);
   useDismiss(rootRef, open, close);
   const offset = usePopoverOffset(rootRef, open, MENU_WIDTH);
@@ -76,7 +79,22 @@ export function ChatMenu({
           role="menu"
           className="absolute top-full max-w-[calc(100vw-1.5rem)] z-20 mt-2 flex flex-col gap-1 rounded-2xl border-2 border-ink bg-card p-2 shadow-[3px_3px_0_var(--color-ink)]"
         >
-          {confirming && (confirming === "block" ? onBlock : onPanic) ? (
+          {pickingMode && onStartGame ? (
+            <div className="flex flex-col gap-1 p-1">
+              <p className="px-2 text-sm font-bold">{t.blackjack.pickMode}</p>
+              {(["dealer", "duel"] as const).map((mode) => (
+                <MenuItem
+                  key={mode}
+                  icon={<Spade className="size-4" aria-hidden />}
+                  label={mode === "dealer" ? t.blackjack.dealerMode : t.blackjack.duelMode}
+                  onClick={() => {
+                    close();
+                    onStartGame("blackjack", mode);
+                  }}
+                />
+              ))}
+            </div>
+          ) : confirming && (confirming === "block" ? onBlock : onPanic) ? (
             <div className="flex flex-col gap-2 p-1">
               <p className="text-sm">
                 {confirming === "block" ? t.menu.blockConfirm : t.safety.panicConfirm}
@@ -162,6 +180,11 @@ export function ChatMenu({
                       close();
                       onStartGame("tarot");
                     }}
+                  />
+                  <MenuItem
+                    icon={<Spade className="size-4" aria-hidden />}
+                    label={t.menu.playBlackjack}
+                    onClick={() => setPickingMode(true)}
                   />
                 </>
               )}

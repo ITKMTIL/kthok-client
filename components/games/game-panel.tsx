@@ -5,6 +5,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { useT } from "@/hooks/use-locale";
 import type { GameControls, GameView, RpsChoice, Side } from "@/types/chat";
+import { BlackjackBoard } from "./blackjack-board";
 import { TaksaBoard, TarotBoard } from "./fortune-boards";
 
 const RPS: { id: RpsChoice; icon: typeof Hand }[] = [
@@ -58,7 +59,9 @@ export function GamePanel({
           className="doodle-btn grid size-8 shrink-0 place-items-center sm:h-8 sm:w-auto sm:px-3"
           aria-label={t.games.restart}
           title={t.games.restart}
-          onClick={() => controls.start(game.type)}
+          onClick={() =>
+            controls.start(game.type, game.type === "blackjack" ? game.mode : undefined)
+          }
         >
           <RotateCcw className="size-4 sm:hidden" aria-hidden />
           <span className="text-sm max-sm:hidden">{t.games.restart}</span>
@@ -80,6 +83,8 @@ export function GamePanel({
         <XoBoard game={game} partnerName={partnerName} onPlay={controls.playXo} />
       ) : game.type === "rps" ? (
         <RpsBoard game={game} partnerName={partnerName} onPick={controls.playRps} />
+      ) : game.type === "blackjack" ? (
+        <BlackjackBoard game={game} partnerName={partnerName} onAction={controls.blackjack} />
       ) : game.type === "taksa" ? (
         <TaksaBoard game={game} partnerName={partnerName} onPick={controls.pickDay} />
       ) : (
@@ -104,6 +109,11 @@ function summaryOf(
         : t.games.waitMove(partnerName);
   }
   if (game.type === "rps") return `${game.score.me} - ${game.score.them}`;
+  if (game.type === "blackjack") {
+    return game.outcome
+      ? t.blackjack.outcome[game.outcome]
+      : `${t.blackjack.you} ${game.mine.total ?? ""}`;
+  }
   if (game.type === "taksa") {
     return game.result ? `${t.fortune.score} ${game.result.score}%` : t.fortune.pickDay;
   }
@@ -114,6 +124,7 @@ function titleOf(t: ReturnType<typeof useT>, type: GameView["type"]): string {
   if (type === "xo") return t.games.xoLabel;
   if (type === "rps") return t.games.rps;
   if (type === "taksa") return t.fortune.taksaTitle;
+  if (type === "blackjack") return t.blackjack.title;
   return t.fortune.tarotTitle;
 }
 

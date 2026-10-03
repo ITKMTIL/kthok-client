@@ -455,7 +455,9 @@ export function useChat({
 
   const games = useMemo<GameControls>(
     () => ({
-      start: (type) => socketRef.current?.emit("game:start", { type }),
+      start: (type, mode) =>
+        socketRef.current?.emit("game:start", { type, mode }),
+      blackjack: (action) => socketRef.current?.emit("game:move", { action }),
       playXo: (cell) => socketRef.current?.emit("game:move", { cell }),
       playRps: (choice) => socketRef.current?.emit("game:move", { choice }),
       pickDay: (day, reveal) =>

@@ -93,7 +93,15 @@ export interface WaitingSummary {
   topics: TopicId[];
 }
 
-export type GameType = "xo" | "rps" | "taksa" | "tarot";
+export type GameType = "xo" | "rps" | "taksa" | "tarot" | "blackjack";
+export type BlackjackMode = "dealer" | "duel";
+export type BlackjackOutcome = "blackjack" | "win" | "lose" | "push";
+
+export interface BlackjackHand {
+  cards: (number | null)[];
+  total: number | null;
+  done: boolean;
+}
 export type RpsChoice = "rock" | "paper" | "scissors";
 export type Side = "me" | "them";
 export type GameResult = "win" | "lose" | "draw";
@@ -129,6 +137,20 @@ export type GameView =
       } | null;
     }
   | {
+      type: "blackjack";
+      mode: BlackjackMode;
+      startedBy: Side;
+      round: number;
+      finished: boolean;
+      deadline: number;
+      mine: BlackjackHand;
+      theirs: BlackjackHand;
+      dealer: { cards: (number | null)[]; total: number } | null;
+      outcome: BlackjackOutcome | null;
+      theirOutcome: BlackjackOutcome | null;
+      wins: { me: number; them: number };
+    }
+  | {
       type: "tarot";
       startedBy: Side;
       mine: TarotDraw | null;
@@ -141,7 +163,8 @@ export interface TarotDraw {
 }
 
 export interface GameControls {
-  start: (type: GameType) => void;
+  start: (type: GameType, mode?: BlackjackMode) => void;
+  blackjack: (action: "hit" | "stand") => void;
   playXo: (cell: number) => void;
   playRps: (choice: RpsChoice) => void;
   pickDay: (day: BirthDay, reveal: boolean) => void;
