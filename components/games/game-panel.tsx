@@ -4,6 +4,7 @@ import { Circle, Grab, Hand, Scissors, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useT } from "@/hooks/use-locale";
 import type { GameControls, GameView, RpsChoice, Side } from "@/types/chat";
+import { TaksaBoard, TarotBoard } from "./fortune-boards";
 
 const RPS: { id: RpsChoice; icon: typeof Hand }[] = [
   { id: "rock", icon: Grab },
@@ -27,11 +28,11 @@ export function GamePanel({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 420, damping: 30 }}
       className="doodle-card flex flex-col gap-2 p-3"
-      aria-label={game.type === "xo" ? t.games.xoLabel : t.games.rpsLabel}
+      aria-label={titleOf(t, game.type)}
     >
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-bold">
-          {game.type === "xo" ? "XO" : t.games.rps}
+          {game.type === "xo" ? "XO" : titleOf(t, game.type)}
           <span className="ml-2 text-sm font-normal text-ink-soft">
             {game.startedBy === "me" ? t.games.youStarted : t.games.partnerStarted(partnerName)}
           </span>
@@ -55,11 +56,22 @@ export function GamePanel({
       </div>
       {game.type === "xo" ? (
         <XoBoard game={game} partnerName={partnerName} onPlay={controls.playXo} />
-      ) : (
+      ) : game.type === "rps" ? (
         <RpsBoard game={game} partnerName={partnerName} onPick={controls.playRps} />
+      ) : game.type === "taksa" ? (
+        <TaksaBoard game={game} partnerName={partnerName} onPick={controls.pickDay} />
+      ) : (
+        <TarotBoard game={game} partnerName={partnerName} onDraw={controls.drawCard} />
       )}
     </motion.section>
   );
+}
+
+function titleOf(t: ReturnType<typeof useT>, type: GameView["type"]): string {
+  if (type === "xo") return t.games.xoLabel;
+  if (type === "rps") return t.games.rps;
+  if (type === "taksa") return t.fortune.taksaTitle;
+  return t.fortune.tarotTitle;
 }
 
 function Mark({ side }: { side: Side | null }) {

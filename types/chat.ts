@@ -1,4 +1,5 @@
 import type { FacultyId } from "@/constants/faculties";
+import type { BirthDay, TaksaPosition } from "@/constants/fortune";
 import type { StickerId } from "@/constants/stickers";
 import type { TopicId } from "@/constants/topics";
 
@@ -92,7 +93,7 @@ export interface WaitingSummary {
   topics: TopicId[];
 }
 
-export type GameType = "xo" | "rps";
+export type GameType = "xo" | "rps" | "taksa" | "tarot";
 export type RpsChoice = "rock" | "paper" | "scissors";
 export type Side = "me" | "them";
 export type GameResult = "win" | "lose" | "draw";
@@ -114,12 +115,37 @@ export type GameView =
       theyPicked: boolean;
       score: { me: number; them: number };
       last: { mine: RpsChoice; theirs: RpsChoice; result: GameResult } | null;
+    }
+  | {
+      type: "taksa";
+      startedBy: Side;
+      myPick: { day: BirthDay; reveal: boolean } | null;
+      theyPicked: boolean;
+      result: {
+        theyAreMy: TaksaPosition;
+        iAmTheir: TaksaPosition;
+        score: number;
+        partnerDay: BirthDay | null;
+      } | null;
+    }
+  | {
+      type: "tarot";
+      startedBy: Side;
+      mine: TarotDraw | null;
+      theirs: TarotDraw | null;
     };
+
+export interface TarotDraw {
+  card: number;
+  reversed: boolean;
+}
 
 export interface GameControls {
   start: (type: GameType) => void;
   playXo: (cell: number) => void;
   playRps: (choice: RpsChoice) => void;
+  pickDay: (day: BirthDay, reveal: boolean) => void;
+  drawCard: () => void;
   end: () => void;
 }
 

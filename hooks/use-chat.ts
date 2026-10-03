@@ -458,6 +458,9 @@ export function useChat({
       start: (type) => socketRef.current?.emit("game:start", { type }),
       playXo: (cell) => socketRef.current?.emit("game:move", { cell }),
       playRps: (choice) => socketRef.current?.emit("game:move", { choice }),
+      pickDay: (day, reveal) =>
+        socketRef.current?.emit("game:move", { day, reveal }),
+      drawCard: () => socketRef.current?.emit("game:move", {}),
       end: () => socketRef.current?.emit("game:end"),
     }),
     [],

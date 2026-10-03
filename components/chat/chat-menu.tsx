@@ -9,6 +9,8 @@ import {
   Grid3x3,
   Scissors,
   Share2,
+  Sparkles,
+  WandSparkles,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
@@ -116,6 +118,22 @@ export function ChatMenu({
                     onClick={() => {
                       close();
                       onStartGame("rps");
+                    }}
+                  />
+                  <MenuItem
+                    icon={<Sparkles className="size-4" aria-hidden />}
+                    label={t.menu.playTaksa}
+                    onClick={() => {
+                      close();
+                      onStartGame("taksa");
+                    }}
+                  />
+                  <MenuItem
+                    icon={<WandSparkles className="size-4" aria-hidden />}
+                    label={t.menu.playTarot}
+                    onClick={() => {
+                      close();
+                      onStartGame("tarot");
                     }}
                   />
                 </>
