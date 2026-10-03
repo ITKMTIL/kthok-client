@@ -9,6 +9,11 @@
 - context ที่อัปเดต: ไฟล์ไหน
 ```
 
+## 2026-10-03 — ฟีเจอร์ชุด 1–10
+- `0177e96` หัวข้อ + ป้ายมีคนรอ, `174e442` คำถามชวนคุย, `2688199` มินิเกม, `9a6cc57` อยากคุยต่อ + ฟอร์มรายงาน (+ privacy note), `867af8a` คิวรายงาน admin, `d4c1ba9` dark mode, `1267de1` คนกดออกเห็นหน้าจบห้อง, `b4c5aea` PWA + push, `28124ff` README
+- ความเป็นนิรนาม: กระทบ ผ่าน checklist โดยเจ้าของอนุมัติ — รายงานเก็บเฉพาะข้อความที่ผู้รายงานเลือก (เข้ารหัส, 30 วัน) แจ้งใน privacy note และฟอร์ม; contact ส่งเมื่อกดทั้งคู่ไม่เก็บ; push ส่งแค่ kind, subscription เก็บ DB; ป้ายคนรอไม่มีตัวเลข; sw ไม่โชว์เนื้อหา
+- context ที่อัปเดต: privacy, product, client, decisions, open-items, changelog
+
 ## 2026-10-03 — ตั้งระบบ context + agents
 - เพิ่ม `context/`, `CLAUDE.md`, `.claude/agents` (kthok-check, kthok-tester, kthok-scout, kthok-context), `.claude/scripts` (test-stack, context-guard), Stop hook
 - ความเป็นนิรนาม: ไม่กระทบ (เอกสารและเครื่องมือ)
