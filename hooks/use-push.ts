@@ -35,16 +35,20 @@ export function usePush(socket: Socket | null, publicKey: string | null) {
   useEffect(() => {
     if (support !== "supported" || !socket || !publicKey) return;
     let cancelled = false;
-    void currentSubscription().then(async ({ subscription }) => {
+    const resend = async () => {
+      const { subscription } = await currentSubscription();
       if (cancelled) return;
       if (Notification.permission === "denied") return setStatus("denied");
       if (!subscription || Notification.permission !== "granted") return;
       setStatus("on");
       if (socket.connected) await send(socket, subscription);
-      else socket.once("connect", () => void send(socket, subscription));
-    });
+    };
+    const onConnect = () => void resend();
+    void resend();
+    socket.on("connect", onConnect);
     return () => {
       cancelled = true;
+      socket.off("connect", onConnect);
     };
   }, [support, socket, publicKey]);
 
