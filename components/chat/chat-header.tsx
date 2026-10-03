@@ -1,4 +1,5 @@
-import { LogOut, Phone, ShieldAlert, SkipForward, User } from "lucide-react";
+import { LogOut, Phone, SkipForward, User } from "lucide-react";
+import { PanicButton } from "@/components/safety/panic-button";
 import { facultyOf } from "@/constants/faculties";
 import type { GameType, Partner } from "@/types/chat";
 import { ChatMenu } from "./chat-menu";
@@ -67,17 +68,7 @@ export function ChatHeader({
           <Phone className="size-4" aria-hidden />
         </button>
       )}
-      {onPanic && (
-        <button
-          type="button"
-          className="doodle-btn grid size-9 shrink-0 place-items-center bg-danger text-card"
-          aria-label="ออกฉุกเฉิน: ออกจากห้องและบล็อกทันที"
-          title="ออกฉุกเฉิน: ออกและบล็อกทันที"
-          onClick={onPanic}
-        >
-          <ShieldAlert className="size-4" aria-hidden />
-        </button>
-      )}
+      {onPanic && <PanicButton onConfirm={onPanic} />}
       <button
         type="button"
         className="doodle-btn flex h-9 shrink-0 items-center gap-1.5 px-2.5 sm:px-3"
