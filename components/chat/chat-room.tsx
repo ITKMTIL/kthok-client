@@ -9,7 +9,7 @@ import type { Reaction } from "@/constants/reactions";
 import { useMessageSelection } from "@/hooks/use-message-selection";
 import { useMusicCollapsed } from "@/hooks/use-music-collapsed";
 import { useVoiceCall } from "@/hooks/use-voice-call";
-import type { ChatState, MusicControls } from "@/types/chat";
+import type { ChatState, MusicControls, RecordedVoice } from "@/types/chat";
 import { useState } from "react";
 import type { Socket } from "socket.io-client";
 import { ChatHeader } from "./chat-header";
@@ -25,6 +25,7 @@ export function ChatRoom({
   self,
   music,
   onSend,
+  onSendVoice,
   onReact,
   onBlock,
   onFeedback,
@@ -38,6 +39,7 @@ export function ChatRoom({
   self: ShareParty;
   music: MusicControls;
   onSend: (text: string) => Promise<string | null>;
+  onSendVoice: (voice: RecordedVoice) => Promise<string | null>;
   onReact: (messageId: string, reaction: Reaction | null) => void;
   onBlock: (() => void) | null;
   onFeedback: (rating: "up" | "down") => void;
@@ -121,6 +123,11 @@ export function ChatRoom({
           <MessageForm
             disabled={ended}
             onSend={onSend}
+            onSendVoice={
+              state.voiceEnabled && voice.call.status === "idle"
+                ? onSendVoice
+                : null
+            }
             onTyping={onTyping}
             onFocus={() => setMusicCollapsed(true)}
           />

@@ -4,6 +4,7 @@ import { Check, SmilePlus } from "lucide-react";
 import { motion } from "motion/react";
 import { useCallback, useRef } from "react";
 import type { Reaction } from "@/constants/reactions";
+import { VoiceBubble } from "@/components/voice/voice-bubble";
 import { useDismiss } from "@/hooks/use-dismiss";
 import type { ChatMessage } from "@/types/chat";
 import { ReactionPicker } from "./reaction-picker";
@@ -46,18 +47,22 @@ export function MessageBubble({
       className={`group relative flex max-w-[80%] flex-col ${message.mine ? "items-end self-end" : "items-start self-start"} ${pickerOpen ? "mb-12" : ""}`}
     >
       <div className={`flex items-center gap-1 ${message.mine ? "flex-row-reverse" : ""}`}>
-        <p
-          className={`bubble max-w-full ${message.mine ? "bubble-mine" : "bubble-theirs"} ${selection ? "cursor-pointer" : ""} ${selection?.selected ? "outline-3 outline-offset-2 outline-accent" : ""}`}
+        <div
+          className={`bubble max-w-full ${message.voice ? "py-1.5" : ""} ${message.mine ? "bubble-mine" : "bubble-theirs"} ${selection ? "cursor-pointer" : ""} ${selection?.selected ? "outline-3 outline-offset-2 outline-accent" : ""}`}
           onClick={handleBubbleClick}
         >
-          {message.text}
-        </p>
+          {message.voice ? (
+            <VoiceBubble id={message.id} voice={message.voice} mine={message.mine} />
+          ) : (
+            message.text
+          )}
+        </div>
         {selection && (
           <button
             type="button"
             role="checkbox"
             aria-checked={selection.selected}
-            aria-label={`เลือกข้อความ: ${message.text.slice(0, 40)}`}
+            aria-label={`เลือกข้อความ: ${message.voice ? "ข้อความเสียง" : message.text.slice(0, 40)}`}
             className={`grid size-6 shrink-0 cursor-pointer place-items-center rounded-full border-2 border-ink focus-visible:outline-2 focus-visible:outline-accent ${selection.selected ? "bg-accent text-card" : "bg-card"}`}
             onClick={selection.onToggle}
           >

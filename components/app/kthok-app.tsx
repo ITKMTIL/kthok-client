@@ -52,6 +52,7 @@ export function KThokApp() {
     find,
     leave,
     send,
+    sendVoice,
     react,
     block,
     sendFeedback,
@@ -149,6 +150,7 @@ export function KThokApp() {
               self={{ name: nickname, faculty: profile?.faculty ?? null }}
               music={music}
               onSend={send}
+              onSendVoice={sendVoice}
               onReact={react}
               onBlock={state.blockEnabled ? block : null}
               onFeedback={sendFeedback}
