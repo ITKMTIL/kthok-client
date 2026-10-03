@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import type { Track } from "@/types/chat";
+import { useT } from "@/hooks/use-locale";
 
 export function TrackQueue({
   queue,
@@ -10,13 +11,14 @@ export function TrackQueue({
   disabled: boolean;
   onRemove: (trackId: string) => void;
 }) {
+  const t = useT();
   return (
     <details className="min-h-0" open>
       <summary className="cursor-pointer text-sm font-bold">
-        คิวถัดไป ({queue.length})
+        {t.music.upNext(queue.length)}
       </summary>
       {queue.length === 0 ? (
-        <p className="mt-1 text-sm text-ink-soft">ยังไม่มีเพลงในคิว</p>
+        <p className="mt-1 text-sm text-ink-soft">{t.music.queueEmpty}</p>
       ) : (
         <ol className="mt-1 flex max-h-32 flex-col gap-1 overflow-y-auto lg:max-h-none">
           {queue.map((track, index) => (
@@ -37,7 +39,7 @@ export function TrackQueue({
                 className="doodle-btn shrink-0 p-1"
                 disabled={disabled}
                 onClick={() => onRemove(track.id)}
-                aria-label={`ลบ ${track.title} ออกจากคิว`}
+                aria-label={t.music.remove(track.title)}
               >
                 <X className="size-3.5" aria-hidden />
               </button>

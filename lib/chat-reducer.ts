@@ -1,6 +1,6 @@
-import { DISCONNECTED_MESSAGE } from "@/constants/messages";
 import type { FacultyId } from "@/constants/faculties";
 import { DEFAULT_TOPIC, type TopicId } from "@/constants/topics";
+import { currentDict } from "@/hooks/use-locale";
 import type {
   ChatMessage,
   ChatState,
@@ -108,7 +108,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
             selfFaculty: state.selfFaculty,
             online: state.online,
             waiting: state.waiting,
-            error: DISCONNECTED_MESSAGE,
+            error: currentDict().errors.disconnected,
           };
     case "disconnected":
       return { ...state, connected: false, partnerTyping: false };

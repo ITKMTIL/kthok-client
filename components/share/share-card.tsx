@@ -5,6 +5,7 @@ import { Waveform } from "@/components/voice/waveform";
 import { facultyOf, type FacultyId } from "@/constants/faculties";
 import { formatClock } from "@/lib/voice";
 import type { ChatMessage } from "@/types/chat";
+import { useT } from "@/hooks/use-locale";
 
 export interface ShareParty {
   name: string;
@@ -22,6 +23,7 @@ export function ShareCard({
   self: ShareParty;
   partner: ShareParty;
 }) {
+  const t = useT();
   return (
     <div
       ref={ref}
@@ -31,7 +33,7 @@ export function ShareCard({
         <span className="text-2xl font-bold tracking-wide">
           K<span className="text-accent">-</span>THOK
         </span>
-        <span className="text-xs text-ink-soft">แชตนิรนามชาว สจล.</span>
+        <span className="text-xs text-ink-soft">{t.share.tagline}</span>
       </div>
 
       <div className="flex items-center justify-between gap-2 text-sm">
@@ -46,7 +48,7 @@ export function ShareCard({
       </div>
 
       <p className="text-center text-xs text-ink-soft">
-        คุยกับเพื่อนใหม่ในรั้ว สจล. ที่ <span className="font-bold text-ink">k-thok</span>
+        {t.share.footer} <span className="font-bold text-ink">k-thok</span>
       </p>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { currentDict } from "@/hooks/use-locale";
 import { useVoiceActive } from "@/lib/voice-activity";
 import { loadYouTubeApi, PlayerState, type YTPlayer } from "@/lib/youtube-api";
 import type { MusicState } from "@/types/chat";
@@ -132,14 +133,14 @@ export function useYouTubePlayer(
             onError: () => {
               const track = musicRef.current?.current;
               if (!track) return;
-              setNotice(`เล่น "${track.title}" ไม่ได้ เลยข้ามให้แล้ว`);
+              setNotice(currentDict().music.skipped(track.title));
               skipCurrent();
             },
           },
         });
       })
       .catch(() => {
-        if (!cancelled) setNotice("โหลดตัวเล่น YouTube ไม่สำเร็จ ลองรีเฟรชหน้านี้นะ");
+        if (!cancelled) setNotice(currentDict().music.playerFailed);
       });
 
     const timer = setInterval(sync, SYNC_INTERVAL_MS);

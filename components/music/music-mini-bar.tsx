@@ -1,4 +1,5 @@
 import { ChevronDown, ChevronUp, Music, Pause, Play, Volume2 } from "lucide-react";
+import { useT } from "@/hooks/use-locale";
 
 export function MusicMiniBar({
   title,
@@ -21,6 +22,7 @@ export function MusicMiniBar({
   onResume: () => void;
   onCollapsedChange: (collapsed: boolean) => void;
 }) {
+  const t = useT();
   const Chevron = collapsed ? ChevronDown : ChevronUp;
 
   return (
@@ -35,16 +37,16 @@ export function MusicMiniBar({
         <Music className="size-5 shrink-0" aria-hidden />
         <span className="min-w-0 flex-1">
           <span className="block truncate font-bold leading-tight">
-            {title ?? "เพลงในห้อง"}
+            {title ?? t.music.title}
           </span>
           <span className="block truncate text-xs text-ink-soft">
             {title
-              ? `${playing ? "กำลังเล่น" : "หยุดอยู่"} · คิว ${queueLength}`
-              : "แตะเพื่อเปิดเพลงฟังด้วยกัน"}
+              ? `${playing ? t.music.playing : t.music.paused} · ${t.music.queueCount(queueLength)}`
+              : t.music.tapToOpen}
           </span>
         </span>
         <Chevron className="size-5 shrink-0" aria-hidden />
-        <span className="sr-only">{collapsed ? "กางแผงเพลง" : "หุบแผงเพลง"}</span>
+        <span className="sr-only">{collapsed ? t.music.expand : t.music.collapse}</span>
       </button>
       {collapsed && title && blocked && (
         <button
@@ -53,7 +55,7 @@ export function MusicMiniBar({
           onClick={onResume}
         >
           <Volume2 className="size-4" aria-hidden />
-          ฟังด้วย
+          {t.music.listen}
         </button>
       )}
       {collapsed && title && !blocked && (
@@ -61,7 +63,7 @@ export function MusicMiniBar({
           type="button"
           className="doodle-btn doodle-btn-primary shrink-0 p-1.5"
           disabled={controlsDisabled}
-          aria-label={playing ? "หยุดเพลง" : "เล่นเพลง"}
+          aria-label={playing ? t.music.pauseSong : t.music.playSong}
           onClick={onToggle}
         >
           {playing ? (

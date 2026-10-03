@@ -2,6 +2,7 @@
 
 import { SendHorizontal, Trash2 } from "lucide-react";
 import { formatClock, MAX_VOICE_SECONDS, VOICE_LIVE_BARS } from "@/lib/voice";
+import { useT } from "@/hooks/use-locale";
 
 export function VoiceRecorderBar({
   elapsed,
@@ -14,6 +15,7 @@ export function VoiceRecorderBar({
   onCancel: () => void;
   onSend: () => void;
 }) {
+  const t = useT();
   const bars = [
     ...Array.from({ length: Math.max(0, VOICE_LIVE_BARS - live.length) }, () => 0),
     ...live,
@@ -21,11 +23,11 @@ export function VoiceRecorderBar({
   const nearLimit = MAX_VOICE_SECONDS - elapsed <= 10;
 
   return (
-    <div className="flex items-center gap-2" role="group" aria-label="กำลังอัดเสียง">
+    <div className="flex items-center gap-2" role="group" aria-label={t.voice.recording}>
       <button
         type="button"
         className="doodle-btn grid size-11 shrink-0 place-items-center p-0"
-        aria-label="ยกเลิกข้อความเสียง"
+        aria-label={t.voice.cancel}
         onClick={onCancel}
       >
         <Trash2 className="size-5" aria-hidden />
@@ -54,7 +56,7 @@ export function VoiceRecorderBar({
       <button
         type="button"
         className="doodle-btn doodle-btn-primary grid size-11 shrink-0 place-items-center p-0"
-        aria-label="ส่งข้อความเสียง"
+        aria-label={t.voice.send}
         onClick={onSend}
       >
         <SendHorizontal className="size-5" aria-hidden />

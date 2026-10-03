@@ -1,16 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Socket } from "socket.io-client";
-import {
-  CALL_ENDED,
-  CALL_ERROR_FALLBACK,
-  CALL_ERRORS,
-  CALL_FAILED,
-  CALL_MIC_BLOCKED,
-  CALL_RELAY_UNAVAILABLE,
-} from "@/constants/messages";
+import { errorText } from "@/lib/i18n";
 import { playSound } from "@/lib/sounds";
+import { currentDict } from "./use-locale";
 
 const RING_INTERVAL_MS = 2500;
+
+const errors = () => currentDict().errors;
 
 export type CallStatus =
   | "idle"
@@ -125,7 +121,7 @@ export function useVoiceCall(
           );
         } else if (peer.connectionState === "failed") {
           socket?.emit("call:end");
-          finish(CALL_FAILED);
+          finish(errors().callFailed);
         }
       };
       peerRef.current = peer;
@@ -149,7 +145,7 @@ export function useVoiceCall(
       const config = await requestIceConfig(socket);
       if (!config) {
         socket.emit("call:end");
-        return finish(CALL_RELAY_UNAVAILABLE);
+        return finish(errors().callRelayUnavailable);
       }
       if (streamRef.current !== stream) return;
       const peer = createPeer(stream, config);
@@ -176,12 +172,12 @@ export function useVoiceCall(
         }
       } catch {
         socket.emit("call:end");
-        finish(CALL_FAILED);
+        finish(errors().callFailed);
       }
     };
 
     const onEnded = ({ reason }: { reason: string }) => {
-      if (statusRef.current !== "idle") finish(CALL_ENDED[reason] ?? null);
+      if (statusRef.current !== "idle") finish(errorText(errors().callEnded, reason, "") || null);
     };
 
     socket.on("call:incoming", onIncoming);
@@ -213,10 +209,10 @@ export function useVoiceCall(
     if (!socket || statusRef.current !== "idle") return;
     setCall({ ...IDLE, status: "outgoing" });
     const stream = await openMicrophone();
-    if (!stream) return finish(CALL_MIC_BLOCKED);
+    if (!stream) return finish(errors().callMicBlocked);
     streamRef.current = stream;
     socket.emit("call:invite", (ack: Ack) => {
-      if (!ack.ok) finish(CALL_ERRORS[ack.error] ?? CALL_ERROR_FALLBACK);
+      if (!ack.ok) finish(errorText(errors().call, ack.error, errors().callFallback));
     });
   }, [socket, finish]);
 
@@ -226,18 +222,18 @@ export function useVoiceCall(
     const stream = await openMicrophone();
     if (!stream) {
       socket.emit("call:decline");
-      return finish(CALL_MIC_BLOCKED);
+      return finish(errors().callMicBlocked);
     }
     streamRef.current = stream;
     const config = await requestIceConfig(socket);
     if (!config) {
       socket.emit("call:decline");
-      return finish(CALL_RELAY_UNAVAILABLE);
+      return finish(errors().callRelayUnavailable);
     }
     if (streamRef.current !== stream) return;
     createPeer(stream, config);
     socket.emit("call:accept", (ack: Ack) => {
-      if (!ack.ok) finish(CALL_ERROR_FALLBACK);
+      if (!ack.ok) finish(errors().callFallback);
     });
   }, [socket, createPeer, finish]);
 

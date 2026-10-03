@@ -2,16 +2,18 @@
 
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { useState } from "react";
+import { useT } from "@/hooks/use-locale";
 
 export function RoomFeedback({
   onFeedback,
 }: {
   onFeedback: (rating: "up" | "down") => void;
 }) {
+  const t = useT();
   const [sent, setSent] = useState(false);
 
   if (sent) {
-    return <p className="text-sm text-ink-soft">ขอบคุณที่บอกเรานะ</p>;
+    return <p className="text-sm text-ink-soft">{t.feedback.thanks}</p>;
   }
 
   const rate = (rating: "up" | "down") => {
@@ -21,12 +23,12 @@ export function RoomFeedback({
 
   return (
     <div className="flex items-center gap-2 text-sm text-ink-soft">
-      <span>ห้องนี้เป็นยังไงบ้าง</span>
+      <span>{t.feedback.question}</span>
       <button
         type="button"
         className="doodle-btn grid size-8 place-items-center"
-        aria-label="คุยสนุก"
-        title="คุยสนุก"
+        aria-label={t.feedback.up}
+        title={t.feedback.up}
         onClick={() => rate("up")}
       >
         <ThumbsUp className="size-4" aria-hidden />
@@ -34,8 +36,8 @@ export function RoomFeedback({
       <button
         type="button"
         className="doodle-btn grid size-8 place-items-center"
-        aria-label="ไม่ค่อยโอเค"
-        title="ไม่ค่อยโอเค"
+        aria-label={t.feedback.down}
+        title={t.feedback.down}
         onClick={() => rate("down")}
       >
         <ThumbsDown className="size-4" aria-hidden />

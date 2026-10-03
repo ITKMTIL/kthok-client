@@ -1,4 +1,5 @@
 import { Pause, Play, SkipForward, Volume2, VolumeX } from "lucide-react";
+import { useT } from "@/hooks/use-locale";
 
 export function PlayerControls({
   playing,
@@ -15,7 +16,8 @@ export function PlayerControls({
   onSkip: () => void;
   onToggleMute: () => void;
 }) {
-  const muteLabel = muted ? "เปิดเสียงฝั่งเรา" : "ปิดเสียงฝั่งเรา";
+  const t = useT();
+  const muteLabel = muted ? t.music.unmute : t.music.mute;
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -26,7 +28,7 @@ export function PlayerControls({
         onClick={onToggle}
       >
         {playing ? <Pause className="size-4" aria-hidden /> : <Play className="size-4" aria-hidden />}
-        {playing ? "หยุด" : "เล่น"}
+        {playing ? t.music.pause : t.music.play}
       </button>
       <button
         type="button"
@@ -35,7 +37,7 @@ export function PlayerControls({
         onClick={onSkip}
       >
         <SkipForward className="size-4" aria-hidden />
-        ข้าม
+        {t.music.skip}
       </button>
       <button
         type="button"

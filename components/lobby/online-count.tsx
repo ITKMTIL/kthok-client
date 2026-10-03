@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { useT } from "@/hooks/use-locale";
 
 export function OnlineCount({
   online,
@@ -9,11 +10,12 @@ export function OnlineCount({
   online: number | null;
   connected: boolean;
 }) {
+  const t = useT();
   return (
     <p className="text-xl" aria-live="polite">
       {online === null ? (
         <span className="text-ink-soft">
-          {connected ? "กำลังนับคน…" : "กำลังเชื่อมต่อเซิร์ฟเวอร์…"}
+          {connected ? t.lobby.counting : t.lobby.connecting}
         </span>
       ) : (
         <>
@@ -25,7 +27,7 @@ export function OnlineCount({
             className="inline-block font-bold text-accent"
           >
             {online}
-          </motion.span> คนกำลังออนไลน์
+          </motion.span> {t.lobby.online}
         </>
       )}
     </p>

@@ -6,13 +6,9 @@ import { LoginScreen } from "@/components/auth/login-screen";
 import { ChatRoom } from "@/components/chat/chat-room";
 import { Searching } from "@/components/chat/searching";
 import { Lobby } from "@/components/lobby/lobby";
-import {
-  BANNED_MESSAGE,
-  LOGIN_NOT_CONFIGURED_MESSAGE,
-  SESSION_EXPIRED_MESSAGE,
-} from "@/constants/messages";
 import type { SearchOptions } from "@/types/chat";
 import { useChat } from "@/hooks/use-chat";
+import { currentDict } from "@/hooks/use-locale";
 import { useNotifications } from "@/hooks/use-notifications";
 import { usePush } from "@/hooks/use-push";
 import { useRulesAccepted } from "@/hooks/use-rules-accepted";
@@ -38,14 +34,15 @@ export function KThokApp() {
   const [loginNotice, setLoginNotice] = useState<string | null>(null);
 
   const handleAuthError = useCallback(() => {
+    const errors = currentDict().errors;
     setLoginNotice(
-      AUTH_REQUIRED ? SESSION_EXPIRED_MESSAGE : LOGIN_NOT_CONFIGURED_MESSAGE,
+      AUTH_REQUIRED ? errors.sessionExpired : errors.loginNotConfigured,
     );
     clearSession();
   }, []);
 
   const handleBanned = useCallback(() => {
-    setLoginNotice(BANNED_MESSAGE);
+    setLoginNotice(currentDict().errors.banned);
     clearSession();
   }, []);
 

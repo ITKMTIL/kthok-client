@@ -4,6 +4,7 @@ import { Reply, Undo2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { REACTIONS, type Reaction } from "@/constants/reactions";
+import { useT } from "@/hooks/use-locale";
 
 export function ReactionPicker({
   selected,
@@ -18,6 +19,7 @@ export function ReactionPicker({
   onReply?: (() => void) | null;
   onUnsend?: (() => void) | null;
 }) {
+  const t = useT();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export function ReactionPicker({
       transition={{ type: "spring", stiffness: 520, damping: 26 }}
       style={{ transformOrigin: align === "right" ? "100% 0%" : "0% 0%" }}
       role="group"
-      aria-label="ใส่รีแอคชัน"
+      aria-label={t.messages.addReaction}
       className={`absolute top-full z-10 mt-1 flex gap-0.5 rounded-full border-2 border-ink bg-card p-1 shadow-[2px_2px_0_var(--color-ink)] ${align === "right" ? "right-0" : "left-0"}`}
     >
       {REACTIONS.map((reaction) => {
@@ -43,7 +45,7 @@ export function ReactionPicker({
             type="button"
             className={`grid size-9 cursor-pointer place-items-center rounded-full text-xl transition-transform hover:scale-125 focus-visible:outline-2 focus-visible:outline-accent ${active ? "bg-accent-soft" : ""}`}
             aria-pressed={active}
-            aria-label={active ? `เอา ${reaction} ออก` : `ใส่ ${reaction}`}
+            aria-label={active ? t.messages.unpick(reaction) : t.messages.pick(reaction)}
             onClick={() => onPick(active ? null : reaction)}
           >
             {reaction}
@@ -54,7 +56,7 @@ export function ReactionPicker({
         <button
           type="button"
           className="grid size-9 cursor-pointer place-items-center rounded-full hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
-          aria-label="ตอบกลับ"
+          aria-label={t.messages.reply}
           onClick={onReply}
         >
           <Reply className="size-4" aria-hidden />
@@ -64,7 +66,7 @@ export function ReactionPicker({
         <button
           type="button"
           className="grid size-9 cursor-pointer place-items-center rounded-full hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
-          aria-label="ยกเลิกส่ง"
+          aria-label={t.messages.unsend}
           onClick={onUnsend}
         >
           <Undo2 className="size-4" aria-hidden />

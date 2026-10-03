@@ -1,7 +1,10 @@
+import { useT } from "@/hooks/use-locale";
+
 export function SiteFooter() {
+  const t = useT();
   return (
     <footer className="mt-auto pt-4 text-center text-xs text-ink-soft">
-      ได้แรงบันดาลใจจาก{" "}
+      {t.footer.inspired}{" "}
       <a
         href="https://drinksonme.live/"
         target="_blank"

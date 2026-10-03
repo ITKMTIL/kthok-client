@@ -1,4 +1,5 @@
-import { facultyOf } from "@/constants/faculties";
+import { facultyText } from "@/constants/faculties";
+import { th } from "@/lib/i18n/th";
 import { formatNumber, sumBy } from "@/lib/admin-stats";
 import type { Overview } from "@/types/admin";
 
@@ -18,7 +19,7 @@ export function FacultyTable({ overview }: { overview: Overview }) {
   const rows = ids
     .map((id) => ({
       id,
-      name: facultyOf(id)?.name ?? id,
+      name: facultyText(th, id)?.name ?? id,
       users: users.get(id) ?? 0,
       matches: matches.get(id) ?? 0,
       requested: requested.get(id) ?? 0,

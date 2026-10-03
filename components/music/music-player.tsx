@@ -7,6 +7,7 @@ import { AddTrackForm } from "./add-track-form";
 import { MusicMiniBar } from "./music-mini-bar";
 import { PlayerControls } from "./player-controls";
 import { TrackQueue } from "./track-queue";
+import { useT } from "@/hooks/use-locale";
 
 export function MusicPlayer({
   music,
@@ -21,6 +22,7 @@ export function MusicPlayer({
   collapsed: boolean;
   onCollapsedChange: (collapsed: boolean) => void;
 }) {
+  const t = useT();
   const { hostRef, blocked, muted, notice, toggleMute, resume, clearNotice } =
     useYouTubePlayer(music, controls.skip);
   const current = music?.current ?? null;
@@ -30,7 +32,7 @@ export function MusicPlayer({
   return (
     <aside
       className="doodle-card order-first flex shrink-0 flex-col px-3 py-2 lg:order-last lg:w-80 lg:overflow-y-auto lg:p-3"
-      aria-label="เพลงในห้อง"
+      aria-label={t.music.title}
     >
       <MusicMiniBar
         title={current?.title ?? null}
@@ -55,7 +57,7 @@ export function MusicPlayer({
             />
             {!current && (
               <p className="absolute inset-0 grid place-items-center p-4 text-center text-sm text-white">
-                ยังไม่มีเพลง วางลิงก์ YouTube เพื่อเปิดฟังด้วยกัน
+                {t.music.empty}
               </p>
             )}
             {current && blocked && (
@@ -65,7 +67,7 @@ export function MusicPlayer({
                 onClick={resume}
               >
                 <Volume2 className="size-7" aria-hidden />
-                กดเพื่อฟังด้วย
+                {t.music.tapToListen}
               </button>
             )}
           </div>
@@ -73,14 +75,14 @@ export function MusicPlayer({
           <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div className="min-w-0">
               <p className="text-sm text-ink-soft">
-                {current ? (playing ? "กำลังเล่น" : "หยุดอยู่") : "เพลงในห้อง"}
+                {current ? (playing ? t.music.playing : t.music.paused) : t.music.title}
               </p>
               <p className="line-clamp-2 font-bold" title={current?.title}>
                 {current?.title ?? "—"}
               </p>
               {current && (
                 <p className="truncate text-sm text-ink-soft">
-                  เพิ่มโดย {current.addedBy}
+                  {t.music.addedBy(current.addedBy)}
                 </p>
               )}
             </div>

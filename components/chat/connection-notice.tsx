@@ -1,5 +1,6 @@
 import { LoaderCircle, WifiOff } from "lucide-react";
 import { SlideIn } from "@/components/ui/slide-in";
+import { useT } from "@/hooks/use-locale";
 
 export function ConnectionNotice({
   connected,
@@ -10,6 +11,7 @@ export function ConnectionNotice({
   partnerAway: boolean;
   partnerName: string;
 }) {
+  const t = useT();
   if (connected && !partnerAway) return null;
 
   return (
@@ -25,8 +27,8 @@ export function ConnectionNotice({
       )}
       <span className="min-w-0">
         {connected
-          ? `${partnerName} หลุดการเชื่อมต่อ รอสักครู่ เดี๋ยวน่าจะกลับมา`
-          : "หลุดการเชื่อมต่อ กำลังต่อกลับเข้าห้องเดิมให้…"}
+          ? t.room.partnerDropped(partnerName)
+          : t.room.reconnecting}
       </span>
     </p>
     </SlideIn>

@@ -21,6 +21,7 @@ import type {
   ReportInput,
 } from "@/types/chat";
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/hooks/use-locale";
 import { useReadReceipts } from "@/hooks/use-read-receipts";
 import type { Socket } from "socket.io-client";
 import { ChatHeader } from "./chat-header";
@@ -72,11 +73,12 @@ export function ChatRoom({
   onLeave: () => void;
   onPanic: () => void;
 }) {
+  const t = useT();
   const ended = state.phase === "ended";
   const [musicCollapsed, setMusicCollapsed] = useMusicCollapsed();
   const selection = useMessageSelection();
   const voice = useVoiceCall(socket, { enabled: !ended, soundMuted });
-  const partnerName = state.partner?.nickname ?? "อีกฝ่าย";
+  const partnerName = state.partner?.nickname ?? t.common.partner;
   const [sharing, setSharing] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [replyTarget, setReplyTarget] = useState<ChatMessage | null>(null);

@@ -1,26 +1,11 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { io, type Socket } from "socket.io-client";
-import {
-  ADD_TRACK_ERROR_FALLBACK,
-  ADD_TRACK_ERRORS,
-  BLOCK_DONE_MESSAGE,
-  BLOCK_FAILED_MESSAGE,
-  FIND_ERROR_FALLBACK,
-  FIND_ERRORS,
-  SEND_ERROR_FALLBACK,
-  KEEP_ERRORS,
-  PANIC_MESSAGE,
-  PROMPT_RATE_LIMITED,
-  REPORT_ERROR_FALLBACK,
-  REPORT_ERRORS,
-  SEND_ERRORS,
-  UNSEND_TOO_LATE,
-  VOICE_SEND_ERRORS,
-} from "@/constants/messages";
 import { facultyOf } from "@/constants/faculties";
 import type { Reaction } from "@/constants/reactions";
 import { chatReducer, initialChatState } from "@/lib/chat-reducer";
 import { CORE_URL } from "@/lib/config";
+import { errorText } from "@/lib/i18n";
+import { currentDict } from "./use-locale";
 import { voicePlayer } from "@/lib/voice-player";
 import type { Profile } from "@/types/auth";
 import type {
@@ -46,6 +31,11 @@ import type {
 } from "@/types/chat";
 
 const NO_REACTIONS = { mine: null, theirs: null };
+
+const errors = () => currentDict().errors;
+
+const sendError = (code: string) =>
+  errorText(errors().send, code, errors().sendFallback);
 
 export function useChat({
   token,
@@ -257,7 +247,7 @@ export function useChat({
           socketRef.current?.emit("room:leave");
           dispatch({
             type: "reset",
-            error: FIND_ERRORS[ack.error] ?? FIND_ERROR_FALLBACK,
+            error: errorText(errors().find, ack.error, errors().findFallback),
           });
         } else if (ack.status === "matched") {
           dispatch({ type: "matched", ...ack });
@@ -280,7 +270,7 @@ export function useChat({
 
   const panic = useCallback(() => {
     const socket = socketRef.current;
-    dispatch({ type: "reset", error: PANIC_MESSAGE });
+    dispatch({ type: "reset", error: errors().panic });
     if (!socket?.connected) return;
     socket.emit("room:block", (ack: { ok: boolean }) => {
       if (!ack.ok) socket.emit("room:leave");
@@ -291,11 +281,9 @@ export function useChat({
     (content: Outgoing, replyTo?: string) =>
       new Promise<string | null>((resolve) => {
         const socket = socketRef.current;
-        if (!socket?.connected) return resolve(SEND_ERRORS.offline);
+        if (!socket?.connected) return resolve(errors().send.offline);
         socket.emit("chat:send", { ...content, replyTo }, (ack: SendAck) => {
-          if (!ack.ok) {
-            return resolve(SEND_ERRORS[ack.error] ?? SEND_ERROR_FALLBACK);
-          }
+          if (!ack.ok) return resolve(sendError(ack.error));
           dispatch({
             type: "message",
             message: { ...ack.message, mine: true, reactions: NO_REACTIONS },
@@ -309,7 +297,7 @@ export function useChat({
   const sendVoice = useCallback(
     async (voice: RecordedVoice) => {
       const socket = socketRef.current;
-      if (!socket?.connected) return SEND_ERRORS.offline;
+      if (!socket?.connected) return errors().send.offline;
       const audio = await voice.blob.arrayBuffer();
       return new Promise<string | null>((resolve) => {
         socket.emit(
@@ -318,9 +306,7 @@ export function useChat({
           (ack: VoiceSendAck) => {
             if (!ack.ok) {
               return resolve(
-                VOICE_SEND_ERRORS[ack.error] ??
-                  SEND_ERRORS[ack.error] ??
-                  SEND_ERROR_FALLBACK,
+                errorText(errors().voice, ack.error, sendError(ack.error)),
               );
             }
             dispatch({
@@ -350,13 +336,13 @@ export function useChat({
     () =>
       new Promise<string | null>((resolve) => {
         const socket = socketRef.current;
-        if (!socket?.connected) return resolve(SEND_ERRORS.offline);
+        if (!socket?.connected) return resolve(errors().send.offline);
         socket.emit("chat:prompt", (ack: PromptAck) => {
           if (!ack.ok) {
             return resolve(
               ack.error === "rate_limited"
-                ? PROMPT_RATE_LIMITED
-                : (SEND_ERRORS[ack.error] ?? SEND_ERROR_FALLBACK),
+                ? errors().promptRateLimited
+                : sendError(ack.error),
             );
           }
           const { key, ...prompt } = ack.prompt;
@@ -379,12 +365,12 @@ export function useChat({
     (messageId: string) =>
       new Promise<string | null>((resolve) => {
         const socket = socketRef.current;
-        if (!socket?.connected) return resolve(SEND_ERRORS.offline);
+        if (!socket?.connected) return resolve(errors().send.offline);
         socket.emit(
           "chat:unsend",
           { messageId },
           (ack: { ok: boolean }) => {
-            if (!ack.ok) return resolve(UNSEND_TOO_LATE);
+            if (!ack.ok) return resolve(errors().unsendTooLate);
             dispatch({ type: "unsent", messageId });
             resolve(null);
           },
@@ -401,14 +387,14 @@ export function useChat({
     (contact: string) =>
       new Promise<string | null>((resolve) => {
         const socket = socketRef.current;
-        if (!socket?.connected) return resolve(SEND_ERRORS.offline);
+        if (!socket?.connected) return resolve(errors().send.offline);
         socket.emit(
           "room:keep",
           { contact },
           (ack: { ok: boolean; error?: string }) => {
             if (!ack.ok) {
               return resolve(
-                KEEP_ERRORS[ack.error ?? ""] ?? SEND_ERROR_FALLBACK,
+                errorText(errors().keep, ack.error, errors().sendFallback),
               );
             }
             dispatch({ type: "keepSent" });
@@ -423,7 +409,7 @@ export function useChat({
     (input: ReportInput) =>
       new Promise<string | null>((resolve) => {
         const socket = socketRef.current;
-        if (!socket?.connected) return resolve(SEND_ERRORS.offline);
+        if (!socket?.connected) return resolve(errors().send.offline);
         socket.emit(
           "room:report",
           input,
@@ -431,7 +417,7 @@ export function useChat({
             resolve(
               ack.ok
                 ? null
-                : (REPORT_ERRORS[ack.error ?? ""] ?? REPORT_ERROR_FALLBACK),
+                : errorText(errors().report, ack.error, errors().reportFallback),
             ),
         );
       }),
@@ -442,10 +428,10 @@ export function useChat({
     () =>
       new Promise<string | null>((resolve) => {
         const active = socketRef.current;
-        if (!active?.connected) return resolve(BLOCK_FAILED_MESSAGE);
+        if (!active?.connected) return resolve(errors().blockFailed);
         active.emit("room:block", (ack: { ok: boolean }) => {
-          if (!ack.ok) return resolve(BLOCK_FAILED_MESSAGE);
-          dispatch({ type: "reset", error: BLOCK_DONE_MESSAGE });
+          if (!ack.ok) return resolve(errors().blockFailed);
+          dispatch({ type: "reset", error: errors().blockDone });
           resolve(null);
         });
       }),
@@ -482,12 +468,16 @@ export function useChat({
       add: (url) =>
         new Promise((resolve) => {
           const socket = socketRef.current;
-          if (!socket?.connected) return resolve(ADD_TRACK_ERRORS.not_in_chat);
+          if (!socket?.connected) return resolve(errors().addTrack.not_in_chat);
           socket.emit("music:add", { url }, (ack: AddTrackAck) =>
             resolve(
               ack.ok
                 ? null
-                : (ADD_TRACK_ERRORS[ack.error] ?? ADD_TRACK_ERROR_FALLBACK),
+                : errorText(
+                    errors().addTrack,
+                    ack.error,
+                    errors().addTrackFallback,
+                  ),
             ),
           );
         }),

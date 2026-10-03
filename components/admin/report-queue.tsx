@@ -2,7 +2,8 @@
 
 import { Ban, Check, LockOpen, RefreshCw, ShieldAlert } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { facultyOf } from "@/constants/faculties";
+import { facultyText } from "@/constants/faculties";
+import { th } from "@/lib/i18n/th";
 import { fetchReports, resolveReport, unbanUser } from "@/lib/admin-api";
 import type { AdminReport, BanDays } from "@/types/admin";
 
@@ -116,7 +117,7 @@ function ReportCard({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [now] = useState(Date.now);
-  const faculty = facultyOf(report.reported.faculty);
+  const faculty = facultyText(th, report.reported.faculty);
   const banned =
     report.reported.bannedUntil !== null && report.reported.bannedUntil > now;
 

@@ -5,6 +5,7 @@ import { formatClock } from "@/lib/voice";
 import { useVoicePlayer, voicePlayer } from "@/lib/voice-player";
 import type { ChatMessage, VoiceClip } from "@/types/chat";
 import { Waveform } from "./waveform";
+import { useT } from "@/hooks/use-locale";
 
 export function VoiceBubble({
   id,
@@ -15,6 +16,7 @@ export function VoiceBubble({
   voice: VoiceClip;
   mine: ChatMessage["mine"];
 }) {
+  const t = useT();
   const player = useVoicePlayer();
   const current = player.id === id;
   const playing = current && player.playing;
@@ -26,7 +28,7 @@ export function VoiceBubble({
       <button
         type="button"
         className={`grid size-9 shrink-0 cursor-pointer place-items-center rounded-full border-2 border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${mine ? "bg-card" : "bg-accent-soft"}`}
-        aria-label={playing ? "หยุดข้อความเสียง" : "เล่นข้อความเสียง"}
+        aria-label={playing ? t.voice.pause : t.voice.play}
         onClick={(event) => {
           event.stopPropagation();
           voicePlayer.toggle(id, voice.url);
@@ -53,7 +55,7 @@ export function VoiceBubble({
           <button
             type="button"
             className="cursor-pointer rounded font-bold focus-visible:outline-2 focus-visible:outline-accent"
-            aria-label={`ความเร็ว ${player.rate} เท่า กดเพื่อเปลี่ยน`}
+            aria-label={t.voice.speed(player.rate)}
             onClick={(event) => {
               event.stopPropagation();
               voicePlayer.cycleRate();

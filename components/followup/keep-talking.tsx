@@ -3,6 +3,7 @@
 import { Check, Copy, HeartHandshake, LoaderCircle } from "lucide-react";
 import { motion } from "motion/react";
 import { useState, type FormEvent } from "react";
+import { useT } from "@/hooks/use-locale";
 import type { KeepState } from "@/types/chat";
 
 export function KeepTalking({
@@ -14,6 +15,7 @@ export function KeepTalking({
   partnerName: string;
   onOffer: (contact: string) => Promise<string | null>;
 }) {
+  const t = useT();
   const [contact, setContact] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,9 +38,9 @@ export function KeepTalking({
       >
         <p className="flex items-center gap-1.5 font-bold">
           <HeartHandshake className="size-5" aria-hidden />
-          อยากคุยต่อทั้งคู่เลย!
+          {t.followup.matched}
         </p>
-        <p className="text-sm">ช่องทางของ {partnerName}</p>
+        <p className="text-sm">{t.followup.theirContact(partnerName)}</p>
         <div className="flex w-full items-center gap-2">
           <span className="doodle-field min-w-0 flex-1 truncate select-all font-bold">
             {keep.partnerContact}
@@ -46,7 +48,7 @@ export function KeepTalking({
           <button
             type="button"
             className="doodle-btn grid size-10 shrink-0 place-items-center p-0"
-            aria-label="คัดลอกช่องทางติดต่อ"
+            aria-label={t.followup.copy}
             onClick={async () => {
               try {
                 await navigator.clipboard.writeText(keep.partnerContact ?? "");
@@ -57,7 +59,7 @@ export function KeepTalking({
             {copied ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
           </button>
         </div>
-        <p className="text-xs text-ink-soft">ข้อมูลนี้ไม่ถูกเก็บไว้ที่ไหน ปิดหน้านี้แล้วหายเลย จดไว้ก่อนนะ</p>
+        <p className="text-xs text-ink-soft">{t.followup.notStored}</p>
       </motion.div>
     );
   }
@@ -66,30 +68,30 @@ export function KeepTalking({
     <div className="flex w-full max-w-sm flex-col gap-2 rounded-2xl border-2 border-dashed border-ink p-3 text-left">
       <p className="flex items-center gap-1.5 font-bold">
         <HeartHandshake className="size-5" aria-hidden />
-        อยากคุยต่อไหม?
+        {t.followup.question}
       </p>
       {keep.partnerOffered && (
         <p className="rounded-xl bg-accent-soft px-2 py-1 text-sm font-bold">
-          {partnerName} อยากคุยต่อกับเธอ!
+          {t.followup.partnerOffered(partnerName)}
         </p>
       )}
       {keep.offered ? (
         <p className="flex items-center gap-1.5 text-sm">
           <LoaderCircle className="size-4 animate-spin" aria-hidden />
-          ส่งแล้ว รอ {partnerName} กดด้วย ถ้าอีกฝ่ายไม่กด ช่องทางของเธอจะไม่ถูกส่งไป
+          {t.followup.waiting(partnerName)}
         </p>
       ) : (
         <>
           <p className="text-xs text-ink-soft">
-            ใส่ IG / Line ที่อยากให้ อีกฝ่ายจะเห็นก็ต่อเมื่อกดอยากคุยต่อเหมือนกันเท่านั้น และเราไม่เก็บไว้
+            {t.followup.hint}
           </p>
           <form className="flex gap-2" onSubmit={submit}>
             <input
               className="doodle-field min-w-0 flex-1 text-sm"
               value={contact}
               maxLength={60}
-              placeholder="เช่น ig: my.name"
-              aria-label="ช่องทางติดต่อ"
+              placeholder={t.followup.placeholder}
+              aria-label={t.followup.contact}
               onChange={(event) => setContact(event.target.value)}
             />
             <button
@@ -97,7 +99,7 @@ export function KeepTalking({
               className="doodle-btn doodle-btn-primary shrink-0 px-3 text-sm font-bold"
               disabled={!contact.trim() || busy}
             >
-              อยากคุยต่อ
+              {t.followup.submit}
             </button>
           </form>
         </>

@@ -4,7 +4,7 @@ import { Lightbulb, LoaderCircle, Mic, Reply, Sticker as StickerIcon, X } from "
 import { StickerPicker } from "@/components/stickers/sticker-picker";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { VoiceRecorderBar } from "@/components/voice/voice-recorder-bar";
-import { MIC_DENIED_MESSAGE } from "@/constants/messages";
+import { useT } from "@/hooks/use-locale";
 import { useTypingSignal } from "@/hooks/use-typing-signal";
 import { useVoiceRecorder } from "@/hooks/use-voice-recorder";
 import { canRecordVoice } from "@/lib/voice";
@@ -32,6 +32,7 @@ export function MessageForm({
   replyTarget: ChatMessage | null;
   onCancelReply: () => void;
 }) {
+  const t = useT();
   const [stickersOpen, setStickersOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +79,7 @@ export function MessageForm({
   async function startRecording() {
     setError(null);
     typing.stop();
-    if (!(await recorder.start())) setError(MIC_DENIED_MESSAGE);
+    if (!(await recorder.start())) setError(t.errors.micDenied);
   }
 
   const showMic = Boolean(onSendVoice) && voiceSupported && !draft.trim();
@@ -103,12 +104,12 @@ export function MessageForm({
           <div className="mb-1.5 flex items-center gap-2 rounded-xl border-2 border-dashed border-ink px-3 py-1 text-sm">
             <Reply className="size-4 shrink-0" aria-hidden />
             <span className="min-w-0 flex-1 truncate">
-              ตอบ{replyTarget.mine ? "ตัวเอง" : "อีกฝ่าย"}: {summarize(replyTarget)}
+              {replyTarget.mine ? t.messages.replyingSelf : t.messages.replyingPartner}: {summarize(t, replyTarget)}
             </span>
             <button
               type="button"
               className="grid size-6 cursor-pointer place-items-center rounded-full hover:bg-accent-soft"
-              aria-label="ยกเลิกการตอบกลับ"
+              aria-label={t.messages.cancelReply}
               onClick={onCancelReply}
             >
               <X className="size-4" aria-hidden />
@@ -128,8 +129,8 @@ export function MessageForm({
           <button
             type="button"
             className="doodle-btn grid size-11 shrink-0 place-items-center p-0"
-            aria-label="สุ่มคำถามชวนคุย"
-            title="สุ่มคำถามชวนคุย"
+            aria-label={t.messages.prompt}
+            title={t.messages.prompt}
             disabled={disabled}
             onClick={async () => setError(await onPrompt())}
           >
@@ -138,9 +139,9 @@ export function MessageForm({
           <button
             type="button"
             className="doodle-btn grid size-11 shrink-0 place-items-center p-0"
-            aria-label="ส่งสติกเกอร์"
+            aria-label={t.stickers.send}
             aria-expanded={stickersOpen}
-            title="สติกเกอร์"
+            title={t.stickers.title}
             disabled={disabled}
             onClick={() => setStickersOpen((open) => !open)}
           >
@@ -155,8 +156,8 @@ export function MessageForm({
               typing.touch();
             }}
             onFocus={onFocus}
-            placeholder={disabled ? "ห้องนี้ปิดแล้ว" : "พิมพ์อะไรสักหน่อย…"}
-            aria-label="ข้อความ"
+            placeholder={disabled ? t.messages.closed : t.messages.placeholder}
+            aria-label={t.messages.input}
             maxLength={MAX_MESSAGE_LENGTH}
             disabled={disabled}
             autoComplete="off"
@@ -165,7 +166,7 @@ export function MessageForm({
             <button
               type="button"
               className="doodle-btn doodle-btn-primary grid w-[4.25rem] shrink-0 place-items-center"
-              aria-label={sendingVoice ? "กำลังส่งข้อความเสียง" : "อัดข้อความเสียง"}
+              aria-label={sendingVoice ? t.voice.sending : t.voice.record}
               disabled={disabled || sendingVoice || recorder.status !== "idle"}
               onClick={startRecording}
             >
@@ -181,7 +182,7 @@ export function MessageForm({
               className="doodle-btn doodle-btn-primary w-[4.25rem] shrink-0 font-bold"
               disabled={disabled || !draft.trim()}
             >
-              ส่ง
+              {t.messages.send}
             </button>
           )}
         </form>

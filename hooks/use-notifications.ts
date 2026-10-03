@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 import { playSound, type SoundName } from "@/lib/sounds";
 import type { ChatState } from "@/types/chat";
-
-const BASE_TITLE = "K-Thok — คุยกับเพื่อนใหม่ในรั้ว สจล.";
+import { currentDict } from "./use-locale";
 
 function isAway(): boolean {
   return document.hidden || !document.hasFocus();
@@ -23,11 +22,11 @@ export function useNotifications(state: ChatState, muted: boolean) {
     };
 
     if (before.phase === "searching" && state.phase === "chatting") {
-      notify("match", "จับคู่ได้แล้ว! · K-Thok");
+      notify("match", currentDict().notifications.match);
       return;
     }
     if (before.phase === "chatting" && state.phase === "ended") {
-      if (isAway()) notify("leave", "อีกฝ่ายออกจากห้องแล้ว · K-Thok");
+      if (isAway()) notify("leave", currentDict().notifications.left);
       return;
     }
     if (state.phase !== "chatting" || count <= before.count) return;
@@ -37,7 +36,7 @@ export function useNotifications(state: ChatState, muted: boolean) {
       .filter((message) => !message.mine).length;
     if (incoming > 0 && isAway()) {
       unread.current += incoming;
-      notify("message", `(${unread.current}) ข้อความใหม่ · K-Thok`);
+      notify("message", currentDict().notifications.messages(unread.current));
     }
   }, [state.phase, state.messages, muted]);
 
@@ -45,7 +44,7 @@ export function useNotifications(state: ChatState, muted: boolean) {
     const reset = () => {
       if (isAway()) return;
       unread.current = 0;
-      document.title = BASE_TITLE;
+      document.title = currentDict().notifications.base;
     };
     document.addEventListener("visibilitychange", reset);
     window.addEventListener("focus", reset);

@@ -1,4 +1,5 @@
-import { LOGIN_ERROR_FALLBACK, LOGIN_ERRORS } from "@/constants/messages";
+import { currentDict } from "@/hooks/use-locale";
+import { errorText } from "@/lib/i18n";
 import { CORE_URL } from "./config";
 
 export type SignInResult =
@@ -8,6 +9,7 @@ export type SignInResult =
 export async function signInWithGoogle(
   credential: string,
 ): Promise<SignInResult> {
+  const errors = currentDict().errors;
   try {
     const response = await fetch(`${CORE_URL}/auth/google`, {
       method: "POST",
@@ -18,14 +20,14 @@ export async function signInWithGoogle(
     if (!response.ok) {
       return {
         ok: false,
-        error: LOGIN_ERRORS[data?.message] ?? LOGIN_ERROR_FALLBACK,
+        error: errorText(errors.login, data?.message, errors.loginFallback),
       };
     }
     if (typeof data?.token !== "string" || !data.token) {
-      return { ok: false, error: LOGIN_ERROR_FALLBACK };
+      return { ok: false, error: errors.loginFallback };
     }
     return { ok: true, token: data.token };
   } catch {
-    return { ok: false, error: LOGIN_ERROR_FALLBACK };
+    return { ok: false, error: errors.loginFallback };
   }
 }

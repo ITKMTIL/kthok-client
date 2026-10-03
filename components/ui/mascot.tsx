@@ -3,6 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useRef } from "react";
+import { useT } from "@/hooks/use-locale";
 
 export function Mascot({
   bubble,
@@ -11,6 +12,7 @@ export function Mascot({
   bubble: string;
   className?: string;
 }) {
+  const t = useT();
   const rootRef = useRef<SVGSVGElement>(null);
 
   useGSAP(
@@ -161,7 +163,7 @@ export function Mascot({
       ref={rootRef}
       viewBox="-45 0 420 190"
       role="img"
-      aria-label={`มาสคอต K-Thok สองคนคุยกันข้างทางรถไฟ คนหนึ่งพูดว่า ${bubble}`}
+      aria-label={t.hero.mascot(bubble)}
       className={className}
       fill="none"
       stroke="currentColor"

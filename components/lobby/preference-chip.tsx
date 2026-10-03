@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { useT } from "@/hooks/use-locale";
 
 export function PreferenceChip({
   name,
@@ -17,6 +18,7 @@ export function PreferenceChip({
   waiting?: boolean;
   onSelect: () => void;
 }) {
+  const t = useT();
   return (
     <label className="doodle-chip relative flex items-center gap-1.5" title={title}>
       <input
@@ -34,7 +36,7 @@ export function PreferenceChip({
             className="absolute -right-1 -top-1 size-3 rounded-full border-2 border-ink bg-online"
             aria-hidden
           />
-          <span className="sr-only">(มีคนรออยู่)</span>
+          <span className="sr-only">{t.lobby.waitingSr}</span>
         </>
       )}
     </label>

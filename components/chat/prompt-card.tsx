@@ -18,7 +18,7 @@ export function PromptCard({ message }: { message: ChatMessage }) {
     >
       <span className="flex items-center gap-1 text-xs font-bold text-ink-soft">
         <Lightbulb className="size-3.5" aria-hidden />
-        {message.mine ? "เธอสุ่มคำถาม" : "อีกฝ่ายสุ่มคำถาม"}
+        {message.mine ? t.messages.promptMine : t.messages.promptTheirs}
       </span>
       <span className="font-bold">{promptText(t, message.text)}</span>
     </motion.div>

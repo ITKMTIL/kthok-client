@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { StickerId } from "@/constants/stickers";
+import { useT } from "@/hooks/use-locale";
 
 const INK = "var(--color-ink)";
 const CARD = "var(--color-card)";
@@ -40,7 +41,8 @@ function Face({
   );
 }
 
-function Caption({ children }: { children: ReactNode }) {
+function Caption({ id }: { id: StickerId }) {
+  const t = useT();
   return (
     <text
       x="50"
@@ -53,7 +55,7 @@ function Caption({ children }: { children: ReactNode }) {
       strokeWidth="4"
       paintOrder="stroke"
     >
-      {children}
+      {t.stickers.captions[id]}
     </text>
   );
 }
@@ -64,7 +66,7 @@ const ART: Record<StickerId, ReactNode> = {
       <Face />
       <path d="M78 34l6-10M82 40l9-6M84 48l9-1" stroke={ACCENT} />
       <path d="M72 50q8-14 4-24" />
-      <Caption>หวัดดี</Caption>
+      <Caption id="hello" />
     </>
   ),
   train: (
@@ -78,21 +80,21 @@ const ART: Record<StickerId, ReactNode> = {
       <circle cx="40" cy="62" r="4" fill={INK} />
       <circle cx="62" cy="62" r="4" fill={INK} />
       <circle cx="80" cy="62" r="4" fill={INK} />
-      <Caption>ปู๊น ๆ</Caption>
+      <Caption id="train" />
     </>
   ),
   laugh: (
     <>
       <Face eyes="happy" mouth="open" />
       <path d="M26 38q-4 6 0 10M74 38q4 6 0 10" stroke="var(--color-online)" />
-      <Caption>555555</Caption>
+      <Caption id="laugh" />
     </>
   ),
   cry: (
     <>
       <Face eyes="sad" mouth="frown" cheeks={false} />
       <path d="M39 49q-3 8 0 12M61 49q3 8 0 12" stroke="var(--color-ink-soft)" strokeWidth="4" />
-      <Caption>ฮือออ</Caption>
+      <Caption id="cry" />
     </>
   ),
   love: (
@@ -100,14 +102,14 @@ const ART: Record<StickerId, ReactNode> = {
       <Face eyes="happy" />
       <path d="M78 18c-4-6-12-2-8 4l8 8 8-8c4-6-4-10-8-4z" fill={ACCENT} strokeWidth="2.5" />
       <path d="M20 22c-3-4-9-1-6 3l6 6 6-6c3-4-3-7-6-3z" fill={ACCENT} strokeWidth="2.5" />
-      <Caption>ปลื้มมม</Caption>
+      <Caption id="love" />
     </>
   ),
   sleepy: (
     <>
       <Face eyes="closed" mouth="o" tan />
       <path d="M70 18h10l-10 10h10M82 8h7l-7 7h7" strokeWidth="2.5" />
-      <Caption>ง่วงแล้ว</Caption>
+      <Caption id="sleepy" />
     </>
   ),
   hungry: (
@@ -115,7 +117,7 @@ const ART: Record<StickerId, ReactNode> = {
       <Face mouth="o" />
       <path d="M62 66h30q-2 12-15 12t-15-12z" fill={SOFT} />
       <path d="M70 60q2-6 0-10M78 60q2-6 0-10" strokeWidth="2.5" />
-      <Caption>หิวว</Caption>
+      <Caption id="hungry" />
     </>
   ),
   study: (
@@ -123,21 +125,21 @@ const ART: Record<StickerId, ReactNode> = {
       <Face eyes="sad" mouth="flat" tan />
       <path d="M22 64l28 6 28-6v14l-28 6-28-6z" fill={CARD} />
       <path d="M50 70v14" />
-      <Caption>อ่านไม่ทัน</Caption>
+      <Caption id="study" />
     </>
   ),
   thanks: (
     <>
       <Face eyes="happy" />
       <path d="M16 20l3 7 7 3-7 3-3 7-3-7-7-3 7-3zM84 16l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="var(--color-online)" strokeWidth="2" />
-      <Caption>ขอบคุณน้า</Caption>
+      <Caption id="thanks" />
     </>
   ),
   bye: (
     <>
       <Face eyes="happy" tan />
       <path d="M24 50q-8-14-4-24M28 34l-6-10M24 40l-9-6" />
-      <Caption>ไปละ บาย</Caption>
+      <Caption id="bye" />
     </>
   ),
 };

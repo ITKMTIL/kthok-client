@@ -2,6 +2,7 @@
 
 import type { KeyboardEvent, PointerEvent } from "react";
 import { formatClock } from "@/lib/voice";
+import { useT } from "@/hooks/use-locale";
 
 export function Waveform({
   peaks,
@@ -16,6 +17,7 @@ export function Waveform({
   className?: string;
   onSeek?: (fraction: number) => void;
 }) {
+  const t = useT();
   const bars = (
     <span className="flex h-full w-full min-w-0 items-center gap-px overflow-hidden" aria-hidden>
       {peaks.map((peak, index) => (
@@ -49,11 +51,11 @@ export function Waveform({
     <span
       role="slider"
       tabIndex={0}
-      aria-label="ตำแหน่งที่เล่น"
+      aria-label={t.voice.position}
       aria-valuemin={0}
       aria-valuemax={Math.round(duration)}
       aria-valuenow={Math.round(progress * duration)}
-      aria-valuetext={`${formatClock(progress * duration)} จาก ${formatClock(duration)}`}
+      aria-valuetext={t.voice.positionText(formatClock(progress * duration), formatClock(duration))}
       className={`flex cursor-pointer touch-none rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${className}`}
       onPointerDown={(event) => {
         event.stopPropagation();

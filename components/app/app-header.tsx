@@ -1,5 +1,7 @@
 import { Bell, BellOff, ChartColumn } from "lucide-react";
 import Link from "next/link";
+import { useT } from "@/hooks/use-locale";
+import { LanguageToggle } from "./language-toggle";
 import { ThemeToggle } from "./theme-toggle";
 
 export function AppHeader({
@@ -17,6 +19,9 @@ export function AppHeader({
   onToggleSound: () => void;
   onSignOut: (() => void) | null;
 }) {
+  const t = useT();
+  const soundLabel = soundMuted ? t.header.soundOn : t.header.soundOff;
+
   return (
     <header className="flex items-center justify-between gap-3 px-4 py-3">
       <span className="shrink-0 text-2xl font-bold tracking-wide">
@@ -24,7 +29,7 @@ export function AppHeader({
       </span>
       {selfName && (
         <span className="min-w-0 flex-1 truncate text-center text-sm">
-          <span className="text-ink-soft">เธอคือ </span>
+          <span className="text-ink-soft">{t.header.you} </span>
           <span className="font-bold">{selfName}</span>
         </span>
       )}
@@ -34,15 +39,16 @@ export function AppHeader({
             className={`mr-1.5 inline-block size-2.5 rounded-full border-2 border-ink ${connected ? "bg-online" : "bg-paper"}`}
             aria-hidden
           />
-          {connected ? "ออนไลน์" : "ออฟไลน์"}
+          {connected ? t.header.online : t.header.offline}
         </span>
+        <LanguageToggle />
         <ThemeToggle />
         <button
           type="button"
           className="grid size-8 cursor-pointer place-items-center rounded-full text-ink hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
           aria-pressed={!soundMuted}
-          aria-label={soundMuted ? "เปิดเสียงแจ้งเตือน" : "ปิดเสียงแจ้งเตือน"}
-          title={soundMuted ? "เปิดเสียงแจ้งเตือน" : "ปิดเสียงแจ้งเตือน"}
+          aria-label={soundLabel}
+          title={soundLabel}
           onClick={onToggleSound}
         >
           {soundMuted ? (
@@ -55,15 +61,15 @@ export function AppHeader({
           <Link
             href="/admin"
             className="grid size-8 place-items-center rounded-full text-ink hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
-            aria-label="รายงานการใช้งาน"
-            title="รายงานการใช้งาน"
+            aria-label={t.header.adminStats}
+            title={t.header.adminStats}
           >
             <ChartColumn className="size-4" aria-hidden />
           </Link>
         )}
         {onSignOut && (
           <button type="button" className="doodle-btn px-2 py-0.5" onClick={onSignOut}>
-            ออกจากระบบ
+            {t.header.signOut}
           </button>
         )}
       </span>

@@ -6,6 +6,7 @@ import { Flag } from "lucide-react";
 import { KeepTalking } from "@/components/followup/keep-talking";
 import type { ChatMessage, KeepState } from "@/types/chat";
 import { BouncingDots } from "@/components/ui/bouncing-dots";
+import { useT } from "@/hooks/use-locale";
 import { MessageBubble } from "./message-bubble";
 import { PromptCard } from "./prompt-card";
 
@@ -47,6 +48,7 @@ export function MessageList({
   onUnsend: (messageId: string) => void;
   onNext: () => void;
 }) {
+  const t = useT();
   const logRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [openPickerId, setOpenPickerId] = useState<string | null>(null);
@@ -80,10 +82,10 @@ export function MessageList({
       ref={logRef}
       className="doodle-card flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain p-3 sm:p-4"
       role="log"
-      aria-label="ข้อความในห้อง"
+      aria-label={t.messages.log}
     >
       <p className="text-center text-sm text-ink-soft">
-        จับคู่แล้ว! ทักทายกันได้เลย เราไม่เก็บข้อความไว้ ออกจากห้องแล้วหายเลย
+        {t.messages.intro}
       </p>
       {messages.map((message) =>
         message.prompt ? (
@@ -114,7 +116,7 @@ export function MessageList({
         ),
       )}
       {partnerTyping && (
-        <p className="bubble bubble-theirs text-ink-soft" aria-label="กำลังพิมพ์">
+        <p className="bubble bubble-theirs text-ink-soft" aria-label={t.messages.typing}>
           <BouncingDots className="h-5 items-center" />
         </p>
       )}
@@ -122,8 +124,8 @@ export function MessageList({
         <div className="mt-2 flex flex-col items-center gap-2 text-center">
           <p className="font-medium">
             {endedBy === "me"
-              ? "เธอออกจากห้องแล้ว"
-              : `${partnerName} ออกจากห้องไปแล้ว`}
+              ? t.messages.youLeft
+              : t.messages.partnerLeft(partnerName)}
           </p>
           <RoomFeedback onFeedback={onFeedback} />
           <KeepTalking keep={keep} partnerName={partnerName} onOffer={onKeep} />
@@ -132,7 +134,7 @@ export function MessageList({
             className="doodle-btn doodle-btn-primary px-5 py-1.5 font-bold"
             onClick={onNext}
           >
-            หาเพื่อนคนใหม่
+            {t.messages.findNew}
           </button>
           {onReport && (
             <button
@@ -141,7 +143,7 @@ export function MessageList({
               onClick={onReport}
             >
               <Flag className="size-3.5" aria-hidden />
-              มีปัญหากับคนนี้? รายงาน
+              {t.messages.reportPrompt}
             </button>
           )}
         </div>

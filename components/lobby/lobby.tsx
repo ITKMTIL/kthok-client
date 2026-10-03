@@ -5,6 +5,7 @@ import { PushToggle } from "@/components/push/push-toggle";
 import { Hero } from "@/components/ui/hero";
 import { SiteFooter } from "@/components/ui/site-footer";
 import type { FacultyId } from "@/constants/faculties";
+import { useT } from "@/hooks/use-locale";
 import type { usePush } from "@/hooks/use-push";
 import { DEFAULT_TOPIC, type TopicId } from "@/constants/topics";
 import type { Profile } from "@/types/auth";
@@ -35,6 +36,7 @@ export function Lobby({
   onProfileChange: (profile: Profile) => void;
   onFind: (options: SearchOptions) => void;
 }) {
+  const t = useT();
   const [prefers, setPrefers] = useState<FacultyId | null>(null);
   const [topic, setTopic] = useState<TopicId>(DEFAULT_TOPIC);
   const waitingFaculties = useMemo(
@@ -52,7 +54,7 @@ export function Lobby({
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center gap-6 px-4 pb-6 pt-6 text-center">
-      <Hero bubble="ทอล์คมั้ย?" />
+      <Hero bubble={t.lobby.bubble} />
       <OnlineCount online={online} connected={connected} />
       <PushToggle push={push} />
       <ProfileCard
@@ -79,11 +81,11 @@ export function Lobby({
         disabled={!ready || !connected}
         onClick={() => onFind({ prefers, topic })}
       >
-        หาเพื่อนคุย
+        {t.lobby.find}
       </button>
       {!connected && (
         <p className="-mt-3 text-sm text-ink-soft">
-          ยังต่อเซิร์ฟเวอร์ไม่ได้ กำลังลองใหม่ให้อยู่…
+          {t.lobby.offline}
         </p>
       )}
       <SiteFooter />

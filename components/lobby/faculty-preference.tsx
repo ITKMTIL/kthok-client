@@ -1,5 +1,6 @@
 import { Dices } from "lucide-react";
 import { FACULTIES, type FacultyId } from "@/constants/faculties";
+import { useT } from "@/hooks/use-locale";
 import { PreferenceChip } from "./preference-chip";
 
 export function FacultyPreference({
@@ -11,22 +12,23 @@ export function FacultyPreference({
   waiting: ReadonlySet<string>;
   onChange: (value: FacultyId | null) => void;
 }) {
+  const t = useT();
   return (
     <fieldset className="doodle-card w-full p-5 text-left">
-      <legend className="sr-only">อยากคุยกับคณะไหน</legend>
-      <h2 className="text-lg font-bold">อยากคุยกับคณะไหน?</h2>
+      <legend className="sr-only">{t.lobby.facultyLegend}</legend>
+      <h2 className="text-lg font-bold">{t.lobby.facultyTitle}</h2>
       <p className="text-sm text-ink-soft">
-        ถ้าไม่มีคนคณะนั้นรออยู่ เดี๋ยวพาไปห้องที่ว่างแทน
+        {t.lobby.facultyHint}
         <span className="ml-1 inline-flex items-center gap-1 whitespace-nowrap">
           <span className="size-2.5 rounded-full border-2 border-ink bg-online" aria-hidden />
-          = มีคนรออยู่
+          {t.lobby.waitingLegend}
         </span>
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
         <PreferenceChip
           name="prefer-faculty"
           icon={Dices}
-          label="ใครก็ได้"
+          label={t.lobby.anyone}
           checked={value === null}
           onSelect={() => onChange(null)}
         />
@@ -35,8 +37,8 @@ export function FacultyPreference({
             key={faculty.id}
             name="prefer-faculty"
             icon={faculty.icon}
-            label={faculty.short}
-            title={faculty.name}
+            label={t.faculties[faculty.id].short}
+            title={t.faculties[faculty.id].name}
             checked={value === faculty.id}
             waiting={waiting.has(faculty.id)}
             onSelect={() => onChange(faculty.id)}

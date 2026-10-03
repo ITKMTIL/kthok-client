@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useT } from "@/hooks/use-locale";
 
 const MAX_URL_LENGTH = 200;
 
@@ -11,6 +12,7 @@ export function AddTrackForm({
   disabled: boolean;
   onAdd: (url: string) => Promise<string | null>;
 }) {
+  const t = useT();
   const [url, setUrl] = useState("");
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,8 +38,8 @@ export function AddTrackForm({
           inputMode="url"
           value={url}
           onChange={(event) => setUrl(event.target.value)}
-          placeholder="วางลิงก์ YouTube"
-          aria-label="ลิงก์ YouTube"
+          placeholder={t.music.pasteLink}
+          aria-label={t.music.link}
           maxLength={MAX_URL_LENGTH}
           disabled={disabled}
           autoComplete="off"
@@ -47,7 +49,7 @@ export function AddTrackForm({
           className="doodle-btn px-3 text-sm font-bold"
           disabled={disabled || adding || !url.trim()}
         >
-          {adding ? "…" : "เพิ่มคิว"}
+          {adding ? "…" : t.music.add}
         </button>
       </form>
       {error && (

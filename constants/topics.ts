@@ -8,12 +8,12 @@ import {
 } from "lucide-react";
 
 export const TOPICS = [
-  { id: "general", label: "คุยทั่วไป", icon: MessagesSquare },
-  { id: "study", label: "ติวสอบ", icon: BookOpen },
-  { id: "games", label: "เกม", icon: Gamepad2 },
-  { id: "vent", label: "อยากระบาย", icon: HeartHandshake },
-  { id: "food", label: "หาเพื่อนกินข้าว", icon: UtensilsCrossed },
-] as const satisfies readonly { id: string; label: string; icon: LucideIcon }[];
+  { id: "general", icon: MessagesSquare },
+  { id: "study", icon: BookOpen },
+  { id: "games", icon: Gamepad2 },
+  { id: "vent", icon: HeartHandshake },
+  { id: "food", icon: UtensilsCrossed },
+] as const satisfies readonly { id: string; icon: LucideIcon }[];
 
 export type TopicId = (typeof TOPICS)[number]["id"];
 

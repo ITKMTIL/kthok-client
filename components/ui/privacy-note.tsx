@@ -1,8 +1,11 @@
+import { useT } from "@/hooks/use-locale";
+
 export function PrivacyNote({ className = "" }: { className?: string }) {
+  const t = useT();
   return (
     <aside
       className={`flex items-center gap-3 rounded-2xl border-2 border-dashed border-ink bg-safe-soft px-4 py-3 text-left ${className}`}
-      aria-label="ความเป็นส่วนตัว"
+      aria-label={t.privacy.label}
     >
       <svg
         viewBox="0 0 48 48"
@@ -22,15 +25,15 @@ export function PrivacyNote({ className = "" }: { className?: string }) {
       </svg>
       <div className="min-w-0">
         <p className="text-lg font-bold leading-snug">
-          เราไม่เก็บข้อความและอีเมล
+          {t.privacy.title}
         </p>
         <p className="text-sm leading-snug text-ink-soft">
-          <span className="block">ใช้อีเมลแค่ยืนยันว่าเป็นเด็ก สจล.</span>
+          <span className="block">{t.privacy.email}</span>
           <span className="block">
-            เก็บเฉพาะรหัสที่เข้ารหัสทางเดียว ไว้กันคนป่วน
+            {t.privacy.hash}
           </span>
           <span className="block">
-            ยกเว้นข้อความที่เธอเลือกแนบตอนรายงาน (เข้ารหัส ลบใน 30 วัน)
+            {t.privacy.reports}
           </span>
         </p>
       </div>

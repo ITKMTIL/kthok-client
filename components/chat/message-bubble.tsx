@@ -8,6 +8,8 @@ import { useCallback, useRef } from "react";
 import type { Reaction } from "@/constants/reactions";
 import { VoiceBubble } from "@/components/voice/voice-bubble";
 import { useDismiss } from "@/hooks/use-dismiss";
+import { useT } from "@/hooks/use-locale";
+import type { Dict } from "@/lib/i18n";
 import type { ChatMessage } from "@/types/chat";
 import { ReactionPicker } from "./reaction-picker";
 
@@ -34,6 +36,7 @@ export function MessageBubble({
   onReply: (() => void) | null;
   onUnsend: (() => void) | null;
 }) {
+  const t = useT();
   const rootRef = useRef<HTMLDivElement>(null);
   const close = useCallback(() => onTogglePicker(false), [onTogglePicker]);
   useDismiss(rootRef, pickerOpen, close);
@@ -64,9 +67,9 @@ export function MessageBubble({
         >
           {quoted && !message.unsent && <Quote message={quoted} />}
           {message.unsent ? (
-            message.mine ? "เธอยกเลิกข้อความนี้" : "ข้อความนี้ถูกยกเลิก"
+            message.mine ? t.messages.unsentMine : t.messages.unsentTheirs
           ) : message.sticker ? (
-            <span role="img" aria-label={`สติกเกอร์ ${stickerLabel(message.sticker)}`}>
+            <span role="img" aria-label={t.messages.sticker(stickerLabel(t, message.sticker))}>
               <Sticker id={message.sticker} />
             </span>
           ) : message.voice ? (
@@ -80,7 +83,7 @@ export function MessageBubble({
             type="button"
             role="checkbox"
             aria-checked={selection.selected}
-            aria-label={`เลือกข้อความ: ${summarize(message)}`}
+            aria-label={t.messages.select(summarize(t, message))}
             className={`grid size-6 shrink-0 cursor-pointer place-items-center rounded-full border-2 border-ink focus-visible:outline-2 focus-visible:outline-accent ${selection.selected ? "bg-accent text-card" : "bg-card"}`}
             onClick={selection.onToggle}
           >
@@ -90,19 +93,19 @@ export function MessageBubble({
         {!disabled && !selection && !message.unsent && (
           <span className="flex [@media(hover:none)]:hidden">
           {onReply && (
-            <ActionButton label="ตอบกลับ" visible={pickerOpen} onClick={onReply}>
+            <ActionButton label={t.messages.reply} visible={pickerOpen} onClick={onReply}>
               <Reply className="size-4" aria-hidden />
             </ActionButton>
           )}
           {onUnsend && (
-            <ActionButton label="ยกเลิกส่ง" visible={pickerOpen} onClick={onUnsend}>
+            <ActionButton label={t.messages.unsend} visible={pickerOpen} onClick={onUnsend}>
               <Undo2 className="size-4" aria-hidden />
             </ActionButton>
           )}
           <button
             type="button"
             className={`grid size-7 shrink-0 cursor-pointer place-items-center rounded-full text-ink-soft transition-opacity hover:bg-accent-soft hover:text-ink focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-accent [@media(hover:none)]:hidden ${pickerOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
-            aria-label="ใส่รีแอคชัน"
+            aria-label={t.messages.addReaction}
             aria-expanded={pickerOpen}
             onClick={() => onTogglePicker(!pickerOpen)}
           >
@@ -128,7 +131,7 @@ export function MessageBubble({
       {read && (
         <span className="flex items-center gap-0.5 px-1 text-xs text-ink-soft">
           <CheckCheck className="size-3.5" aria-hidden />
-          อ่านแล้ว
+          {t.messages.read}
         </span>
       )}
 
@@ -173,6 +176,7 @@ function ReactionChip({
   disabled: boolean;
   onRemove?: () => void;
 }) {
+  const t = useT();
   const className = `flex items-center gap-0.5 rounded-full border-2 border-ink px-1.5 text-sm leading-6 ${mine ? "bg-accent-soft" : "bg-card"}`;
   const pop = {
     initial: { scale: 0, rotate: -20 },
@@ -192,7 +196,7 @@ function ReactionChip({
         key={reaction}
         {...pop}
         className={className}
-        aria-label={`รีแอคชัน ${reaction}`}
+        aria-label={t.messages.reaction(reaction)}
       >
         {content}
       </motion.span>
@@ -204,7 +208,7 @@ function ReactionChip({
       {...pop}
       type="button"
       className={`${className} cursor-pointer`}
-      aria-label={`เอารีแอคชัน ${reaction} ของเธอออก`}
+      aria-label={t.messages.removeReaction(reaction)}
       onClick={onRemove}
     >
       {content}
@@ -212,14 +216,15 @@ function ReactionChip({
   );
 }
 
-export function summarize(message: ChatMessage): string {
-  if (message.unsent) return "ข้อความที่ถูกยกเลิก";
-  if (message.sticker) return `สติกเกอร์ ${stickerLabel(message.sticker)}`;
-  if (message.voice) return "ข้อความเสียง";
+export function summarize(t: Dict, message: ChatMessage): string {
+  if (message.unsent) return t.messages.unsentSummary;
+  if (message.sticker) return t.messages.sticker(stickerLabel(t, message.sticker));
+  if (message.voice) return t.messages.voice;
   return message.text.slice(0, 60);
 }
 
 function Quote({ message }: { message: ChatMessage }) {
+  const t = useT();
   return (
     <a
       href={`#msg-${message.id}`}
@@ -232,8 +237,8 @@ function Quote({ message }: { message: ChatMessage }) {
           ?.scrollIntoView({ block: "center", behavior: "smooth" });
       }}
     >
-      <span className="font-bold">{message.mine ? "เธอ" : "อีกฝ่าย"}</span>{" "}
-      <span className="line-clamp-1">{summarize(message)}</span>
+      <span className="font-bold">{message.mine ? t.messages.you : t.common.partner}</span>{" "}
+      <span className="line-clamp-1">{summarize(t, message)}</span>
     </a>
   );
 }

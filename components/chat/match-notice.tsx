@@ -3,7 +3,8 @@
 import { CircleCheck, Shuffle, X } from "lucide-react";
 import { useState } from "react";
 import { SlideIn } from "@/components/ui/slide-in";
-import { facultyOf, type FacultyId } from "@/constants/faculties";
+import { facultyText, type FacultyId } from "@/constants/faculties";
+import { useT } from "@/hooks/use-locale";
 
 export function MatchNotice({
   prefers,
@@ -12,8 +13,9 @@ export function MatchNotice({
   prefers: FacultyId | null;
   preferenceMet: boolean;
 }) {
+  const t = useT();
   const [dismissed, setDismissed] = useState(false);
-  const preferred = prefers ? facultyOf(prefers) : undefined;
+  const preferred = prefers ? facultyText(t, prefers) : undefined;
   if (!preferred || dismissed) return null;
 
   const Icon = preferenceMet ? CircleCheck : Shuffle;
@@ -30,18 +32,18 @@ export function MatchNotice({
       />
       <span className="min-w-0 flex-1">
         {preferenceMet ? (
-          <>ตรงคณะที่ขอ: {preferred.name}</>
+          t.room.preferenceMet(preferred.name)
         ) : (
           <>
-            ไม่มีเด็ก{preferred.short}ว่างตอนนี้
-            <span className="font-medium"> เลยจับคู่ให้ห้องนี้แทน</span>
+            {t.room.preferenceMissed(preferred.short)}
+            <span className="font-medium"> {t.room.preferenceFallback}</span>
           </>
         )}
       </span>
       <button
         type="button"
         className="grid size-7 shrink-0 cursor-pointer place-items-center rounded-full hover:bg-card focus-visible:outline-2 focus-visible:outline-accent"
-        aria-label="ปิดข้อความนี้"
+        aria-label={t.common.dismiss}
         onClick={() => setDismissed(true)}
       >
         <X className="size-4" aria-hidden />

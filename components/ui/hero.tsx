@@ -1,14 +1,16 @@
 import { Mascot } from "./mascot";
+import { useT } from "@/hooks/use-locale";
 
 export function Hero({ bubble }: { bubble: string }) {
+  const t = useT();
   return (
     <>
       <div>
         <h1 className="text-3xl font-bold leading-snug sm:text-4xl">
-          คุยกับเพื่อนใหม่ในรั้ว <span className="text-accent">สจล.</span>
+          {t.hero.title} <span className="text-accent">{t.hero.titleAccent}</span>
         </h1>
         <p className="mt-1 text-lg text-ink-soft">
-          ไม่ต้องปัด ไม่ต้องแมตช์ กดแล้วจับคู่ให้เลย แบบไม่มีใครรู้ว่าใครเป็นใคร
+          {t.hero.subtitle}
         </p>
       </div>
       <Mascot bubble={bubble} className="w-[26rem] max-w-full" />

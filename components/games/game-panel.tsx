@@ -2,24 +2,13 @@
 
 import { Circle, Grab, Hand, Scissors, X } from "lucide-react";
 import { motion } from "motion/react";
-import type {
-  GameControls,
-  GameResult,
-  GameView,
-  RpsChoice,
-  Side,
-} from "@/types/chat";
+import { useT } from "@/hooks/use-locale";
+import type { GameControls, GameView, RpsChoice, Side } from "@/types/chat";
 
-const RESULT_TEXT: Record<GameResult, string> = {
-  win: "เธอชนะ!",
-  lose: "อีกฝ่ายชนะ",
-  draw: "เสมอ",
-};
-
-const RPS: { id: RpsChoice; label: string; icon: typeof Hand }[] = [
-  { id: "rock", label: "ค้อน", icon: Grab },
-  { id: "paper", label: "กระดาษ", icon: Hand },
-  { id: "scissors", label: "กรรไกร", icon: Scissors },
+const RPS: { id: RpsChoice; icon: typeof Hand }[] = [
+  { id: "rock", icon: Grab },
+  { id: "paper", icon: Hand },
+  { id: "scissors", icon: Scissors },
 ];
 
 export function GamePanel({
@@ -31,19 +20,20 @@ export function GamePanel({
   partnerName: string;
   controls: GameControls;
 }) {
+  const t = useT();
   return (
     <motion.section
       initial={{ opacity: 0, y: -8, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 420, damping: 30 }}
       className="doodle-card flex flex-col gap-2 p-3"
-      aria-label={game.type === "xo" ? "เกม XO" : "เกมเป่ายิ้งฉุบ"}
+      aria-label={game.type === "xo" ? t.games.xoLabel : t.games.rpsLabel}
     >
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-bold">
-          {game.type === "xo" ? "XO" : "เป่ายิ้งฉุบ"}
+          {game.type === "xo" ? "XO" : t.games.rps}
           <span className="ml-2 text-sm font-normal text-ink-soft">
-            {game.startedBy === "me" ? "เธอชวนเล่น" : `${partnerName} ชวนเล่น`}
+            {game.startedBy === "me" ? t.games.youStarted : t.games.partnerStarted(partnerName)}
           </span>
         </h2>
         <div className="flex gap-1.5">
@@ -52,14 +42,14 @@ export function GamePanel({
             className="doodle-btn px-3 py-1 text-sm"
             onClick={() => controls.start(game.type)}
           >
-            เริ่มใหม่
+            {t.games.restart}
           </button>
           <button
             type="button"
             className="doodle-btn px-3 py-1 text-sm"
             onClick={controls.end}
           >
-            เลิกเล่น
+            {t.games.quit}
           </button>
         </div>
       </div>
@@ -73,8 +63,9 @@ export function GamePanel({
 }
 
 function Mark({ side }: { side: Side | null }) {
-  if (side === "me") return <X className="size-6 stroke-[3] text-accent" aria-label="X ของเธอ" />;
-  if (side === "them") return <Circle className="size-5 stroke-[3]" aria-label="O ของอีกฝ่าย" />;
+  const t = useT();
+  if (side === "me") return <X className="size-6 stroke-[3] text-accent" aria-label={t.games.markMine} />;
+  if (side === "them") return <Circle className="size-5 stroke-[3]" aria-label={t.games.markTheirs} />;
   return null;
 }
 
@@ -87,22 +78,23 @@ function XoBoard({
   partnerName: string;
   onPlay: (cell: number) => void;
 }) {
+  const t = useT();
   const status = game.result
-    ? RESULT_TEXT[game.result]
+    ? t.games.result[game.result]
     : game.myTurn
-      ? "ตาเธอแล้ว"
-      : `รอ ${partnerName} เดิน`;
+      ? t.games.yourTurn
+      : t.games.waitMove(partnerName);
 
   return (
     <div className="flex items-center gap-4">
-      <div className="grid grid-cols-3 gap-1.5" role="grid" aria-label="กระดาน XO">
+      <div className="grid grid-cols-3 gap-1.5" role="grid" aria-label={t.games.board}>
         {game.board.map((side, cell) => (
           <button
             key={cell}
             type="button"
             className={`grid size-11 place-items-center rounded-lg border-2 border-ink ${game.line?.includes(cell) ? "bg-accent-soft" : "bg-card"} ${!side && game.myTurn ? "cursor-pointer hover:bg-paper" : ""}`}
             disabled={side !== null || !game.myTurn}
-            aria-label={`ช่อง ${cell + 1}${side ? "" : " ว่าง"}`}
+            aria-label={side ? t.games.cell(cell + 1) : t.games.emptyCell(cell + 1)}
             onClick={() => onPlay(cell)}
           >
             <Mark side={side} />
@@ -125,22 +117,22 @@ function RpsBoard({
   partnerName: string;
   onPick: (choice: RpsChoice) => void;
 }) {
-  const labelOf = (choice: RpsChoice) =>
-    RPS.find((item) => item.id === choice)?.label ?? choice;
+  const t = useT();
+  const labelOf = (choice: RpsChoice) => t.games.choices[choice];
 
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm" aria-live="polite">
-        รอบที่ {game.round} · เธอ {game.score.me} - {game.score.them} {partnerName}
+        {t.games.score(game.round, game.score.me, game.score.them, partnerName)}
         {game.last && (
           <span className="ml-2 font-bold">
-            รอบก่อน: {labelOf(game.last.mine)} vs {labelOf(game.last.theirs)} ·{" "}
-            {RESULT_TEXT[game.last.result]}
+            {t.games.lastRound(labelOf(game.last.mine), labelOf(game.last.theirs))} ·{" "}
+            {t.games.result[game.last.result]}
           </span>
         )}
       </p>
       <div className="flex flex-wrap items-center gap-2">
-        {RPS.map(({ id, label, icon: Icon }) => (
+        {RPS.map(({ id, icon: Icon }) => (
           <button
             key={id}
             type="button"
@@ -150,16 +142,16 @@ function RpsBoard({
             onClick={() => onPick(id)}
           >
             <Icon className="size-4" aria-hidden />
-            {label}
+            {labelOf(id)}
           </button>
         ))}
         <span className="text-sm text-ink-soft">
           {game.myPick
             ? game.theyPicked
               ? ""
-              : `รอ ${partnerName} เลือก…`
+              : t.games.waitPick(partnerName)
             : game.theyPicked
-              ? `${partnerName} เลือกแล้ว`
+              ? t.games.partnerPicked(partnerName)
               : ""}
         </span>
       </div>

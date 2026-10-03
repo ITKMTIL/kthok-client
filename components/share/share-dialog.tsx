@@ -2,7 +2,7 @@
 
 import { Copy, Download, Share2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { facultyOf } from "@/constants/faculties";
+import { facultyText } from "@/constants/faculties";
 import {
   canCopyImages,
   canShareFiles,
@@ -13,14 +13,9 @@ import {
 } from "@/lib/share-image";
 import type { ChatMessage } from "@/types/chat";
 import { ShareCard, type ShareParty } from "./share-card";
+import { useT } from "@/hooks/use-locale";
 
 type Action = "download" | "share" | "copy";
-
-const DONE: Record<Action, string> = {
-  download: "บันทึกรูปแล้ว",
-  share: "ส่งต่อให้แอพที่เลือกแล้ว",
-  copy: "คัดลอกรูปแล้ว วางได้เลย",
-};
 
 export function ShareDialog({
   messages,
@@ -33,6 +28,7 @@ export function ShareDialog({
   partner: ShareParty;
   onClose: () => void;
 }) {
+  const t = useT();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const [showPartnerName, setShowPartnerName] = useState(false);
@@ -45,10 +41,10 @@ export function ShareDialog({
     if (dialog && !dialog.open) dialog.showModal();
   }, []);
 
-  const partnerFaculty = partner.faculty ? facultyOf(partner.faculty) : undefined;
+  const partnerFaculty = partner.faculty ? facultyText(t, partner.faculty) : undefined;
   const shownPartner: ShareParty = showPartnerName
     ? partner
-    : { ...partner, name: `เพื่อนจาก${partnerFaculty?.short ?? " สจล."}` };
+    : { ...partner, name: t.share.friendFrom(partnerFaculty?.short ?? null) };
 
   async function run(action: Action) {
     const card = cardRef.current;
@@ -61,11 +57,11 @@ export function ShareDialog({
       if (action === "download") downloadPng(blob);
       else if (action === "share") await sharePng(blob);
       else await copyPng(blob);
-      setStatus(DONE[action]);
+      setStatus(t.share.done[action]);
     } catch (error) {
       if (!(error instanceof DOMException && error.name === "AbortError")) {
         setFailed(true);
-        setStatus("สร้างรูปไม่สำเร็จ ลองอีกครั้งหรือใช้ปุ่มบันทึกรูปแทน");
+        setStatus(t.share.failed);
       }
     } finally {
       setBusy(null);
@@ -84,12 +80,12 @@ export function ShareDialog({
     >
       <div className="flex items-center justify-between gap-2">
         <h2 id="share-title" className="text-lg font-bold">
-          แชร์บทสนทนา
+          {t.share.title}
         </h2>
         <button
           type="button"
           className="grid size-8 cursor-pointer place-items-center rounded-full hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
-          aria-label="ปิด"
+          aria-label={t.common.close}
           onClick={() => dialogRef.current?.close()}
         >
           <X className="size-5" aria-hidden />
@@ -112,7 +108,7 @@ export function ShareDialog({
           checked={showPartnerName}
           onChange={(event) => setShowPartnerName(event.target.checked)}
         />
-        โชว์นามแฝงของอีกฝ่ายในรูป
+        {t.share.showName}
       </label>
 
       <div className="flex flex-wrap gap-2">
@@ -123,7 +119,7 @@ export function ShareDialog({
           onClick={() => run("download")}
         >
           <Download className="size-4" aria-hidden />
-          บันทึกรูป
+          {t.share.download}
         </button>
         {canShareFiles() && (
           <button
@@ -133,7 +129,7 @@ export function ShareDialog({
             onClick={() => run("share")}
           >
             <Share2 className="size-4" aria-hidden />
-            แชร์
+            {t.share.share}
           </button>
         )}
         {canCopyImages() && (
@@ -144,7 +140,7 @@ export function ShareDialog({
             onClick={() => run("copy")}
           >
             <Copy className="size-4" aria-hidden />
-            คัดลอก
+            {t.share.copy}
           </button>
         )}
       </div>
@@ -152,7 +148,7 @@ export function ShareDialog({
         className={`min-h-5 text-sm ${failed ? "font-medium text-danger" : "text-ink-soft"}`}
         role="status"
       >
-        {busy ? "กำลังสร้างรูป…" : (status ?? "รูปสร้างในเครื่องเธอเอง เราไม่ได้เก็บไว้")}
+        {busy ? t.share.rendering : (status ?? t.share.local)}
       </p>
     </dialog>
   );

@@ -4,8 +4,10 @@ import { ShieldAlert } from "lucide-react";
 import { motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
 import { useDismiss } from "@/hooks/use-dismiss";
+import { useT } from "@/hooks/use-locale";
 
 export function PanicButton({ onConfirm }: { onConfirm: () => void }) {
+  const t = useT();
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
@@ -16,9 +18,9 @@ export function PanicButton({ onConfirm }: { onConfirm: () => void }) {
       <button
         type="button"
         className="doodle-btn grid size-9 place-items-center bg-danger text-card"
-        aria-label="ออกฉุกเฉิน: ออกจากห้องและบล็อก"
+        aria-label={t.safety.panicLabel}
         aria-expanded={open}
-        title="ออกฉุกเฉิน"
+        title={t.safety.panic}
         onClick={() => setOpen((value) => !value)}
       >
         <ShieldAlert className="size-4" aria-hidden />
@@ -30,11 +32,11 @@ export function PanicButton({ onConfirm }: { onConfirm: () => void }) {
           transition={{ type: "spring", stiffness: 520, damping: 30 }}
           style={{ transformOrigin: "100% 0%" }}
           role="alertdialog"
-          aria-label="ยืนยันออกและบล็อก"
+          aria-label={t.safety.panicConfirmLabel}
           className="absolute right-0 top-full z-20 mt-2 flex w-64 flex-col gap-2 rounded-2xl border-2 border-ink bg-card p-3 shadow-[3px_3px_0_var(--color-ink)]"
         >
           <p className="text-sm">
-            ออกจากห้องและบล็อกคนนี้ทันที จะไม่ถูกจับคู่กันอีก
+            {t.safety.panicConfirm}
           </p>
           <div className="flex gap-2">
             <button
@@ -42,7 +44,7 @@ export function PanicButton({ onConfirm }: { onConfirm: () => void }) {
               className="doodle-btn flex-1 px-2 py-1 text-sm"
               onClick={close}
             >
-              ยกเลิก
+              {t.common.cancel}
             </button>
             <button
               type="button"
@@ -53,7 +55,7 @@ export function PanicButton({ onConfirm }: { onConfirm: () => void }) {
                 onConfirm();
               }}
             >
-              ออกและบล็อก
+              {t.safety.panicAction}
             </button>
           </div>
         </motion.div>

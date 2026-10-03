@@ -13,6 +13,7 @@ import {
 import { motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
 import { useDismiss } from "@/hooks/use-dismiss";
+import { useT } from "@/hooks/use-locale";
 import type { GameType } from "@/types/chat";
 
 export function ChatMenu({
@@ -32,6 +33,7 @@ export function ChatMenu({
   onToggleReadReceipts: () => void;
   onBlock: (() => void) | null;
 }) {
+  const t = useT();
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -46,7 +48,7 @@ export function ChatMenu({
       <button
         type="button"
         className="doodle-btn grid size-9 place-items-center"
-        aria-label="ตัวเลือกเพิ่มเติม"
+        aria-label={t.menu.more}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => (open ? close() : setOpen(true))}
@@ -65,7 +67,7 @@ export function ChatMenu({
           {confirming && onBlock ? (
             <div className="flex flex-col gap-2 p-1">
               <p className="text-sm">
-                บล็อกแล้วจะออกจากห้องทันที และจะไม่ถูกจับคู่กับคนนี้อีก
+                {t.menu.blockConfirm}
               </p>
               <div className="flex gap-2">
                 <button
@@ -73,7 +75,7 @@ export function ChatMenu({
                   className="doodle-btn flex-1 px-2 py-1 text-sm"
                   onClick={close}
                 >
-                  ยกเลิก
+                  {t.common.cancel}
                 </button>
                 <button
                   type="button"
@@ -83,7 +85,7 @@ export function ChatMenu({
                     onBlock();
                   }}
                 >
-                  บล็อก
+                  {t.menu.block}
                 </button>
               </div>
             </div>
@@ -91,7 +93,7 @@ export function ChatMenu({
             <>
               <MenuItem
                 icon={<Share2 className="size-4" aria-hidden />}
-                label="แชร์บทสนทนาเป็นรูป"
+                label={t.menu.share}
                 disabled={!canShare}
                 onClick={() => {
                   close();
@@ -102,7 +104,7 @@ export function ChatMenu({
                 <>
                   <MenuItem
                     icon={<Grid3x3 className="size-4" aria-hidden />}
-                    label="ชวนเล่น XO"
+                    label={t.menu.playXo}
                     onClick={() => {
                       close();
                       onStartGame("xo");
@@ -110,7 +112,7 @@ export function ChatMenu({
                   />
                   <MenuItem
                     icon={<Scissors className="size-4" aria-hidden />}
-                    label="ชวนเป่ายิ้งฉุบ"
+                    label={t.menu.playRps}
                     onClick={() => {
                       close();
                       onStartGame("rps");
@@ -126,7 +128,7 @@ export function ChatMenu({
                     <Eye className="size-4" aria-hidden />
                   )
                 }
-                label={readReceipts ? "ปิดสถานะอ่านแล้ว" : "เปิดสถานะอ่านแล้ว"}
+                label={readReceipts ? t.menu.receiptsOff : t.menu.receiptsOn}
                 onClick={() => {
                   close();
                   onToggleReadReceipts();
@@ -135,7 +137,7 @@ export function ChatMenu({
               {onReport && (
                 <MenuItem
                   icon={<Flag className="size-4 text-danger" aria-hidden />}
-                  label="รายงานคนนี้"
+                  label={t.menu.report}
                   onClick={() => {
                     close();
                     onReport();
@@ -145,7 +147,7 @@ export function ChatMenu({
               {onBlock && (
                 <MenuItem
                   icon={<Ban className="size-4 text-danger" aria-hidden />}
-                  label="บล็อกคนนี้"
+                  label={t.menu.blockUser}
                   onClick={() => setConfirming(true)}
                 />
               )}

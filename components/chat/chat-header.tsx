@@ -1,6 +1,7 @@
 import { LogOut, Phone, SkipForward, User } from "lucide-react";
 import { PanicButton } from "@/components/safety/panic-button";
-import { facultyOf } from "@/constants/faculties";
+import { facultyOf, facultyText } from "@/constants/faculties";
+import { useT } from "@/hooks/use-locale";
 import type { GameType, Partner } from "@/types/chat";
 import { ChatMenu } from "./chat-menu";
 
@@ -33,6 +34,7 @@ export function ChatHeader({
   onLeave: () => void;
   onPanic: (() => void) | null;
 }) {
+  const t = useT();
   const faculty = partner ? facultyOf(partner.faculty) : undefined;
   const FacultyIcon = faculty?.icon ?? User;
 
@@ -44,7 +46,7 @@ export function ChatHeader({
       <div className="min-w-0 flex-1">
         <h1 className="truncate font-bold leading-tight sm:text-lg">{partner?.nickname}</h1>
         <p className="truncate text-sm text-ink-soft">
-          {faculty?.name}
+          {partner && facultyText(t, partner.faculty)?.name}
         </p>
       </div>
       <ChatMenu
@@ -61,8 +63,8 @@ export function ChatHeader({
           type="button"
           className="doodle-btn grid size-9 shrink-0 place-items-center"
           disabled={!canCall}
-          aria-label="ชวนคุยเสียง"
-          title="ชวนคุยเสียง"
+          aria-label={t.room.call}
+          title={t.room.call}
           onClick={onCall}
         >
           <Phone className="size-4" aria-hidden />
@@ -72,22 +74,22 @@ export function ChatHeader({
       <button
         type="button"
         className="doodle-btn flex h-9 shrink-0 items-center gap-1.5 px-2.5 sm:px-3"
-        aria-label="คนถัดไป"
-        title="คนถัดไป"
+        aria-label={t.room.next}
+        title={t.room.next}
         onClick={onNext}
       >
         <SkipForward className="size-4" aria-hidden />
-        <span className="max-sm:hidden">คนถัดไป</span>
+        <span className="max-sm:hidden">{t.room.next}</span>
       </button>
       <button
         type="button"
         className="doodle-btn flex h-9 shrink-0 items-center gap-1.5 px-2.5 sm:px-3"
-        aria-label="ออกจากห้อง"
-        title="ออกจากห้อง"
+        aria-label={t.room.leave}
+        title={t.room.leave}
         onClick={onLeave}
       >
         <LogOut className="size-4" aria-hidden />
-        <span className="max-sm:hidden">ออก</span>
+        <span className="max-sm:hidden">{t.room.leaveShort}</span>
       </button>
     </header>
   );

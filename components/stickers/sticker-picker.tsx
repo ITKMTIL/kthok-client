@@ -2,9 +2,10 @@
 
 import { motion } from "motion/react";
 import { useRef } from "react";
-import { STICKERS, type StickerId } from "@/constants/stickers";
+import { STICKERS, stickerLabel, type StickerId } from "@/constants/stickers";
 import { useDismiss } from "@/hooks/use-dismiss";
 import { Sticker } from "./sticker";
+import { useT } from "@/hooks/use-locale";
 
 export function StickerPicker({
   onPick,
@@ -13,6 +14,7 @@ export function StickerPicker({
   onPick: (id: StickerId) => void;
   onClose: () => void;
 }) {
+  const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   useDismiss(ref, true, onClose);
 
@@ -23,7 +25,7 @@ export function StickerPicker({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 480, damping: 30 }}
       role="group"
-      aria-label="เลือกสติกเกอร์"
+      aria-label={t.stickers.pick}
       className="absolute bottom-full left-0 z-20 mb-2 grid w-[min(22rem,calc(100vw-1.5rem))] grid-cols-5 gap-1 rounded-2xl border-2 border-ink bg-card p-2 shadow-[3px_3px_0_var(--color-ink)]"
     >
       {STICKERS.map((sticker) => (
@@ -31,7 +33,7 @@ export function StickerPicker({
           key={sticker.id}
           type="button"
           className="grid aspect-square cursor-pointer place-items-center rounded-xl hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
-          aria-label={`ส่งสติกเกอร์ ${sticker.label}`}
+          aria-label={t.stickers.sendOne(stickerLabel(t, sticker.id))}
           onClick={() => onPick(sticker.id)}
         >
           <Sticker id={sticker.id} className="size-14" />

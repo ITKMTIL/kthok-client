@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useLocale, useT } from "@/hooks/use-locale";
 import { EMAIL_DOMAIN, GOOGLE_CLIENT_ID } from "@/lib/config";
 import { loadGoogleIdentity } from "@/lib/google-identity";
 
@@ -14,6 +15,8 @@ export function GoogleSignInButton({
   const hostRef = useRef<HTMLDivElement>(null);
   const onCredentialRef = useRef(onCredential);
   const [failed, setFailed] = useState(false);
+  const [locale] = useLocale();
+  const t = useT();
 
   useEffect(() => {
     onCredentialRef.current = onCredential;
@@ -43,7 +46,7 @@ export function GoogleSignInButton({
             size: "large",
             shape: "pill",
             text: "signin_with",
-            locale: "th",
+            locale,
             width,
           });
         };
@@ -58,14 +61,19 @@ export function GoogleSignInButton({
       cancelled = true;
       observer?.disconnect();
     };
-  }, []);
+  }, [locale]);
 
   if (failed) {
     return (
       <p role="alert" className="font-medium text-danger">
-        โหลดปุ่มล็อกอินของ Google ไม่สำเร็จ ลองรีเฟรชหน้านี้นะ
+        {t.login.googleFailed}
       </p>
     );
   }
-  return <div ref={hostRef} className="flex min-h-11 w-full justify-center" />;
+  return (
+    <div
+      ref={hostRef}
+      className="flex min-h-11 w-full justify-center [color-scheme:light]"
+    />
+  );
 }

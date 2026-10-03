@@ -2,15 +2,10 @@
 
 import { Flag, X } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useT } from "@/hooks/use-locale";
 import type { ChatMessage, ReportInput, ReportReason } from "@/types/chat";
 
-const REASONS: { id: ReportReason; label: string }[] = [
-  { id: "harassment", label: "คุกคาม ก่อกวน" },
-  { id: "sexual", label: "เรื่องทางเพศที่ไม่ต้องการ" },
-  { id: "hate", label: "ด่าทอ เหยียด" },
-  { id: "spam", label: "สแปม โฆษณา หลอกลวง" },
-  { id: "other", label: "อื่น ๆ" },
-];
+const REASONS: ReportReason[] = ["harassment", "sexual", "hate", "spam", "other"];
 
 const MAX_EVIDENCE = 20;
 
@@ -25,6 +20,7 @@ export function ReportDialog({
   onSubmit: (input: ReportInput) => Promise<string | null>;
   onClose: () => void;
 }) {
+  const t = useT();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [reason, setReason] = useState<ReportReason | null>(null);
   const [note, setNote] = useState("");
@@ -77,12 +73,12 @@ export function ReportDialog({
       <div className="flex items-center gap-2">
         <h2 id="report-title" className="flex flex-1 items-center gap-1.5 text-lg font-bold">
           <Flag className="size-5 text-danger" aria-hidden />
-          รายงาน {partnerName}
+          {t.report.title(partnerName)}
         </h2>
         <button
           type="button"
           className="grid size-8 cursor-pointer place-items-center rounded-full hover:bg-accent-soft"
-          aria-label="ปิด"
+          aria-label={t.common.close}
           onClick={() => dialogRef.current?.close()}
         >
           <X className="size-5" aria-hidden />
@@ -91,29 +87,29 @@ export function ReportDialog({
 
       {done ? (
         <div className="flex flex-col gap-3">
-          <p>ส่งรายงานแล้ว ขอบคุณที่ช่วยดูแลชุมชนนะ ทีมงานจะตรวจสอบโดยไม่เปิดเผยว่าใครเป็นคนรายงาน</p>
+          <p>{t.report.done}</p>
           <button
             type="button"
             className="doodle-btn doodle-btn-primary px-4 py-2 font-bold"
             onClick={() => dialogRef.current?.close()}
           >
-            ปิด
+            {t.common.close}
           </button>
         </div>
       ) : (
         <form className="flex min-h-0 flex-col gap-3" onSubmit={submit}>
           <fieldset className="flex flex-wrap gap-2">
-            <legend className="mb-1 text-sm font-bold">เกิดอะไรขึ้น?</legend>
+            <legend className="mb-1 text-sm font-bold">{t.report.what}</legend>
             {REASONS.map((item) => (
-              <label key={item.id} className="doodle-chip text-sm">
+              <label key={item} className="doodle-chip text-sm">
                 <input
                   type="radio"
                   name="report-reason"
                   className="sr-only"
-                  checked={reason === item.id}
-                  onChange={() => setReason(item.id)}
+                  checked={reason === item}
+                  onChange={() => setReason(item)}
                 />
-                {item.label}
+                {t.report.reasons[item]}
               </label>
             ))}
           </fieldset>
@@ -121,7 +117,7 @@ export function ReportDialog({
           {candidates.length > 0 && (
             <fieldset className="flex min-h-0 flex-col gap-1">
               <legend className="mb-1 text-sm font-bold">
-                แนบข้อความเป็นหลักฐาน (ไม่บังคับ สูงสุด {MAX_EVIDENCE})
+                {t.report.evidence(MAX_EVIDENCE)}
               </legend>
               <div className="flex max-h-48 flex-col gap-1 overflow-y-auto rounded-xl border-2 border-ink p-2">
                 {candidates.map((message) => (
@@ -137,7 +133,7 @@ export function ReportDialog({
                     />
                     <span className="min-w-0 break-words">
                       <span className="font-bold">
-                        {message.mine ? "เธอ" : partnerName}:
+                        {message.mine ? t.messages.you : partnerName}:
                       </span>{" "}
                       {message.text}
                     </span>
@@ -148,7 +144,7 @@ export function ReportDialog({
           )}
 
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-bold">เล่าเพิ่ม (ไม่บังคับ)</span>
+            <span className="font-bold">{t.report.note}</span>
             <textarea
               className="doodle-field min-h-16 resize-none"
               value={note}
@@ -158,7 +154,7 @@ export function ReportDialog({
           </label>
 
           <p className="text-xs text-ink-soft">
-            เราเก็บเฉพาะข้อความที่เธอเลือกแนบ แบบเข้ารหัส ให้ทีมงานตรวจ และลบทิ้งอัตโนมัติใน 30 วัน อีกฝ่ายจะไม่รู้ว่าใครรายงาน
+            {t.report.privacy}
           </p>
           {error && (
             <p className="text-sm font-medium text-danger" role="alert">
@@ -170,7 +166,7 @@ export function ReportDialog({
             className="doodle-btn bg-danger px-4 py-2 font-bold text-card"
             disabled={!reason || busy}
           >
-            ส่งรายงาน
+            {t.report.submit}
           </button>
         </form>
       )}

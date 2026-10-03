@@ -2,6 +2,7 @@ import { FACULTIES, facultyOf } from "@/constants/faculties";
 import { AUTH_REQUIRED } from "@/lib/config";
 import { pick, randomNickname } from "@/lib/nickname";
 import { createStoredValue } from "@/lib/storage";
+import { currentDict } from "./use-locale";
 import type { StoredProfile } from "@/types/auth";
 
 const profileStore = createStoredValue<StoredProfile>(
@@ -15,8 +16,8 @@ const profileStore = createStoredValue<StoredProfile>(
   },
   () =>
     AUTH_REQUIRED
-      ? { nickname: randomNickname() }
-      : { nickname: randomNickname(), faculty: pick(FACULTIES).id },
+      ? { nickname: randomNickname(currentDict()) }
+      : { nickname: randomNickname(currentDict()), faculty: pick(FACULTIES).id },
 );
 
 export function saveProfile(profile: StoredProfile) {
