@@ -12,7 +12,7 @@ export type ChatAction =
   | { type: "connected"; recovered: boolean }
   | { type: "disconnected" }
   | { type: "authenticated"; faculty: FacultyId; admin: boolean }
-  | { type: "features"; call: boolean; block: boolean }
+  | { type: "features"; call: boolean; voice: boolean; block: boolean }
   | { type: "stats"; online: number }
   | { type: "search"; prefers: FacultyId | null }
   | { type: "waiting"; roomId: string }
@@ -34,6 +34,7 @@ export type ChatAction =
 export const initialChatState: ChatState = {
   connected: false,
   callEnabled: false,
+  voiceEnabled: false,
   blockEnabled: false,
   isAdmin: false,
   selfFaculty: null,
@@ -73,9 +74,10 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
             ...initialChatState,
             connected: true,
             callEnabled: state.callEnabled,
+            voiceEnabled: state.voiceEnabled,
             blockEnabled: state.blockEnabled,
             isAdmin: state.isAdmin,
-        selfFaculty: state.selfFaculty,
+            selfFaculty: state.selfFaculty,
             online: state.online,
             error: DISCONNECTED_MESSAGE,
           };
@@ -85,6 +87,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return {
         ...state,
         callEnabled: action.call,
+        voiceEnabled: action.voice,
         blockEnabled: action.block,
       };
     case "authenticated":
@@ -96,6 +99,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...initialChatState,
         connected: state.connected,
         callEnabled: state.callEnabled,
+        voiceEnabled: state.voiceEnabled,
         blockEnabled: state.blockEnabled,
         isAdmin: state.isAdmin,
         selfFaculty: state.selfFaculty,
@@ -166,6 +170,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...initialChatState,
         connected: state.connected,
         callEnabled: state.callEnabled,
+        voiceEnabled: state.voiceEnabled,
         blockEnabled: state.blockEnabled,
         isAdmin: state.isAdmin,
         selfFaculty: state.selfFaculty,

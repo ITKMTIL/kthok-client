@@ -9,21 +9,26 @@ import {
   FIND_ERRORS,
   SEND_ERROR_FALLBACK,
   SEND_ERRORS,
+  VOICE_SEND_ERRORS,
 } from "@/constants/messages";
 import { facultyOf, type FacultyId } from "@/constants/faculties";
 import type { Reaction } from "@/constants/reactions";
 import { chatReducer, initialChatState } from "@/lib/chat-reducer";
 import { CORE_URL } from "@/lib/config";
+import { voicePlayer } from "@/lib/voice-player";
 import type { Profile } from "@/types/auth";
 import type {
   AddTrackAck,
   IncomingMessage,
+  IncomingVoice,
   FindAck,
   MatchedPayload,
   MusicControls,
   MusicPayload,
   ReactionPayload,
+  RecordedVoice,
   SendAck,
+  VoiceSendAck,
 } from "@/types/chat";
 
 const NO_REACTIONS = { mine: null, theirs: null };
@@ -72,12 +77,15 @@ export function useChat({
     socket.on("disconnect", () => dispatch({ type: "disconnected" }));
     socket.on("auth:error", () => onAuthErrorRef.current());
     socket.on("auth:banned", () => onBannedRef.current());
-    socket.on("features", (features: { call?: boolean; block?: boolean }) =>
-      dispatch({
-        type: "features",
-        call: features.call === true,
-        block: features.block === true,
-      }),
+    socket.on(
+      "features",
+      (features: { call?: boolean; voice?: boolean; block?: boolean }) =>
+        dispatch({
+          type: "features",
+          call: features.call === true,
+          voice: features.voice === true,
+          block: features.block === true,
+        }),
     );
     socket.on("auth:ok", (payload: { faculty: string; admin?: boolean }) => {
       const faculty = facultyOf(payload.faculty);
@@ -102,6 +110,23 @@ export function useChat({
       dispatch({
         type: "message",
         message: { ...message, mine: false, reactions: NO_REACTIONS },
+      }),
+    );
+    socket.on("voice:message", ({ audio, mime, ...meta }: IncomingVoice) =>
+      dispatch({
+        type: "message",
+        message: {
+          id: meta.id,
+          at: meta.at,
+          text: "",
+          mine: false,
+          reactions: NO_REACTIONS,
+          voice: {
+            url: URL.createObjectURL(new Blob([audio], { type: mime })),
+            duration: meta.duration,
+            peaks: meta.peaks,
+          },
+        },
       }),
     );
     socket.on(
@@ -137,6 +162,29 @@ export function useChat({
       socketRef.current = null;
     };
   }, [socket]);
+
+  const voiceUrlsRef = useRef(new Set<string>());
+
+  useEffect(() => {
+    const current = new Set(
+      state.messages.flatMap((message) =>
+        message.voice ? [message.voice.url] : [],
+      ),
+    );
+    for (const url of voiceUrlsRef.current) {
+      if (!current.has(url)) URL.revokeObjectURL(url);
+    }
+    if (current.size === 0) voicePlayer.stop();
+    voiceUrlsRef.current = current;
+  }, [state.messages]);
+
+  useEffect(
+    () => () => {
+      voiceUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      voicePlayer.stop();
+    },
+    [],
+  );
 
   const find = useCallback((profile: Profile, prefers: FacultyId | null) => {
     dispatch({ type: "search", prefers });
@@ -180,6 +228,46 @@ export function useChat({
           resolve(null);
         });
       }),
+    [],
+  );
+
+  const sendVoice = useCallback(
+    async (voice: RecordedVoice) => {
+      const socket = socketRef.current;
+      if (!socket?.connected) return SEND_ERRORS.offline;
+      const audio = await voice.blob.arrayBuffer();
+      return new Promise<string | null>((resolve) => {
+        socket.emit(
+          "voice:send",
+          { audio, duration: voice.duration, peaks: voice.peaks },
+          (ack: VoiceSendAck) => {
+            if (!ack.ok) {
+              return resolve(
+                VOICE_SEND_ERRORS[ack.error] ??
+                  SEND_ERRORS[ack.error] ??
+                  SEND_ERROR_FALLBACK,
+              );
+            }
+            dispatch({
+              type: "message",
+              message: {
+                id: ack.message.id,
+                at: ack.message.at,
+                text: "",
+                mine: true,
+                reactions: NO_REACTIONS,
+                voice: {
+                  url: URL.createObjectURL(voice.blob),
+                  duration: ack.message.duration,
+                  peaks: ack.message.peaks,
+                },
+              },
+            });
+            resolve(null);
+          },
+        );
+      });
+    },
     [],
   );
 
@@ -240,6 +328,7 @@ export function useChat({
     find,
     leave,
     send,
+    sendVoice,
     react,
     block,
     sendFeedback,

@@ -10,15 +10,38 @@ export interface MessageReactions {
   theirs: string | null;
 }
 
+export interface VoiceClip {
+  url: string;
+  duration: number;
+  peaks: number[];
+}
+
+export interface RecordedVoice {
+  blob: Blob;
+  duration: number;
+  peaks: number[];
+}
+
 export interface ChatMessage {
   id: string;
   text: string;
   at: number;
   mine: boolean;
   reactions: MessageReactions;
+  voice?: VoiceClip;
 }
 
-export type IncomingMessage = Omit<ChatMessage, "mine" | "reactions">;
+export type IncomingMessage = Omit<ChatMessage, "mine" | "reactions" | "voice">;
+
+export interface VoiceMeta {
+  id: string;
+  at: number;
+  duration: number;
+  peaks: number[];
+  mime: string;
+}
+
+export type IncomingVoice = VoiceMeta & { audio: ArrayBuffer };
 
 export type ReactionPayload = MessageReactions & {
   roomId: string;
@@ -51,6 +74,7 @@ export interface MusicControls {
 export interface ChatState {
   connected: boolean;
   callEnabled: boolean;
+  voiceEnabled: boolean;
   blockEnabled: boolean;
   isAdmin: boolean;
   selfFaculty: FacultyId | null;
@@ -82,6 +106,10 @@ export type FindAck =
 
 export type SendAck =
   | { ok: true; message: IncomingMessage }
+  | { ok: false; error: string };
+
+export type VoiceSendAck =
+  | { ok: true; message: VoiceMeta }
   | { ok: false; error: string };
 
 export type AddTrackAck = { ok: true } | { ok: false; error: string };

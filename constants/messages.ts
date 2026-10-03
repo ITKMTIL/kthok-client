@@ -10,6 +10,14 @@ export const SEND_ERRORS: Record<string, string> = {
   not_in_chat: "ห้องนี้ปิดแล้ว",
   offline: "ยังต่อเน็ตไม่ติด รอแป๊บแล้วส่งอีกที",
 };
+export const VOICE_SEND_ERRORS: Record<string, string> = {
+  rate_limited: "ส่งข้อความเสียงถี่ไปหน่อย พักสักนาทีนะ",
+  invalid_audio: "ไฟล์เสียงใหญ่ไปหรือเสียหาย ลองอัดใหม่อีกที",
+  invalid_duration: "ข้อความเสียงยาวได้ไม่เกิน 1 นาที",
+  disabled: "ตอนนี้ปิดข้อความเสียงอยู่",
+};
+export const MIC_DENIED_MESSAGE =
+  "เปิดไมค์ไม่ได้ ลองอนุญาตไมโครโฟนในเบราว์เซอร์ก่อนนะ";
 export const SEND_ERROR_FALLBACK = "ส่งข้อความไม่สำเร็จ ลองอีกครั้งนะ";
 
 export const ADD_TRACK_ERRORS: Record<string, string> = {
