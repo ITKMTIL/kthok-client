@@ -135,7 +135,7 @@ dialog[open]::backdrop {
 }
 
 .splash {
-  animation: splash-fallback 0.4s ease 5s forwards;
+  animation: splash-fallback 0.4s ease 8s forwards;
 }
 
 @keyframes dialog-in {
