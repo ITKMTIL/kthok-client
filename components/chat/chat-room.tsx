@@ -130,6 +130,7 @@ export function ChatRoom({
           partnerName={state.partner?.nickname ?? ""}
           partnerTyping={state.partnerTyping}
           ended={ended}
+          endedBy={state.endedBy}
           selected={selection.selected}
           onToggleSelected={selection.toggle}
           onReact={onReact}

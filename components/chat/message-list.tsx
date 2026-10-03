@@ -15,6 +15,7 @@ export function MessageList({
   partnerName,
   partnerTyping,
   ended,
+  endedBy,
   selected,
   onToggleSelected,
   onReact,
@@ -28,6 +29,7 @@ export function MessageList({
   partnerName: string;
   partnerTyping: boolean;
   ended: boolean;
+  endedBy: "me" | "partner" | null;
   selected: ReadonlySet<string> | null;
   onToggleSelected: (messageId: string) => void;
   onReact: (messageId: string, reaction: Reaction | null) => void;
@@ -92,7 +94,11 @@ export function MessageList({
       )}
       {ended && (
         <div className="mt-2 flex flex-col items-center gap-2 text-center">
-          <p className="font-medium">{partnerName} ออกจากห้องไปแล้ว</p>
+          <p className="font-medium">
+            {endedBy === "me"
+              ? "เธอออกจากห้องแล้ว"
+              : `${partnerName} ออกจากห้องไปแล้ว`}
+          </p>
           <RoomFeedback onFeedback={onFeedback} />
           <KeepTalking keep={keep} partnerName={partnerName} onOffer={onKeep} />
           <button

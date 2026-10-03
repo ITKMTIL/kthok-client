@@ -254,6 +254,11 @@ export function useChat({
 
   const leave = useCallback(() => {
     socketRef.current?.emit("room:leave");
+    dispatch({ type: "left" });
+  }, []);
+
+  const exit = useCallback(() => {
+    socketRef.current?.emit("room:leave");
     dispatch({ type: "reset" });
   }, []);
 
@@ -446,6 +451,7 @@ export function useChat({
     socket,
     find,
     leave,
+    exit,
     send,
     sendVoice,
     askPrompt,

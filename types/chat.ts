@@ -150,6 +150,7 @@ export interface ChatState {
   partnerAway: boolean;
   music: MusicState | null;
   game: GameView | null;
+  endedBy: "me" | "partner" | null;
   keep: KeepState;
   error: string | null;
 }

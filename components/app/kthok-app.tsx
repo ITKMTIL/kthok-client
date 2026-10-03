@@ -51,6 +51,7 @@ export function KThokApp() {
     socket,
     find,
     leave,
+    exit,
     send,
     sendVoice,
     askPrompt,
@@ -168,7 +169,7 @@ export function KThokApp() {
               onNext={() =>
                 startSearch({ prefers: state.prefers, topic: state.topic })
               }
-              onLeave={leave}
+              onLeave={state.phase === "ended" ? exit : leave}
             />
           </Screen>
         )}
