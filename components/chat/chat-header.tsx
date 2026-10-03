@@ -8,6 +8,7 @@ export function ChatHeader({
   canShare,
   onShare,
   onStartGame,
+  onReport,
   onBlock,
   canCall,
   onCall,
@@ -18,6 +19,7 @@ export function ChatHeader({
   canShare: boolean;
   onShare: () => void;
   onStartGame: ((type: GameType) => void) | null;
+  onReport: (() => void) | null;
   onBlock: (() => void) | null;
   canCall: boolean;
   onCall: (() => void) | null;
@@ -42,6 +44,7 @@ export function ChatHeader({
         canShare={canShare}
         onShare={onShare}
         onStartGame={onStartGame}
+        onReport={onReport}
         onBlock={onBlock}
       />
       {onCall && (

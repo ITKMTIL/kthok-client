@@ -1,6 +1,13 @@
 "use client";
 
-import { Ban, EllipsisVertical, Grid3x3, Scissors, Share2 } from "lucide-react";
+import {
+  Ban,
+  EllipsisVertical,
+  Flag,
+  Grid3x3,
+  Scissors,
+  Share2,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
 import { useDismiss } from "@/hooks/use-dismiss";
@@ -10,11 +17,13 @@ export function ChatMenu({
   canShare,
   onShare,
   onStartGame,
+  onReport,
   onBlock,
 }: {
   canShare: boolean;
   onShare: () => void;
   onStartGame: ((type: GameType) => void) | null;
+  onReport: (() => void) | null;
   onBlock: (() => void) | null;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -102,6 +111,16 @@ export function ChatMenu({
                     }}
                   />
                 </>
+              )}
+              {onReport && (
+                <MenuItem
+                  icon={<Flag className="size-4 text-danger" aria-hidden />}
+                  label="รายงานคนนี้"
+                  onClick={() => {
+                    close();
+                    onReport();
+                  }}
+                />
               )}
               {onBlock && (
                 <MenuItem

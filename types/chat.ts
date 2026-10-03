@@ -114,11 +114,26 @@ export interface GameControls {
   end: () => void;
 }
 
+export interface KeepState {
+  offered: boolean;
+  partnerOffered: boolean;
+  partnerContact: string | null;
+}
+
+export type ReportReason = "harassment" | "sexual" | "hate" | "spam" | "other";
+
+export interface ReportInput {
+  reason: ReportReason;
+  note: string;
+  messages: { id: string; text: string }[];
+}
+
 export interface ChatState {
   connected: boolean;
   callEnabled: boolean;
   voiceEnabled: boolean;
   blockEnabled: boolean;
+  reportEnabled: boolean;
   isAdmin: boolean;
   selfFaculty: FacultyId | null;
   online: number | null;
@@ -135,6 +150,7 @@ export interface ChatState {
   partnerAway: boolean;
   music: MusicState | null;
   game: GameView | null;
+  keep: KeepState;
   error: string | null;
 }
 

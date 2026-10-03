@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Reaction } from "@/constants/reactions";
-import type { ChatMessage } from "@/types/chat";
+import { Flag } from "lucide-react";
+import { KeepTalking } from "@/components/followup/keep-talking";
+import type { ChatMessage, KeepState } from "@/types/chat";
 import { BouncingDots } from "@/components/ui/bouncing-dots";
 import { MessageBubble } from "./message-bubble";
 import { PromptCard } from "./prompt-card";
@@ -17,6 +19,9 @@ export function MessageList({
   onToggleSelected,
   onReact,
   onFeedback,
+  keep,
+  onKeep,
+  onReport,
   onNext,
 }: {
   messages: ChatMessage[];
@@ -27,6 +32,9 @@ export function MessageList({
   onToggleSelected: (messageId: string) => void;
   onReact: (messageId: string, reaction: Reaction | null) => void;
   onFeedback: (rating: "up" | "down") => void;
+  keep: KeepState;
+  onKeep: (contact: string) => Promise<string | null>;
+  onReport: (() => void) | null;
   onNext: () => void;
 }) {
   const logRef = useRef<HTMLDivElement>(null);
@@ -86,6 +94,7 @@ export function MessageList({
         <div className="mt-2 flex flex-col items-center gap-2 text-center">
           <p className="font-medium">{partnerName} ออกจากห้องไปแล้ว</p>
           <RoomFeedback onFeedback={onFeedback} />
+          <KeepTalking keep={keep} partnerName={partnerName} onOffer={onKeep} />
           <button
             type="button"
             className="doodle-btn doodle-btn-primary px-5 py-1.5 font-bold"
@@ -93,6 +102,16 @@ export function MessageList({
           >
             หาเพื่อนคนใหม่
           </button>
+          {onReport && (
+            <button
+              type="button"
+              className="flex cursor-pointer items-center gap-1 text-sm text-ink-soft underline-offset-2 hover:underline"
+              onClick={onReport}
+            >
+              <Flag className="size-3.5" aria-hidden />
+              มีปัญหากับคนนี้? รายงาน
+            </button>
+          )}
         </div>
       )}
       <div ref={bottomRef} />

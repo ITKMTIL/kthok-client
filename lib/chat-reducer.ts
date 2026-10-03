@@ -15,7 +15,13 @@ export type ChatAction =
   | { type: "connected"; recovered: boolean }
   | { type: "disconnected" }
   | { type: "authenticated"; faculty: FacultyId; admin: boolean }
-  | { type: "features"; call: boolean; voice: boolean; block: boolean }
+  | {
+      type: "features";
+      call: boolean;
+      voice: boolean;
+      block: boolean;
+      report: boolean;
+    }
   | { type: "stats"; online: number; waiting: WaitingSummary }
   | { type: "search"; prefers: FacultyId | null; topic: TopicId }
   | { type: "waiting"; roomId: string }
@@ -32,6 +38,9 @@ export type ChatAction =
     }
   | { type: "music"; roomId: string; music: MusicState }
   | { type: "game"; roomId: string; game: GameView | null }
+  | { type: "keepSent" }
+  | { type: "keepOffered"; roomId: string }
+  | { type: "contact"; roomId: string; contact: string }
   | { type: "closed"; roomId: string }
   | { type: "reset"; error?: string };
 
@@ -40,6 +49,7 @@ export const initialChatState: ChatState = {
   callEnabled: false,
   voiceEnabled: false,
   blockEnabled: false,
+  reportEnabled: false,
   isAdmin: false,
   selfFaculty: null,
   online: null,
@@ -56,6 +66,7 @@ export const initialChatState: ChatState = {
   partnerAway: false,
   music: null,
   game: null,
+  keep: { offered: false, partnerOffered: false, partnerContact: null },
   error: null,
 };
 
@@ -84,6 +95,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
             callEnabled: state.callEnabled,
             voiceEnabled: state.voiceEnabled,
             blockEnabled: state.blockEnabled,
+            reportEnabled: state.reportEnabled,
             isAdmin: state.isAdmin,
             selfFaculty: state.selfFaculty,
             online: state.online,
@@ -98,6 +110,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         callEnabled: action.call,
         voiceEnabled: action.voice,
         blockEnabled: action.block,
+        reportEnabled: action.report,
       };
     case "authenticated":
       return { ...state, selfFaculty: action.faculty, isAdmin: action.admin };
@@ -110,6 +123,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         callEnabled: state.callEnabled,
         voiceEnabled: state.voiceEnabled,
         blockEnabled: state.blockEnabled,
+        reportEnabled: state.reportEnabled,
         isAdmin: state.isAdmin,
         selfFaculty: state.selfFaculty,
         online: state.online,
@@ -166,6 +180,25 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         : state;
     case "music":
       return inRoom(action.roomId) ? { ...state, music: action.music } : state;
+    case "keepSent":
+      return state.phase === "ended"
+        ? { ...state, keep: { ...state.keep, offered: true } }
+        : state;
+    case "keepOffered":
+      return state.roomId === action.roomId
+        ? { ...state, keep: { ...state.keep, partnerOffered: true } }
+        : state;
+    case "contact":
+      return state.roomId === action.roomId
+        ? {
+            ...state,
+            keep: {
+              offered: true,
+              partnerOffered: true,
+              partnerContact: action.contact,
+            },
+          }
+        : state;
     case "game":
       return inRoom(action.roomId) ? { ...state, game: action.game } : state;
     case "closed":
@@ -186,6 +219,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         callEnabled: state.callEnabled,
         voiceEnabled: state.voiceEnabled,
         blockEnabled: state.blockEnabled,
+        reportEnabled: state.reportEnabled,
         isAdmin: state.isAdmin,
         selfFaculty: state.selfFaculty,
         online: state.online,

@@ -8,7 +8,10 @@ import {
   FIND_ERROR_FALLBACK,
   FIND_ERRORS,
   SEND_ERROR_FALLBACK,
+  KEEP_ERRORS,
   PROMPT_RATE_LIMITED,
+  REPORT_ERROR_FALLBACK,
+  REPORT_ERRORS,
   SEND_ERRORS,
   VOICE_SEND_ERRORS,
 } from "@/constants/messages";
@@ -32,6 +35,7 @@ import type {
   PromptPayload,
   ReactionPayload,
   RecordedVoice,
+  ReportInput,
   SearchOptions,
   SendAck,
   VoiceSendAck,
@@ -86,12 +90,18 @@ export function useChat({
     socket.on("auth:banned", () => onBannedRef.current());
     socket.on(
       "features",
-      (features: { call?: boolean; voice?: boolean; block?: boolean }) =>
+      (features: {
+        call?: boolean;
+        voice?: boolean;
+        block?: boolean;
+        report?: boolean;
+      }) =>
         dispatch({
           type: "features",
           call: features.call === true,
           voice: features.voice === true,
           block: features.block === true,
+          report: features.report === true,
         }),
     );
     socket.on("auth:ok", (payload: { faculty: string; admin?: boolean }) => {
@@ -175,6 +185,14 @@ export function useChat({
       "game:state",
       ({ roomId, game }: { roomId: string; game: GameView | null }) =>
         dispatch({ type: "game", roomId, game }),
+    );
+    socket.on("room:keep-offered", ({ roomId }: { roomId: string }) =>
+      dispatch({ type: "keepOffered", roomId }),
+    );
+    socket.on(
+      "room:contact",
+      ({ roomId, contact }: { roomId: string; contact: string }) =>
+        dispatch({ type: "contact", roomId, contact }),
     );
     socket.on("room:closed", (payload: { roomId: string }) =>
       dispatch({ type: "closed", roomId: payload.roomId }),
@@ -321,6 +339,47 @@ export function useChat({
     [],
   );
 
+  const keepTalking = useCallback(
+    (contact: string) =>
+      new Promise<string | null>((resolve) => {
+        const socket = socketRef.current;
+        if (!socket?.connected) return resolve(SEND_ERRORS.offline);
+        socket.emit(
+          "room:keep",
+          { contact },
+          (ack: { ok: boolean; error?: string }) => {
+            if (!ack.ok) {
+              return resolve(
+                KEEP_ERRORS[ack.error ?? ""] ?? SEND_ERROR_FALLBACK,
+              );
+            }
+            dispatch({ type: "keepSent" });
+            resolve(null);
+          },
+        );
+      }),
+    [],
+  );
+
+  const report = useCallback(
+    (input: ReportInput) =>
+      new Promise<string | null>((resolve) => {
+        const socket = socketRef.current;
+        if (!socket?.connected) return resolve(SEND_ERRORS.offline);
+        socket.emit(
+          "room:report",
+          input,
+          (ack: { ok: boolean; error?: string }) =>
+            resolve(
+              ack.ok
+                ? null
+                : (REPORT_ERRORS[ack.error ?? ""] ?? REPORT_ERROR_FALLBACK),
+            ),
+        );
+      }),
+    [],
+  );
+
   const block = useCallback(
     () =>
       new Promise<string | null>((resolve) => {
@@ -390,6 +449,8 @@ export function useChat({
     send,
     sendVoice,
     askPrompt,
+    keepTalking,
+    report,
     react,
     block,
     sendFeedback,

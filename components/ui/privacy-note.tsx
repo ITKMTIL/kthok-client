@@ -29,6 +29,9 @@ export function PrivacyNote({ className = "" }: { className?: string }) {
           <span className="block">
             เก็บเฉพาะรหัสที่เข้ารหัสทางเดียว ไว้กันคนป่วน
           </span>
+          <span className="block">
+            ยกเว้นข้อความที่เธอเลือกแนบตอนรายงาน (เข้ารหัส ลบใน 30 วัน)
+          </span>
         </p>
       </div>
     </aside>

@@ -19,6 +19,20 @@ export const VOICE_SEND_ERRORS: Record<string, string> = {
 export const MIC_DENIED_MESSAGE =
   "เปิดไมค์ไม่ได้ ลองอนุญาตไมโครโฟนในเบราว์เซอร์ก่อนนะ";
 export const PROMPT_RATE_LIMITED = "สุ่มคำถามถี่ไปหน่อย ลองคุยข้อนี้ก่อนนะ";
+export const KEEP_ERRORS: Record<string, string> = {
+  not_ended: "ห้องยังไม่จบ ชวนกันในแชตได้เลย",
+  invalid_contact: "ใส่ช่องทางติดต่อสั้น ๆ ไม่เกิน 60 ตัวอักษร",
+  contact_not_allowed: "ช่องทางติดต่อนี้มีคำที่ไม่อนุญาต",
+  rate_limited: "กดถี่ไปหน่อย รอแป๊บนะ",
+};
+export const REPORT_ERRORS: Record<string, string> = {
+  already_reported: "รายงานห้องนี้ไปแล้ว ขอบคุณนะ",
+  invalid_messages: "ข้อความที่เลือกไม่ตรงกับที่คุยกันจริง ลองเลือกใหม่",
+  no_room: "ห้องนี้หมดเวลารายงานแล้ว",
+  unavailable: "ตอนนี้รายงานไม่ได้ ลองบล็อกแทนก่อนนะ",
+  rate_limited: "รายงานถี่ไปหน่อย รอสักพักนะ",
+};
+export const REPORT_ERROR_FALLBACK = "ส่งรายงานไม่สำเร็จ ลองอีกครั้งนะ";
 export const SEND_ERROR_FALLBACK = "ส่งข้อความไม่สำเร็จ ลองอีกครั้งนะ";
 
 export const ADD_TRACK_ERRORS: Record<string, string> = {

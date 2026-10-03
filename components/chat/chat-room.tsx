@@ -1,6 +1,7 @@
 "use client";
 
 import { CallBar } from "@/components/call/call-bar";
+import { ReportDialog } from "@/components/followup/report-dialog";
 import { GamePanel } from "@/components/games/game-panel";
 import { MusicPlayer } from "@/components/music/music-player";
 import type { ShareParty } from "@/components/share/share-card";
@@ -15,6 +16,7 @@ import type {
   GameControls,
   MusicControls,
   RecordedVoice,
+  ReportInput,
 } from "@/types/chat";
 import { useState } from "react";
 import type { Socket } from "socket.io-client";
@@ -34,6 +36,8 @@ export function ChatRoom({
   onSend,
   onSendVoice,
   onPrompt,
+  onKeep,
+  onReport,
   onReact,
   onBlock,
   onFeedback,
@@ -50,6 +54,8 @@ export function ChatRoom({
   onSend: (text: string) => Promise<string | null>;
   onSendVoice: (voice: RecordedVoice) => Promise<string | null>;
   onPrompt: () => Promise<string | null>;
+  onKeep: (contact: string) => Promise<string | null>;
+  onReport: (input: ReportInput) => Promise<string | null>;
   onReact: (messageId: string, reaction: Reaction | null) => void;
   onBlock: (() => void) | null;
   onFeedback: (rating: "up" | "down") => void;
@@ -63,6 +69,8 @@ export function ChatRoom({
   const voice = useVoiceCall(socket, { enabled: !ended, soundMuted });
   const partnerName = state.partner?.nickname ?? "อีกฝ่าย";
   const [sharing, setSharing] = useState(false);
+  const [reporting, setReporting] = useState(false);
+  const openReport = state.reportEnabled ? () => setReporting(true) : null;
   const sharedMessages = state.messages.filter((message) =>
     selection.selected?.has(message.id),
   );
@@ -82,6 +90,7 @@ export function ChatRoom({
           canShare={state.messages.length > 0 && !selection.selecting}
           onShare={selection.start}
           onStartGame={ended ? null : games.start}
+          onReport={openReport}
           onBlock={ended ? null : onBlock}
           canCall={
             !ended &&
@@ -125,6 +134,9 @@ export function ChatRoom({
           onToggleSelected={selection.toggle}
           onReact={onReact}
           onFeedback={onFeedback}
+          keep={state.keep}
+          onKeep={onKeep}
+          onReport={openReport}
           onNext={onNext}
         />
         {selection.selecting ? (
@@ -148,6 +160,14 @@ export function ChatRoom({
           />
         )}
       </section>
+      {reporting && (
+        <ReportDialog
+          messages={state.messages}
+          partnerName={partnerName}
+          onSubmit={onReport}
+          onClose={() => setReporting(false)}
+        />
+      )}
       {sharing && state.partner && (
         <ShareDialog
           messages={sharedMessages}
