@@ -17,3 +17,4 @@
 - โทร: ลดเสียงเพลงระหว่างโทร, ต่อสายใหม่หลัง reconnect
 - CI (lint + typecheck + build image), test
 - ลบ `public/*.svg` ที่ไม่ใช้
+- [ ] ตรวจชื่อคณะภาษาอังกฤษใน `lib/i18n/en.ts` (International College, IAAI, College of Music Engineering)
