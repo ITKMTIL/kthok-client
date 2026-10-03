@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { useVoiceActive } from "@/lib/voice-activity";
 import { loadYouTubeApi, PlayerState, type YTPlayer } from "@/lib/youtube-api";
 import type { MusicState } from "@/types/chat";
 
 const SYNC_INTERVAL_MS = 500;
 const MAX_DRIFT_SEC = 2;
 const BLOCKED_AFTER_TICKS = 8;
+const DUCKED_VOLUME = 15;
 
 function expectedPosition(music: MusicState): number {
   return music.playing
@@ -151,6 +153,12 @@ export function useYouTubePlayer(
       host.replaceChildren();
     };
   }, []);
+
+  const ducked = useVoiceActive();
+
+  useEffect(() => {
+    playerRef.current?.setVolume(ducked ? DUCKED_VOLUME : 100);
+  }, [ducked]);
 
   const toggleMute = () => {
     const player = playerRef.current;

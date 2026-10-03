@@ -1,6 +1,8 @@
-import { User } from "lucide-react";
+import { Mic, User } from "lucide-react";
 import type { Ref } from "react";
+import { Waveform } from "@/components/voice/waveform";
 import { facultyOf, type FacultyId } from "@/constants/faculties";
+import { formatClock } from "@/lib/voice";
 import type { ChatMessage } from "@/types/chat";
 
 export interface ShareParty {
@@ -71,9 +73,19 @@ function CardMessage({ message }: { message: ChatMessage }) {
     <div
       className={`flex max-w-[85%] flex-col ${message.mine ? "items-end self-end" : "items-start self-start"}`}
     >
-      <p className={`bubble max-w-full ${message.mine ? "bubble-mine" : "bubble-theirs"}`}>
-        {message.text}
-      </p>
+      {message.voice ? (
+        <p className={`bubble flex w-56 max-w-full items-center gap-2 ${message.mine ? "bubble-mine" : "bubble-theirs"}`}>
+          <Mic className="size-4 shrink-0" aria-hidden />
+          <Waveform peaks={message.voice.peaks} className="h-6 min-w-0 flex-1" />
+          <span className="shrink-0 text-xs tabular-nums">
+            {formatClock(message.voice.duration)}
+          </span>
+        </p>
+      ) : (
+        <p className={`bubble max-w-full ${message.mine ? "bubble-mine" : "bubble-theirs"}`}>
+          {message.text}
+        </p>
+      )}
       {reactions.length > 0 && (
         <span className="-mt-1.5 flex gap-1 px-2">
           {reactions.map((reaction, index) => (

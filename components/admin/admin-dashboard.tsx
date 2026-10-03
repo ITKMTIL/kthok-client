@@ -109,6 +109,7 @@ function Report({ overview }: { overview: Overview }) {
   const messages = series(overview, "message");
   const logins = series(overview, "login");
   const calls = series(overview, "call");
+  const voices = series(overview, "voice");
   const rooms = total(series(overview, "room"));
   const roomSeconds = total(series(overview, "room_seconds"));
   const up = total(series(overview, "feedback_up"));
@@ -132,7 +133,7 @@ function Report({ overview }: { overview: Overview }) {
         <StatTile
           label="จับคู่วันนี้"
           value={formatNumber(today(pairs))}
-          hint={`ข้อความวันนี้ ${formatNumber(today(messages))}`}
+          hint={`ข้อความวันนี้ ${formatNumber(today(messages))} · เสียง ${formatNumber(today(voices))}`}
         />
         <StatTile
           label="ออนไลน์สูงสุด"
@@ -174,6 +175,7 @@ function Report({ overview }: { overview: Overview }) {
           { label: "ข้อความ", points: messages },
           { label: "ล็อกอิน", points: logins },
           { label: "สายโทร", points: calls },
+          { label: "ข้อความเสียง", points: voices },
         ]}
       />
 
