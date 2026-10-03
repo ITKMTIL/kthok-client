@@ -15,8 +15,11 @@ import {
 import { motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
 import { useDismiss } from "@/hooks/use-dismiss";
+import { usePopoverOffset } from "@/hooks/use-popover-offset";
 import { useT } from "@/hooks/use-locale";
 import type { GameType } from "@/types/chat";
+
+const MENU_WIDTH = 240;
 
 export function ChatMenu({
   canShare,
@@ -44,6 +47,7 @@ export function ChatMenu({
     setConfirming(false);
   }, []);
   useDismiss(rootRef, open, close);
+  const offset = usePopoverOffset(rootRef, open, MENU_WIDTH);
 
   return (
     <div ref={rootRef} className="relative shrink-0">
@@ -62,9 +66,9 @@ export function ChatMenu({
           initial={{ opacity: 0, scale: 0.9, y: -6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 520, damping: 30 }}
-          style={{ transformOrigin: "100% 0%" }}
+          style={{ transformOrigin: "100% 0%", right: offset, width: MENU_WIDTH }}
           role="menu"
-          className="absolute right-0 top-full z-20 mt-2 flex w-60 flex-col gap-1 rounded-2xl border-2 border-ink bg-card p-2 shadow-[3px_3px_0_var(--color-ink)]"
+          className="absolute top-full max-w-[calc(100vw-1.5rem)] z-20 mt-2 flex flex-col gap-1 rounded-2xl border-2 border-ink bg-card p-2 shadow-[3px_3px_0_var(--color-ink)]"
         >
           {confirming && onBlock ? (
             <div className="flex flex-col gap-2 p-1">

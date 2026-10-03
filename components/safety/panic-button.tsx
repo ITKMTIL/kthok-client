@@ -4,6 +4,9 @@ import { ShieldAlert } from "lucide-react";
 import { motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
 import { useDismiss } from "@/hooks/use-dismiss";
+import { usePopoverOffset } from "@/hooks/use-popover-offset";
+
+const POPOVER_WIDTH = 256;
 import { useT } from "@/hooks/use-locale";
 
 export function PanicButton({ onConfirm }: { onConfirm: () => void }) {
@@ -12,6 +15,7 @@ export function PanicButton({ onConfirm }: { onConfirm: () => void }) {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
   useDismiss(rootRef, open, close);
+  const offset = usePopoverOffset(rootRef, open, POPOVER_WIDTH);
 
   return (
     <div ref={rootRef} className="relative shrink-0">
@@ -30,10 +34,10 @@ export function PanicButton({ onConfirm }: { onConfirm: () => void }) {
           initial={{ opacity: 0, scale: 0.9, y: -6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 520, damping: 30 }}
-          style={{ transformOrigin: "100% 0%" }}
+          style={{ transformOrigin: "100% 0%", right: offset, width: POPOVER_WIDTH }}
           role="alertdialog"
           aria-label={t.safety.panicConfirmLabel}
-          className="absolute right-0 top-full z-20 mt-2 flex w-64 flex-col gap-2 rounded-2xl border-2 border-ink bg-card p-3 shadow-[3px_3px_0_var(--color-ink)]"
+          className="absolute top-full z-20 mt-2 flex max-w-[calc(100vw-1.5rem)] flex-col gap-2 rounded-2xl border-2 border-ink bg-card p-3 shadow-[3px_3px_0_var(--color-ink)]"
         >
           <p className="text-sm">
             {t.safety.panicConfirm}
