@@ -9,6 +9,11 @@
 - context ที่อัปเดต: ไฟล์ไหน
 ```
 
+## 2026-10-03 — แบล็กแจ็ก
+- `components/games/blackjack-board.tsx` ไพ่ลายเส้น ♠♥♦♣, เมนูเลือกโหมดใน ⋮, ข้อความ `blackjack` ใน th/en
+- ความเป็นนิรนาม: ไม่กระทบ
+- context ที่อัปเดต: product, changelog
+
 ## 2026-10-03 — push ลงทะเบียนซ้ำทุกครั้งที่ต่อใหม่
 - `8dee1e6` `use-push` ส่ง `push:subscribe` ทุก `connect` เพื่อให้ core ผูก endpoint กับ socket ใหม่
 - ความเป็นนิรนาม: ไม่กระทบ
