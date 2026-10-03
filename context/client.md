@@ -18,7 +18,8 @@
   - `ui/` splash (GSAP), mascot (GSAP loops), hero, privacy-note, screen, slide-in, site-footer
 - `hooks/`: `use-chat` (socket + reducer, revoke blob URL เสียง, ส่ง `presence:visibility`, `leave` = ไปหน้าจบห้อง / `exit` = กลับ lobby), `use-push`, `use-theme`, `use-voice-call`, `use-voice-recorder`, `use-youtube-player` (sync 500ms, drift >2s, duck เสียง), `use-session`, `use-profile`, `use-notifications`, `use-visual-viewport`, ...
 - `lib/`: `theme` (THEME_SCRIPT inline ใน layout กัน flash), `push` (support/decodeKey/register sw), `config` (`NEXT_PUBLIC_*`), `storage` (`createStoredValue` + useSyncExternalStore), `sounds`, `share-image` (html-to-image 1080px), `voice*` (store ของ player/activity), `youtube-api`, `google-identity`, `admin-*`
-- `constants/` faculties (ต้องตรงกับ core), messages (ข้อความ error ภาษาไทย), reactions
+- `constants/` faculties (id + icon ต้องตรงกับ core, ชื่อมาจาก dict ผ่าน `facultyText`), topics/stickers (id + icon), reactions
+- `lib/i18n/`: `th.ts` (ต้นฉบับ, `Dict` derive จากนี้), `en.ts` (`en: Dict`), `index.ts` (`DICTS`, `errorText`, `promptText`); `hooks/use-locale.ts` (`useT`, `useLocale`, `currentDict`, เก็บ `kthok:locale`)
 - `types/` chat, auth, admin
 
 ## Pattern
@@ -29,4 +30,5 @@
 - store ข้าม component ใช้ module + `useSyncExternalStore` (ดู `lib/voice-player.ts`)
 - icon จาก lucide-react, ไม่มี emoji ใน UI
 - อนิเมชัน: Motion (`motion/react`) สำหรับ UI, GSAP (`useGSAP`) สำหรับ splash/mascot
-- ทุกปุ่ม/ไอคอนต้องมี `aria-label` ภาษาไทย
+- ทุกปุ่ม/ไอคอนต้องมี `aria-label` (มาจาก dict)
+- i18n: ข้อความที่ผู้ใช้เห็นทั้งหมดอยู่ใน `lib/i18n/th.ts` + `en.ts` ห้าม hard-code ใน component; ใช้ `useT()` ใน component, `currentDict()` นอก React (ack callback ใน `use-chat`/`use-voice-call`, reducer, `auth-api`) error code จาก core แปลงด้วย `errorText(map, code, fallback)` เพิ่ม key ที่ `th.ts` ก่อนแล้ว tsc จะบังคับให้เติม `en.ts` admin (`app/admin`, `components/admin`, `lib/admin-stats`) และ metadata/OG คงภาษาไทย, `public/sw.js` เขียนสองภาษาในบรรทัดเดียว
