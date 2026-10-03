@@ -45,10 +45,15 @@ export async function fetchReports(
   }
 }
 
-async function post(token: string, path: string, body?: unknown) {
+async function post(
+  token: string,
+  path: string,
+  body?: unknown,
+  method: "POST" | "DELETE" = "POST",
+) {
   try {
     const response = await fetch(`${CORE_URL}${path}`, {
-      method: "POST",
+      method,
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -71,4 +76,29 @@ export function resolveReport(
 
 export function unbanUser(token: string, userRef: number): Promise<boolean> {
   return post(token, `/admin/users/${userRef}/unban`);
+}
+
+export interface WordList {
+  defaults: string[];
+  custom: { id: number; word: string; createdAt: number }[];
+}
+
+export async function fetchWords(token: string): Promise<WordList | null> {
+  try {
+    const response = await fetch(`${CORE_URL}/admin/words`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    return response.ok ? ((await response.json()) as WordList) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function addWord(token: string, word: string): Promise<boolean> {
+  return post(token, "/admin/words", { word });
+}
+
+export function removeWord(token: string, id: number): Promise<boolean> {
+  return post(token, `/admin/words/${id}`, undefined, "DELETE");
 }

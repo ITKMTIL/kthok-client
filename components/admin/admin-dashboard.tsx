@@ -16,6 +16,7 @@ import { DailyColumns } from "./daily-columns";
 import { DailyTable } from "./daily-table";
 import { FacultyTable } from "./faculty-table";
 import { ReportQueue } from "./report-queue";
+import { WordList } from "./word-list";
 import { StatTile } from "./stat-tile";
 
 const RANGES = [7, 14, 30];
@@ -102,6 +103,7 @@ export function AdminDashboard() {
       {!problem && !result && <p className="text-ink-soft">กำลังโหลดข้อมูล…</p>}
       {result?.ok && token && <ReportQueue token={token} />}
       {result?.ok && <Report overview={result.overview} />}
+      {result?.ok && token && <WordList token={token} />}
     </main>
   );
 }
