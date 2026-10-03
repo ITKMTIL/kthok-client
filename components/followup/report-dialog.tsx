@@ -33,7 +33,8 @@ export function ReportDialog({
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const candidates = messages.filter(
-    (message) => !message.voice && !message.prompt,
+    (message) =>
+      !message.voice && !message.prompt && !message.sticker && !message.unsent,
   );
 
   useEffect(() => {

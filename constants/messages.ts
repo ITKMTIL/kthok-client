@@ -33,6 +33,7 @@ export const REPORT_ERRORS: Record<string, string> = {
   rate_limited: "รายงานถี่ไปหน่อย รอสักพักนะ",
 };
 export const REPORT_ERROR_FALLBACK = "ส่งรายงานไม่สำเร็จ ลองอีกครั้งนะ";
+export const UNSEND_TOO_LATE = "ยกเลิกได้แค่ภายใน 1 นาทีหลังส่ง";
 export const SEND_ERROR_FALLBACK = "ส่งข้อความไม่สำเร็จ ลองอีกครั้งนะ";
 
 export const ADD_TRACK_ERRORS: Record<string, string> = {

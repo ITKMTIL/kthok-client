@@ -44,6 +44,8 @@ export type ChatAction =
   | { type: "contact"; roomId: string; contact: string }
   | { type: "closed"; roomId: string }
   | { type: "left" }
+  | { type: "unsent"; messageId: string }
+  | { type: "read"; messageId: string }
   | { type: "reset"; error?: string };
 
 export const initialChatState: ChatState = {
@@ -70,6 +72,7 @@ export const initialChatState: ChatState = {
   music: null,
   game: null,
   endedBy: null,
+  readUpTo: null,
   keep: { offered: false, partnerOffered: false, partnerContact: null },
   error: null,
 };
@@ -219,6 +222,27 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
             music: null,
             game: null,
           }
+        : state;
+    case "unsent":
+      return state.phase === "chatting" || state.phase === "ended"
+        ? {
+            ...state,
+            messages: state.messages.map((message) =>
+              message.id === action.messageId
+                ? {
+                    ...message,
+                    text: "",
+                    voice: undefined,
+                    sticker: undefined,
+                    unsent: true,
+                  }
+                : message,
+            ),
+          }
+        : state;
+    case "read":
+      return state.phase === "chatting"
+        ? { ...state, readUpTo: action.messageId }
         : state;
     case "left":
       return state.phase === "chatting"

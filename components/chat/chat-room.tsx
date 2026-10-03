@@ -12,13 +12,16 @@ import { useMessageSelection } from "@/hooks/use-message-selection";
 import { useMusicCollapsed } from "@/hooks/use-music-collapsed";
 import { useVoiceCall } from "@/hooks/use-voice-call";
 import type {
+  ChatMessage,
   ChatState,
+  Outgoing,
   GameControls,
   MusicControls,
   RecordedVoice,
   ReportInput,
 } from "@/types/chat";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useReadReceipts } from "@/hooks/use-read-receipts";
 import type { Socket } from "socket.io-client";
 import { ChatHeader } from "./chat-header";
 import { ConnectionNotice } from "./connection-notice";
@@ -34,6 +37,8 @@ export function ChatRoom({
   music,
   games,
   onSend,
+  onUnsend,
+  onMarkRead,
   onSendVoice,
   onPrompt,
   onKeep,
@@ -52,7 +57,9 @@ export function ChatRoom({
   self: ShareParty;
   music: MusicControls;
   games: GameControls;
-  onSend: (text: string) => Promise<string | null>;
+  onSend: (content: Outgoing, replyTo?: string) => Promise<string | null>;
+  onUnsend: (messageId: string) => Promise<string | null>;
+  onMarkRead: (messageId: string) => void;
   onSendVoice: (voice: RecordedVoice) => Promise<string | null>;
   onPrompt: () => Promise<string | null>;
   onKeep: (contact: string) => Promise<string | null>;
@@ -72,9 +79,27 @@ export function ChatRoom({
   const partnerName = state.partner?.nickname ?? "อีกฝ่าย";
   const [sharing, setSharing] = useState(false);
   const [reporting, setReporting] = useState(false);
+  const [replyTarget, setReplyTarget] = useState<ChatMessage | null>(null);
+  const [receipts, setReceipts] = useReadReceipts();
+  const lastReadRef = useRef<string | null>(null);
+  const latestTheirs = [...state.messages]
+    .reverse()
+    .find((message) => !message.mine && !message.prompt)?.id;
+
+  useEffect(() => {
+    if (!receipts || ended || !latestTheirs) return;
+    const mark = () => {
+      if (document.hidden || lastReadRef.current === latestTheirs) return;
+      lastReadRef.current = latestTheirs;
+      onMarkRead(latestTheirs);
+    };
+    mark();
+    document.addEventListener("visibilitychange", mark);
+    return () => document.removeEventListener("visibilitychange", mark);
+  }, [receipts, ended, latestTheirs, onMarkRead]);
   const openReport = state.reportEnabled ? () => setReporting(true) : null;
-  const sharedMessages = state.messages.filter((message) =>
-    selection.selected?.has(message.id),
+  const sharedMessages = state.messages.filter(
+    (message) => !message.unsent && selection.selected?.has(message.id),
   );
 
   return (
@@ -93,6 +118,8 @@ export function ChatRoom({
           onShare={selection.start}
           onStartGame={ended ? null : games.start}
           onReport={openReport}
+          readReceipts={receipts}
+          onToggleReadReceipts={() => setReceipts(!receipts)}
           onBlock={ended ? null : onBlock}
           canCall={
             !ended &&
@@ -141,6 +168,9 @@ export function ChatRoom({
           keep={state.keep}
           onKeep={onKeep}
           onReport={openReport}
+          readUpTo={receipts ? state.readUpTo : null}
+          onReply={setReplyTarget}
+          onUnsend={(messageId) => void onUnsend(messageId)}
           onNext={onNext}
         />
         {selection.selecting ? (
@@ -152,7 +182,13 @@ export function ChatRoom({
         ) : (
           <MessageForm
             disabled={ended}
-            onSend={onSend}
+            onSend={async (content) => {
+              const failure = await onSend(content, replyTarget?.id);
+              if (!failure) setReplyTarget(null);
+              return failure;
+            }}
+            replyTarget={ended ? null : replyTarget}
+            onCancelReply={() => setReplyTarget(null)}
             onSendVoice={
               state.voiceEnabled && voice.call.status === "idle"
                 ? onSendVoice

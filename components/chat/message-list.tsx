@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Reaction } from "@/constants/reactions";
 import { Flag } from "lucide-react";
 import { KeepTalking } from "@/components/followup/keep-talking";
@@ -8,6 +8,8 @@ import type { ChatMessage, KeepState } from "@/types/chat";
 import { BouncingDots } from "@/components/ui/bouncing-dots";
 import { MessageBubble } from "./message-bubble";
 import { PromptCard } from "./prompt-card";
+
+const UNSEND_WINDOW_MS = 60_000;
 import { RoomFeedback } from "./room-feedback";
 
 export function MessageList({
@@ -23,6 +25,9 @@ export function MessageList({
   keep,
   onKeep,
   onReport,
+  readUpTo,
+  onReply,
+  onUnsend,
   onNext,
 }: {
   messages: ChatMessage[];
@@ -37,11 +42,24 @@ export function MessageList({
   keep: KeepState;
   onKeep: (contact: string) => Promise<string | null>;
   onReport: (() => void) | null;
+  readUpTo: string | null;
+  onReply: (message: ChatMessage) => void;
+  onUnsend: (messageId: string) => void;
   onNext: () => void;
 }) {
   const logRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [openPickerId, setOpenPickerId] = useState<string | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  const byId = useMemo(
+    () => new Map(messages.map((message) => [message.id, message])),
+    [messages],
+  );
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 5_000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
@@ -84,6 +102,14 @@ export function MessageList({
           }
           onTogglePicker={(open) => setOpenPickerId(open ? message.id : null)}
           onReact={(reaction) => onReact(message.id, reaction)}
+          quoted={(message.replyTo && byId.get(message.replyTo)) || null}
+          read={message.mine && message.id === readUpTo}
+          onReply={ended ? null : () => onReply(message)}
+          onUnsend={
+            !ended && message.mine && now - message.at < UNSEND_WINDOW_MS
+              ? () => onUnsend(message.id)
+              : null
+          }
         />
         ),
       )}

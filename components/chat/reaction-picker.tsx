@@ -1,5 +1,6 @@
 "use client";
 
+import { Reply, Undo2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { REACTIONS, type Reaction } from "@/constants/reactions";
@@ -8,10 +9,14 @@ export function ReactionPicker({
   selected,
   align,
   onPick,
+  onReply,
+  onUnsend,
 }: {
   selected: string | null;
   align: "left" | "right";
   onPick: (reaction: Reaction | null) => void;
+  onReply?: (() => void) | null;
+  onUnsend?: (() => void) | null;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -45,6 +50,26 @@ export function ReactionPicker({
           </button>
         );
       })}
+      {onReply && (
+        <button
+          type="button"
+          className="grid size-9 cursor-pointer place-items-center rounded-full hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
+          aria-label="ตอบกลับ"
+          onClick={onReply}
+        >
+          <Reply className="size-4" aria-hidden />
+        </button>
+      )}
+      {onUnsend && (
+        <button
+          type="button"
+          className="grid size-9 cursor-pointer place-items-center rounded-full hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
+          aria-label="ยกเลิกส่ง"
+          onClick={onUnsend}
+        >
+          <Undo2 className="size-4" aria-hidden />
+        </button>
+      )}
     </motion.div>
   );
 }

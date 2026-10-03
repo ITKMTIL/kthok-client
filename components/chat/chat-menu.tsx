@@ -3,6 +3,8 @@
 import {
   Ban,
   EllipsisVertical,
+  Eye,
+  EyeOff,
   Flag,
   Grid3x3,
   Scissors,
@@ -18,12 +20,16 @@ export function ChatMenu({
   onShare,
   onStartGame,
   onReport,
+  readReceipts,
+  onToggleReadReceipts,
   onBlock,
 }: {
   canShare: boolean;
   onShare: () => void;
   onStartGame: ((type: GameType) => void) | null;
   onReport: (() => void) | null;
+  readReceipts: boolean;
+  onToggleReadReceipts: () => void;
   onBlock: (() => void) | null;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -112,6 +118,20 @@ export function ChatMenu({
                   />
                 </>
               )}
+              <MenuItem
+                icon={
+                  readReceipts ? (
+                    <EyeOff className="size-4" aria-hidden />
+                  ) : (
+                    <Eye className="size-4" aria-hidden />
+                  )
+                }
+                label={readReceipts ? "ปิดสถานะอ่านแล้ว" : "เปิดสถานะอ่านแล้ว"}
+                onClick={() => {
+                  close();
+                  onToggleReadReceipts();
+                }}
+              />
               {onReport && (
                 <MenuItem
                   icon={<Flag className="size-4 text-danger" aria-hidden />}

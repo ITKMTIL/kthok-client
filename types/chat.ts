@@ -1,4 +1,5 @@
 import type { FacultyId } from "@/constants/faculties";
+import type { StickerId } from "@/constants/stickers";
 import type { TopicId } from "@/constants/topics";
 
 export interface Partner {
@@ -31,9 +32,17 @@ export interface ChatMessage {
   reactions: MessageReactions;
   voice?: VoiceClip;
   prompt?: boolean;
+  sticker?: StickerId;
+  replyTo?: string;
+  unsent?: boolean;
 }
 
-export type IncomingMessage = Omit<ChatMessage, "mine" | "reactions" | "voice">;
+export type IncomingMessage = Omit<
+  ChatMessage,
+  "mine" | "reactions" | "voice" | "prompt" | "unsent"
+>;
+
+export type Outgoing = { text: string } | { sticker: StickerId };
 
 export interface VoiceMeta {
   id: string;
@@ -152,6 +161,7 @@ export interface ChatState {
   music: MusicState | null;
   game: GameView | null;
   endedBy: "me" | "partner" | null;
+  readUpTo: string | null;
   keep: KeepState;
   error: string | null;
 }

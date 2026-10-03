@@ -1,5 +1,6 @@
 import { Mic, User } from "lucide-react";
 import type { Ref } from "react";
+import { Sticker } from "@/components/stickers/sticker";
 import { Waveform } from "@/components/voice/waveform";
 import { facultyOf, type FacultyId } from "@/constants/faculties";
 import { formatClock } from "@/lib/voice";
@@ -73,7 +74,9 @@ function CardMessage({ message }: { message: ChatMessage }) {
     <div
       className={`flex max-w-[85%] flex-col ${message.mine ? "items-end self-end" : "items-start self-start"}`}
     >
-      {message.voice ? (
+      {message.sticker ? (
+        <Sticker id={message.sticker} className="size-24" />
+      ) : message.voice ? (
         <p className={`bubble flex w-56 max-w-full items-center gap-2 ${message.mine ? "bubble-mine" : "bubble-theirs"}`}>
           <Mic className="size-4 shrink-0" aria-hidden />
           <Waveform peaks={message.voice.peaks} className="h-6 min-w-0 flex-1" />

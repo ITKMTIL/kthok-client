@@ -1,13 +1,15 @@
 "use client";
 
-import { Lightbulb, LoaderCircle, Mic } from "lucide-react";
+import { Lightbulb, LoaderCircle, Mic, Reply, Sticker as StickerIcon, X } from "lucide-react";
+import { StickerPicker } from "@/components/stickers/sticker-picker";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { VoiceRecorderBar } from "@/components/voice/voice-recorder-bar";
 import { MIC_DENIED_MESSAGE } from "@/constants/messages";
 import { useTypingSignal } from "@/hooks/use-typing-signal";
 import { useVoiceRecorder } from "@/hooks/use-voice-recorder";
 import { canRecordVoice } from "@/lib/voice";
-import type { RecordedVoice } from "@/types/chat";
+import type { ChatMessage, Outgoing, RecordedVoice } from "@/types/chat";
+import { summarize } from "./message-bubble";
 
 const MAX_MESSAGE_LENGTH = 1000;
 
@@ -18,14 +20,19 @@ export function MessageForm({
   onPrompt,
   onTyping,
   onFocus,
+  replyTarget,
+  onCancelReply,
 }: {
   disabled: boolean;
-  onSend: (text: string) => Promise<string | null>;
+  onSend: (content: Outgoing) => Promise<string | null>;
   onSendVoice: ((voice: RecordedVoice) => Promise<string | null>) | null;
   onPrompt: () => Promise<string | null>;
   onTyping: (typing: boolean) => void;
   onFocus: () => void;
+  replyTarget: ChatMessage | null;
+  onCancelReply: () => void;
 }) {
+  const [stickersOpen, setStickersOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [sendingVoice, setSendingVoice] = useState(false);
@@ -50,6 +57,10 @@ export function MessageForm({
   }, []);
 
   useEffect(() => {
+    if (replyTarget) inputRef.current?.focus();
+  }, [replyTarget]);
+
+  useEffect(() => {
     if (disabled || !onSendVoice) cancel();
   }, [disabled, onSendVoice, cancel]);
 
@@ -59,7 +70,7 @@ export function MessageForm({
     if (!text || disabled) return;
     typing.stop();
     setDraft("");
-    const failure = await onSend(text);
+    const failure = await onSend({ text });
     setError(failure);
     if (failure) setDraft((current) => current || text);
   }
@@ -87,7 +98,33 @@ export function MessageForm({
           onSend={recorder.send}
         />
       ) : (
-        <form className="flex gap-2" onSubmit={handleSubmit}>
+        <>
+        {replyTarget && (
+          <div className="mb-1.5 flex items-center gap-2 rounded-xl border-2 border-dashed border-ink px-3 py-1 text-sm">
+            <Reply className="size-4 shrink-0" aria-hidden />
+            <span className="min-w-0 flex-1 truncate">
+              ตอบ{replyTarget.mine ? "ตัวเอง" : "อีกฝ่าย"}: {summarize(replyTarget)}
+            </span>
+            <button
+              type="button"
+              className="grid size-6 cursor-pointer place-items-center rounded-full hover:bg-accent-soft"
+              aria-label="ยกเลิกการตอบกลับ"
+              onClick={onCancelReply}
+            >
+              <X className="size-4" aria-hidden />
+            </button>
+          </div>
+        )}
+        <form className="relative flex gap-2" onSubmit={handleSubmit}>
+          {stickersOpen && (
+            <StickerPicker
+              onClose={() => setStickersOpen(false)}
+              onPick={async (sticker) => {
+                setStickersOpen(false);
+                setError(await onSend({ sticker }));
+              }}
+            />
+          )}
           <button
             type="button"
             className="doodle-btn grid size-11 shrink-0 place-items-center p-0"
@@ -97,6 +134,17 @@ export function MessageForm({
             onClick={async () => setError(await onPrompt())}
           >
             <Lightbulb className="size-5" aria-hidden />
+          </button>
+          <button
+            type="button"
+            className="doodle-btn grid size-11 shrink-0 place-items-center p-0"
+            aria-label="ส่งสติกเกอร์"
+            aria-expanded={stickersOpen}
+            title="สติกเกอร์"
+            disabled={disabled}
+            onClick={() => setStickersOpen((open) => !open)}
+          >
+            <StickerIcon className="size-5" aria-hidden />
           </button>
           <input
             ref={inputRef}
@@ -137,6 +185,7 @@ export function MessageForm({
             </button>
           )}
         </form>
+        </>
       )}
     </div>
   );

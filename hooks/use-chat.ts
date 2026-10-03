@@ -14,6 +14,7 @@ import {
   REPORT_ERROR_FALLBACK,
   REPORT_ERRORS,
   SEND_ERRORS,
+  UNSEND_TOO_LATE,
   VOICE_SEND_ERRORS,
 } from "@/constants/messages";
 import { facultyOf } from "@/constants/faculties";
@@ -32,6 +33,7 @@ import type {
   MatchedPayload,
   MusicControls,
   MusicPayload,
+  Outgoing,
   PromptAck,
   PromptPayload,
   ReactionPayload,
@@ -193,6 +195,12 @@ export function useChat({
       ({ roomId, game }: { roomId: string; game: GameView | null }) =>
         dispatch({ type: "game", roomId, game }),
     );
+    socket.on("chat:unsent", ({ messageId }: { messageId: string }) =>
+      dispatch({ type: "unsent", messageId }),
+    );
+    socket.on("chat:read", ({ messageId }: { messageId: string }) =>
+      dispatch({ type: "read", messageId }),
+    );
     socket.on("room:keep-offered", ({ roomId }: { roomId: string }) =>
       dispatch({ type: "keepOffered", roomId }),
     );
@@ -280,11 +288,11 @@ export function useChat({
   }, []);
 
   const send = useCallback(
-    (text: string) =>
+    (content: Outgoing, replyTo?: string) =>
       new Promise<string | null>((resolve) => {
         const socket = socketRef.current;
         if (!socket?.connected) return resolve(SEND_ERRORS.offline);
-        socket.emit("chat:send", { text }, (ack: SendAck) => {
+        socket.emit("chat:send", { ...content, replyTo }, (ack: SendAck) => {
           if (!ack.ok) {
             return resolve(SEND_ERRORS[ack.error] ?? SEND_ERROR_FALLBACK);
           }
@@ -360,6 +368,28 @@ export function useChat({
       }),
     [],
   );
+
+  const unsend = useCallback(
+    (messageId: string) =>
+      new Promise<string | null>((resolve) => {
+        const socket = socketRef.current;
+        if (!socket?.connected) return resolve(SEND_ERRORS.offline);
+        socket.emit(
+          "chat:unsend",
+          { messageId },
+          (ack: { ok: boolean }) => {
+            if (!ack.ok) return resolve(UNSEND_TOO_LATE);
+            dispatch({ type: "unsent", messageId });
+            resolve(null);
+          },
+        );
+      }),
+    [],
+  );
+
+  const markRead = useCallback((messageId: string) => {
+    socketRef.current?.emit("chat:read", { messageId });
+  }, []);
 
   const keepTalking = useCallback(
     (contact: string) =>
@@ -471,6 +501,8 @@ export function useChat({
     exit,
     panic,
     send,
+    unsend,
+    markRead,
     sendVoice,
     askPrompt,
     keepTalking,

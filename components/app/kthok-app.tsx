@@ -57,6 +57,8 @@ export function KThokApp() {
     exit,
     panic,
     send,
+    unsend,
+    markRead,
     sendVoice,
     askPrompt,
     keepTalking,
@@ -181,6 +183,8 @@ export function KThokApp() {
               music={music}
               games={games}
               onSend={send}
+              onUnsend={unsend}
+              onMarkRead={markRead}
               onSendVoice={sendVoice}
               onPrompt={askPrompt}
               onKeep={keepTalking}
