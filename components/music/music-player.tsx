@@ -48,13 +48,13 @@ export function MusicPlayer({
         className={`flex flex-col gap-3 ${collapsed ? "max-lg:invisible max-lg:h-0 max-lg:overflow-hidden" : "max-lg:mt-2"}`}
       >
         <div className="flex gap-3 lg:flex-col">
-          <div className="relative size-[200px] shrink-0 overflow-hidden rounded-xl border-2 border-ink bg-ink lg:h-[200px] lg:w-full">
+          <div className="relative size-[200px] shrink-0 overflow-hidden rounded-xl border-2 border-ink bg-black lg:h-[200px] lg:w-full">
             <div
               ref={hostRef}
               className={`size-full [&>iframe]:size-full ${current ? "" : "invisible"}`}
             />
             {!current && (
-              <p className="absolute inset-0 grid place-items-center p-4 text-center text-sm text-paper">
+              <p className="absolute inset-0 grid place-items-center p-4 text-center text-sm text-white">
                 ยังไม่มีเพลง วางลิงก์ YouTube เพื่อเปิดฟังด้วยกัน
               </p>
             )}

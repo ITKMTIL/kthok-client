@@ -3,7 +3,6 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useRef, useState } from "react";
-import { BRAND } from "@/lib/brand";
 
 const SEEN_KEY = "kthok:splash-seen";
 const LETTERS = ["K", "-", "T", "H", "O", "K"];
@@ -193,20 +192,20 @@ export function Splash() {
           className="splash-mark size-28 overflow-visible"
           style={{ opacity: 0 }}
           fill="none"
-          stroke={BRAND.ink}
+          stroke="var(--color-ink)"
           strokeWidth="4"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
           <path
             d="M14 7h36c5.500 0 10 4.500 10 10v20c0 5.500-4.500 10-10 10H29L15 59l2-12h-3C8.500 47 4 42.500 4 37V17C4 11.500 8.500 7 14 7z"
-            fill={BRAND.accentSoft}
+            fill="var(--color-accent-soft)"
           />
           <path className="splash-eye" d="M24 20v6" strokeWidth="5" />
           <path className="splash-eye" d="M40 20v6" strokeWidth="5" />
           <path className="splash-smile" d="M21 32c6.500 7 15.500 7 22 0" strokeDasharray="30" />
-          <path className="splash-cheek" d="M13 29h4" stroke={BRAND.accent} strokeWidth="3" />
-          <path className="splash-cheek" d="M47 29h4" stroke={BRAND.accent} strokeWidth="3" />
+          <path className="splash-cheek" d="M13 29h4" stroke="var(--color-accent)" strokeWidth="3" />
+          <path className="splash-cheek" d="M47 29h4" stroke="var(--color-accent)" strokeWidth="3" />
         </svg>
 
         <div className="relative mt-2 h-24 w-full">
@@ -219,29 +218,29 @@ export function Splash() {
             className="splash-train absolute bottom-0 left-1/2 -ml-[150px] h-[104px] w-[300px] overflow-visible"
             style={{ opacity: 0 }}
             fill="none"
-            stroke={BRAND.ink}
+            stroke="var(--color-ink)"
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <g stroke={BRAND.inkSoft} strokeWidth="2">
+            <g stroke="var(--color-ink-soft)" strokeWidth="2">
               <circle className="splash-smoke" cx="118" cy="114" r="3.5" />
               <circle className="splash-smoke" cx="118" cy="114" r="3.5" />
               <circle className="splash-smoke" cx="118" cy="114" r="3.5" />
             </g>
             <g className="splash-train-body">
-              <rect x="0" y="126" width="40" height="21" rx="5" fill={BRAND.card} />
-              <rect x="44" y="126" width="40" height="21" rx="5" fill={BRAND.card} />
-              <path d="M88 147v-16c0-3 2-5 5-5h20c9 0 17 8 19 21z" fill={BRAND.accentSoft} />
-              <path d="M114 126v-6h8v6" fill={BRAND.card} />
+              <rect x="0" y="126" width="40" height="21" rx="5" fill="var(--color-card)" />
+              <rect x="44" y="126" width="40" height="21" rx="5" fill="var(--color-card)" />
+              <path d="M88 147v-16c0-3 2-5 5-5h20c9 0 17 8 19 21z" fill="var(--color-accent-soft)" />
+              <path d="M114 126v-6h8v6" fill="var(--color-card)" />
               <path d="M40 140h4M84 140h4" />
-              <path d="M3 141h34M47 141h34M91 141h36" stroke={BRAND.accent} />
+              <path d="M3 141h34M47 141h34M91 141h36" stroke="var(--color-accent)" />
               <path
                 d="M7 131h7v6H7zM18 131h7v6h-7zM29 131h6v6h-6zM51 131h7v6h-7zM62 131h7v6h-7zM73 131h6v6h-6zM95 131h7v6h-7zM107 131h9l4 6h-13z"
-                fill={BRAND.paper}
+                fill="var(--color-paper)"
                 strokeWidth="1.8"
               />
-              <g fill={BRAND.ink}>
+              <g fill="var(--color-ink)">
                 <circle cx="10" cy="150" r="3" />
                 <circle cx="30" cy="150" r="3" />
                 <circle cx="54" cy="150" r="3" />

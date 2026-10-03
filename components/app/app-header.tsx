@@ -1,5 +1,6 @@
 import { Bell, BellOff, ChartColumn } from "lucide-react";
 import Link from "next/link";
+import { ThemeToggle } from "./theme-toggle";
 
 export function AppHeader({
   connected,
@@ -35,6 +36,7 @@ export function AppHeader({
           />
           {connected ? "ออนไลน์" : "ออฟไลน์"}
         </span>
+        <ThemeToggle />
         <button
           type="button"
           className="grid size-8 cursor-pointer place-items-center rounded-full text-ink hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
