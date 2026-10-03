@@ -21,6 +21,7 @@
 - Docker image ใช้ `--platform=linux/amd64` เสมอ
 - secret และ `ADMIN_STUDENT_IDS` เจ้าของตั้งเอง
 - ตอบภาษาไทย กระชับ งานใหญ่ให้ plan ก่อน ลงมือเมื่อเจ้าของสั่ง "เริ่มเลย"
+- ไม่ต้องรันเทสในเบราว์เซอร์/test-stack/agent tester เว้นแต่เจ้าของขอ หลังแก้ให้รันแค่ typecheck + lint แล้วบอกว่าส่วนไหนยังไม่ได้เทส
 - ห้ามเทสกับ core (3001) / client (3000) ที่เจ้าของรันอยู่ ห้ามเปิดเพลง YouTube หรือใช้ไมค์จริงตอนเทส ดู `context/ops.md`
 
 ## Agents (`.claude/agents/`) ใช้เพื่อประหยัด context
