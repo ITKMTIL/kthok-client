@@ -1,8 +1,20 @@
 const MESSAGES = {
-  match: { title: "เจอเพื่อนคุยแล้ว!", body: "กลับมาทักทายกันเลย" },
-  message: { title: "มีข้อความใหม่", body: "เพื่อนในห้องส่งข้อความมา" },
-  call: { title: "มีสายเรียกเข้า", body: "เพื่อนในห้องชวนคุยเสียง" },
-  keep: { title: "มีคนอยากคุยต่อกับเธอ", body: "กลับมาตอบได้ภายใน 10 นาที" },
+  match: {
+    title: "เจอเพื่อนคุยแล้ว! · Matched!",
+    body: "กลับมาทักทายกันเลย · Come back and say hi",
+  },
+  message: {
+    title: "มีข้อความใหม่ · New message",
+    body: "เพื่อนในห้องส่งข้อความมา · Your chat buddy sent a message",
+  },
+  call: {
+    title: "มีสายเรียกเข้า · Incoming call",
+    body: "เพื่อนในห้องชวนคุยเสียง · Your chat buddy wants to voice chat",
+  },
+  keep: {
+    title: "มีคนอยากคุยต่อกับเธอ · Someone wants to keep talking",
+    body: "กลับมาตอบได้ภายใน 10 นาที · Reply within 10 minutes",
+  },
 };
 
 self.addEventListener("install", () => self.skipWaiting());
