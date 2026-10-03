@@ -15,6 +15,8 @@ import type { SearchOptions } from "@/types/chat";
 import { useChat } from "@/hooks/use-chat";
 import { useNotifications } from "@/hooks/use-notifications";
 import { usePush } from "@/hooks/use-push";
+import { useRulesAccepted } from "@/hooks/use-rules-accepted";
+import { RulesDialog } from "@/components/safety/rules-dialog";
 import { useSoundMuted } from "@/hooks/use-sound-muted";
 import { useVisualViewportHeight } from "@/hooks/use-visual-viewport";
 import { saveProfile, useProfile } from "@/hooks/use-profile";
@@ -87,8 +89,14 @@ export function KThokApp() {
   const needsLogin = AUTH_REQUIRED && token === null;
   const sessionLoading = AUTH_REQUIRED && token === undefined;
 
+  const [rulesAccepted, acceptRules] = useRulesAccepted();
+  const [pendingSearch, setPendingSearch] = useState<SearchOptions | null>(
+    null,
+  );
+
   const startSearch = (options: SearchOptions) => {
     unlockAudio();
+    if (!rulesAccepted) return setPendingSearch(options);
     if (profile && nickname) find({ ...profile, nickname }, options);
   };
 
@@ -102,6 +110,16 @@ export function KThokApp() {
     <MotionConfig reducedMotion="user">
     <div className="app-shell relative flex flex-col overflow-hidden">
       <Splash />
+      {pendingSearch && (
+        <RulesDialog
+          onAccept={() => {
+            acceptRules();
+            if (profile && nickname) find({ ...profile, nickname }, pendingSearch);
+            setPendingSearch(null);
+          }}
+          onClose={() => setPendingSearch(null)}
+        />
+      )}
       <AppHeader
         connected={state.connected}
         selfName={inRoom && nickname ? nickname : null}
