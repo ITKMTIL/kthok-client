@@ -9,6 +9,11 @@
 - context ที่อัปเดต: ไฟล์ไหน
 ```
 
+## 2026-10-03 — เกมดูดวง
+- `d03c8e5` TaksaBoard/TarotBoard (`components/games/fortune-boards.tsx`), `constants/fortune.ts` (วัน + สีประจำวัน), ข้อความ `fortune` ใน th/en
+- ความเป็นนิรนาม: ผ่าน — ถามแค่วันในสัปดาห์, ไม่โชว์ให้อีกฝ่ายถ้าไม่ติ๊ก, ไม่เก็บ
+- context ที่อัปเดต: product, privacy, changelog
+
 ## 2026-10-03 — หน้าเว็บภาษาอังกฤษ + ปุ่มสลับภาษา
 - `b5d6cb0` ย้ายข้อความทุก component (ยกเว้น admin), error map จาก `constants/messages.ts` (ลบไฟล์), ชื่อคณะ/หัวข้อ/สติกเกอร์, title แจ้งเตือน, นามแฝงสุ่ม ไปไว้ใน `lib/i18n/th.ts` + `en.ts` และเพิ่ม `components/app/language-toggle.tsx`; `abd58c3` ข้อความ push ใน `sw.js` สองภาษา
 - ความเป็นนิรนาม: ไม่กระทบ — ภาษาเก็บใน localStorage ของผู้ใช้เท่านั้น ไม่ส่งไป core, payload socket/push ไม่เปลี่ยน
